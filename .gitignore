@@ -1,0 +1,59 @@
+# Philotes repository exclusions
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_export_environment.sh
+
+# Android
+.gradle/
+local.properties
+*.jks
+*.keystore
+key.properties
+
+# Apple / macOS
+Pods/
+DerivedData/
+*.xcuserstate
+
+# Visual Studio / Windows
+.vs/
+*.user
+*.suo
+
+# VS Code local settings
+.vscode/
+
+# Node
+node_modules/
+
+# Database/local runtime data
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
