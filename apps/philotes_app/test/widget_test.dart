@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:philotes/screens/onboarding/verification_safety_screen.dart';
+import 'package:philotes/screens/onboarding/profile_photo_screen.dart';
 
 void main() {
   testWidgets(
-    'Verification and Safety requires acknowledgement',
+    'Profile Photo requires a photo before continuing',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: VerificationSafetyScreen(),
+          home: ProfilePhotoScreen(),
         ),
       );
 
       expect(
-        find.text('Verification & Safety'),
+        find.text('Add a Profile Photo'),
         findsOneWidget,
       );
 
       final continueButton = find.byKey(
-        const Key(
-          'verificationSafetyContinueButton',
-        ),
+        const Key('profilePhotoContinueButton'),
       );
 
       await tester.ensureVisible(continueButton);
@@ -32,7 +30,7 @@ void main() {
 
       expect(
         find.byKey(
-          const Key('safetyAcknowledgementError'),
+          const Key('profilePhotoError'),
         ),
         findsOneWidget,
       );
@@ -40,99 +38,118 @@ void main() {
   );
 
   testWidgets(
-    'Verification and Safety contains prominent scam warning',
+    'Profile Photo can simulate camera selection',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: VerificationSafetyScreen(),
+          home: ProfilePhotoScreen(),
+        ),
+      );
+
+      final cameraButton = find.byKey(
+        const Key('takePhotoButton'),
+      );
+
+      await tester.ensureVisible(cameraButton);
+      await tester.pumpAndSettle();
+
+      await tester.tap(cameraButton);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Photo selected from camera'),
+        findsOneWidget,
+      );
+
+      expect(
+        find.byKey(
+          const Key('removePhotoButton'),
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Profile Photo can simulate device selection',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: ProfilePhotoScreen(),
+        ),
+      );
+
+      final chooseButton = find.byKey(
+        const Key('choosePhotoButton'),
+      );
+
+      await tester.ensureVisible(chooseButton);
+      await tester.pumpAndSettle();
+
+      await tester.tap(chooseButton);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Photo selected from device'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Profile Photo can be removed',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: ProfilePhotoScreen(),
+        ),
+      );
+
+      final cameraButton = find.byKey(
+        const Key('takePhotoButton'),
+      );
+
+      await tester.tap(cameraButton);
+      await tester.pumpAndSettle();
+
+      final removeButton = find.byKey(
+        const Key('removePhotoButton'),
+      );
+
+      await tester.ensureVisible(removeButton);
+      await tester.pumpAndSettle();
+
+      await tester.tap(removeButton);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('No profile photo selected'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Profile Photo clearly states photo visibility',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: ProfilePhotoScreen(),
         ),
       );
 
       expect(
         find.byKey(
-          const Key('antiScamWarning'),
-        ),
-        findsOneWidget,
-      );
-
-      expect(
-        find.text('PROTECT YOURSELF FROM SCAMS'),
-        findsOneWidget,
-      );
-
-      expect(
-        find.byKey(
-          const Key('primaryScamWarningText'),
-        ),
-        findsOneWidget,
-      );
-    },
-  );
-
-  testWidgets(
-    'Meeting Safety expands to show guidance',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: VerificationSafetyScreen(),
-        ),
-      );
-
-      final meetingSafetyToggle = find.byKey(
-        const Key('meetingSafetyToggle'),
-      );
-
-      await tester.ensureVisible(meetingSafetyToggle);
-      await tester.pumpAndSettle();
-
-      await tester.tap(meetingSafetyToggle);
-      await tester.pumpAndSettle();
-
-      expect(
-        find.textContaining(
-          'Meet in a public place',
+          const Key('profilePhotoPrivacyNotice'),
         ),
         findsOneWidget,
       );
 
       expect(
         find.textContaining(
-          'Arrange your own transportation',
+          'visible to other',
         ),
         findsOneWidget,
-      );
-    },
-  );
-
-  testWidgets(
-    'Safety acknowledgement can be selected',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: VerificationSafetyScreen(),
-        ),
-      );
-
-      final acknowledgement = find.byKey(
-        const Key(
-          'safetyAcknowledgementCheckbox',
-        ),
-      );
-
-      await tester.ensureVisible(acknowledgement);
-      await tester.pumpAndSettle();
-
-      await tester.tap(acknowledgement);
-      await tester.pumpAndSettle();
-
-      final checkbox =
-          tester.widget<CheckboxListTile>(
-        acknowledgement,
-      );
-
-      expect(
-        checkbox.value,
-        isTrue,
       );
     },
   );

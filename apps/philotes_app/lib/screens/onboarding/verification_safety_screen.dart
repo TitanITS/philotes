@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/philotes_colors.dart';
+import 'profile_photo_screen.dart';
 
 class VerificationSafetyScreen extends StatefulWidget {
   const VerificationSafetyScreen({super.key});
@@ -26,11 +27,10 @@ class _VerificationSafetyScreenState
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Profile Photo will be the next onboarding step.',
-        ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            const ProfilePhotoScreen(),
       ),
     );
   }
