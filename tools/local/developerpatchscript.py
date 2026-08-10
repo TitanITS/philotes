@@ -1,248 +1,193 @@
 from pathlib import Path
 from datetime import datetime
+from shutil import copy2
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
 
-README_PATH = PROJECT_ROOT / "README.md"
-GITIGNORE_PATH = PROJECT_ROOT / ".gitignore"
-PRODUCT_DEFINITION_PATH = PROJECT_ROOT / "docs" / "PRODUCT_DEFINITION.md"
+MASTER_LOGO = PROJECT_ROOT / "assets" / "branding" / "titan-logo.png"
+
+APP_ROOT = PROJECT_ROOT / "apps" / "philotes_app"
+APP_ASSET_DIR = APP_ROOT / "assets" / "branding"
+APP_LOGO = APP_ASSET_DIR / "titan-logo.png"
+
+PUBSPEC = APP_ROOT / "pubspec.yaml"
+MAIN_DART = APP_ROOT / "lib" / "main.dart"
+
 REPORT_PATH = SCRIPT_DIR / "developerpatchscript_report.txt"
 
 
-README_CONTENT = """# Philotes
+OLD_FOOTER = """                    const Text(
+                      'BROUGHT TO YOU BY TITAN',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: philotesNavy,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 3,
+                      ),
+                    ),
+"""
 
-**A Community for Friendship**
-
-**Brought to you by Titan**
-
-Philotes is a friendship and community platform being developed by Titan.
-
-The purpose of Philotes is to help adults discover people with shared interests,
-build genuine friendships, participate in activities, and form meaningful social
-connections in a safety-focused community.
-
-## Project Status
-
-Philotes is currently in initial product definition and development.
-
-## Planned Client Platforms
-
-- Android
-- iOS
-- Windows
-- macOS
-- Web where appropriate
-
-## Initial Technology Direction
-
-- Flutter / Dart for client applications
-- Python / FastAPI for backend services
-- PostgreSQL for relational data
-- Git / GitHub for source control
-
-## Brand
-
-PHILOTES
-
-A Community for Friendship
-
-Brought to you by Titan
+NEW_FOOTER = """                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/branding/titan-logo.png',
+                          height: 28,
+                          width: 28,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 9),
+                        const Text(
+                          'BROUGHT TO YOU BY TITAN',
+                          style: TextStyle(
+                            color: philotesNavy,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ],
+                    ),
 """
 
 
-GITIGNORE_CONTENT = """# Philotes repository exclusions
-
-# Environment files and secrets
-.env
-.env.*
-!.env.example
-
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-.venv/
-venv/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# Flutter / Dart
-.dart_tool/
-.packages
-.pub-cache/
-.pub/
-build/
-flutter_export_environment.sh
-
-# Android
-.gradle/
-local.properties
-*.jks
-*.keystore
-key.properties
-
-# Apple / macOS
-Pods/
-DerivedData/
-*.xcuserstate
-
-# Visual Studio / Windows
-.vs/
-*.user
-*.suo
-
-# VS Code local settings
-.vscode/
-
-# Node
-node_modules/
-
-# Database/local runtime data
-*.db
-*.sqlite
-*.sqlite3
-
-# Logs and temporary files
-*.log
-*.tmp
-*.temp
-.DS_Store
-Thumbs.db
-"""
-
-
-PRODUCT_DEFINITION_CONTENT = """# Philotes Product Definition
-
-## Product Name
-
-Philotes
-
-## Tagline
-
-A Community for Friendship
-
-## Attribution
-
-Brought to you by Titan
-
-## Product Purpose
-
-Philotes is a friendship-focused community platform designed to help adults
-find people with compatible interests, establish genuine friendships, and
-participate in activities together.
-
-Philotes is not intended to be a dating application.
-
-## Core Principles
-
-1. Friendship before popularity.
-2. Safety and trust are fundamental product requirements.
-3. Members should be authentic and appropriately verified.
-4. Initial real-world meetings should encourage safe public environments.
-5. Members control their personal information.
-6. The product will not depend on third-party advertising.
-7. The interface should encourage genuine social connection rather than
-   addictive engagement mechanics.
-
-## Initial Community Vocabulary
-
-- Philotes: the overall community.
-- Circle: a member's friendship network or interest-based group.
-- Discover: finding compatible people and communities.
-- Gathering: an activity or meetup.
-- First Gathering: an initial structured public meetup.
-- Titan Verified: planned verified-member status.
-- Trust & Safety: moderation, reporting, and member-protection functions.
-- Community Standards: behavioral expectations for members.
-
-## Initial Target Platforms
-
-- Android
-- iOS
-- Windows
-- macOS
-- Web where appropriate
-
-## Initial Technical Direction
-
-### Client
-
-Flutter and Dart.
-
-### Backend
-
-Python and FastAPI.
-
-### Database
-
-PostgreSQL.
-
-### Source Control
-
-Git with GitHub remote repository.
-
-## Development Status
-
-Phase 0 - Repository foundation and product definition.
-
-No production application code has been created yet.
-"""
-
-
-def write_file(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+def fail(message: str) -> None:
+    print(f"FAIL: {message}")
+    raise SystemExit(1)
 
 
 def main() -> None:
-    print("=" * 70)
-    print("PHILOTES DEVELOPMENT PATCH SCRIPT")
-    print("=" * 70)
     print()
-    print(f"Project root: {PROJECT_ROOT}")
+    print("=" * 70)
+    print("PHILOTES TITAN FOOTER BRANDING PATCH")
+    print("=" * 70)
     print()
 
-    write_file(README_PATH, README_CONTENT)
-    write_file(GITIGNORE_PATH, GITIGNORE_CONTENT)
-    write_file(PRODUCT_DEFINITION_PATH, PRODUCT_DEFINITION_CONTENT)
+    if not MASTER_LOGO.exists():
+        fail(f"Master Titan logo not found: {MASTER_LOGO}")
+
+    if not PUBSPEC.exists():
+        fail(f"pubspec.yaml not found: {PUBSPEC}")
+
+    if not MAIN_DART.exists():
+        fail(f"main.dart not found: {MAIN_DART}")
+
+    # ------------------------------------------------------------
+    # Copy the master Titan logo into the Flutter application.
+    # The repository-level master remains unchanged.
+    # ------------------------------------------------------------
+
+    APP_ASSET_DIR.mkdir(parents=True, exist_ok=True)
+    copy2(MASTER_LOGO, APP_LOGO)
+
+    # ------------------------------------------------------------
+    # Register the image as a Flutter asset.
+    # ------------------------------------------------------------
+
+    pubspec_text = PUBSPEC.read_text(encoding="utf-8")
+
+    asset_entry = "    - assets/branding/titan-logo.png"
+
+    if asset_entry not in pubspec_text:
+        anchor = "  uses-material-design: true"
+
+        if anchor not in pubspec_text:
+            fail("Could not find uses-material-design entry in pubspec.yaml")
+
+        pubspec_text = pubspec_text.replace(
+            anchor,
+            anchor
+            + "\n"
+            + "  assets:\n"
+            + "    - assets/branding/titan-logo.png",
+            1,
+        )
+
+        PUBSPEC.write_text(pubspec_text, encoding="utf-8")
+
+    # ------------------------------------------------------------
+    # Replace the text-only Titan footer with:
+    #
+    # [small Titan logo] BROUGHT TO YOU BY TITAN
+    # ------------------------------------------------------------
+
+    main_text = MAIN_DART.read_text(encoding="utf-8")
+
+    if NEW_FOOTER not in main_text:
+        if OLD_FOOTER not in main_text:
+            fail("Expected Titan footer block was not found in main.dart")
+
+        main_text = main_text.replace(
+            OLD_FOOTER,
+            NEW_FOOTER,
+            1,
+        )
+
+        MAIN_DART.write_text(main_text, encoding="utf-8")
+
+    # ------------------------------------------------------------
+    # Verification
+    # ------------------------------------------------------------
+
+    pubspec_verify = PUBSPEC.read_text(encoding="utf-8")
+    main_verify = MAIN_DART.read_text(encoding="utf-8")
 
     checks = {
-        "README.md": README_PATH.exists(),
-        ".gitignore": GITIGNORE_PATH.exists(),
-        "docs/PRODUCT_DEFINITION.md": PRODUCT_DEFINITION_PATH.exists(),
+        "Master Titan logo exists":
+            MASTER_LOGO.exists(),
+
+        "Flutter Titan logo copy exists":
+            APP_LOGO.exists(),
+
+        "Titan logo registered in pubspec.yaml":
+            "assets/branding/titan-logo.png" in pubspec_verify,
+
+        "Titan logo used by main.dart":
+            "Image.asset(" in main_verify
+            and "assets/branding/titan-logo.png" in main_verify,
+
+        "Titan attribution remains present":
+            "BROUGHT TO YOU BY TITAN" in main_verify,
     }
 
-    report_lines = [
-        "PHILOTES DEVELOPMENT PATCH REPORT",
+    report = [
+        "PHILOTES TITAN FOOTER BRANDING PATCH REPORT",
         "=" * 70,
         f"Generated: {datetime.now().isoformat(timespec='seconds')}",
         f"Project root: {PROJECT_ROOT}",
+        f"Master logo: {MASTER_LOGO}",
+        f"Flutter logo: {APP_LOGO}",
         "",
-        "FILES:",
     ]
 
     all_passed = True
 
-    for name, passed in checks.items():
+    for description, passed in checks.items():
         status = "PASS" if passed else "FAIL"
-        report_lines.append(f"{status}: {name}")
-        print(f"{status}: {name}")
+        print(f"{status}: {description}")
+        report.append(f"{status}: {description}")
 
         if not passed:
             all_passed = False
 
-    report_lines.extend(
+    report.extend(
         [
             "",
             f"OVERALL: {'PASS' if all_passed else 'FAIL'}",
             "",
-            "No Flutter application code was generated by this patch.",
+            "The repository-level Titan logo was not modified.",
+            "The Flutter application uses its own copied branding asset.",
+            "The Titan mark is displayed before BROUGHT TO YOU BY TITAN.",
         ]
     )
 
-    REPORT_PATH.write_text("\n".join(report_lines) + "\n", encoding="utf-8")
+    REPORT_PATH.write_text(
+        "\n".join(report) + "\n",
+        encoding="utf-8",
+    )
 
     print()
     print(f"Report: {REPORT_PATH}")

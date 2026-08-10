@@ -1,122 +1,324 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const PhilotesApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class PhilotesApp extends StatelessWidget {
+  const PhilotesApp({super.key});
 
-  // This widget is the root of your application.
+  static const Color philotesNavy = Color(0xFF0B2341);
+  static const Color philotesGold = Color(0xFFC9A24B);
+  static const Color philotesIvory = Color(0xFFF8F4EB);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Philotes',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        scaffoldBackgroundColor: philotesIvory,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: philotesNavy,
+          primary: philotesNavy,
+          secondary: philotesGold,
+          surface: philotesIvory,
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const PhilotesWelcomeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class PhilotesWelcomeScreen extends StatelessWidget {
+  const PhilotesWelcomeScreen({super.key});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  static const Color philotesNavy = Color(0xFF0B2341);
+  static const Color philotesGold = Color(0xFFC9A24B);
+  static const Color philotesIvory = Color(0xFFF8F4EB);
+  static const Color philotesSilver = Color(0xFF7B8794);
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [philotesIvory, Color(0xFFF2EBDD)],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 620),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const _CommunityMark(),
+
+                    const SizedBox(height: 34),
+
+                    const Text(
+                      'PHILOTES',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: philotesNavy,
+                        fontSize: 46,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 7,
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    Container(width: 220, height: 1, color: philotesGold),
+
+                    const SizedBox(height: 18),
+
+                    const Text(
+                      'A COMMUNITY FOR FRIENDSHIP',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: philotesGold,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 2.2,
+                      ),
+                    ),
+
+                    const SizedBox(height: 34),
+
+                    const Text(
+                      'Real people. Shared interests. Lifelong friendships.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: philotesNavy,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    const Text(
+                      'Discover people who enjoy the things you enjoy, '
+                      'build genuine connections, and create friendships '
+                      'in a community designed around trust and safety.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: philotesSilver,
+                        fontSize: 16,
+                        height: 1.6,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: FilledButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Philotes onboarding will begin here.',
+                              ),
+                            ),
+                          );
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: philotesNavy,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          'Join the Community',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Philotes sign in will begin here.',
+                              ),
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: philotesNavy,
+                          side: const BorderSide(
+                            color: philotesGold,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 42),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'BROUGHT TO YOU BY',
+                          style: TextStyle(
+                            color: philotesNavy,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 3,
+                          ),
+                        ),
+
+                        const SizedBox(width: 7),
+
+                        Image.asset(
+                          'assets/branding/titan-logo.png',
+                          height: 22,
+                          width: 22,
+                          fit: BoxFit.contain,
+                        ),
+
+                        const SizedBox(width: 4),
+
+                        const Text(
+                          'TITAN',
+                          style: TextStyle(
+                            color: philotesNavy,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    const Text(
+                      'Friendship  •  Trust  •  Community  •  Connection',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: philotesGold,
+                        fontSize: 12,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+class _CommunityMark extends StatelessWidget {
+  const _CommunityMark();
+
+  static const Color philotesNavy = Color(0xFF0B2341);
+  static const Color philotesGold = Color(0xFFC9A24B);
+  static const Color philotesSilver = Color(0xFF7B8794);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 150,
+      height: 150,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: philotesGold, width: 2),
       ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Positioned(
+            top: 25,
+            child: _PersonDot(color: philotesNavy, size: 30),
+          ),
+
+          const Positioned(
+            left: 26,
+            top: 62,
+            child: _PersonDot(color: Color(0xFF315D88), size: 28),
+          ),
+
+          const Positioned(
+            right: 26,
+            top: 62,
+            child: _PersonDot(color: philotesGold, size: 28),
+          ),
+
+          const Positioned(
+            bottom: 25,
+            child: _PersonDot(color: philotesSilver, size: 30),
+          ),
+
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: philotesGold, width: 1.5),
+            ),
+            child: const Icon(
+              Icons.people_alt_outlined,
+              color: philotesNavy,
+              size: 31,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PersonDot extends StatelessWidget {
+  const _PersonDot({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }
