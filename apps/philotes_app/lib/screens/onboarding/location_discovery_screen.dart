@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/philotes_colors.dart';
+import 'verification_safety_screen.dart';
 
 class LocationDiscoveryScreen extends StatefulWidget {
   const LocationDiscoveryScreen({super.key});
@@ -98,11 +99,10 @@ class _LocationDiscoveryScreenState
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Verification & Safety will be the next onboarding step.',
-        ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            const VerificationSafetyScreen(),
       ),
     );
   }
