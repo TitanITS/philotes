@@ -1,37 +1,35 @@
-PHILOTES PAGE 8 AGE RANGE + FAITH REPAIR PATCH REPORT
+PHILOTES PAGE 9 - LOCATION & DISCOVERY PATCH REPORT
 ============================================================================
-Generated: 2026-08-10T15:59:27
+Generated: 2026-08-10T16:27:19
 Project root: C:\Titan Information Technology Solutions\philotes
 
-PASS: Friendship Preferences screen exists
-PASS: Friendship Age Range present
-PASS: Minimum Age field present
-PASS: Maximum Age field present
-PASS: Minimum age starts at 18
-PASS: Maximum age uses 80 plus
-PASS: Typed ages are clamped
-PASS: Maximum cannot be below minimum
-PASS: Minimum can raise maximum
-PASS: Minimum dropdown present
-PASS: Maximum dropdown present
-PASS: Catholic faith option present
-PASS: Christian faith option retained
-PASS: Material checkbox fix retained
-PASS: Location remains next step
+PASS: Location & Discovery screen exists
+PASS: Current location option present
+PASS: ZIP-code option present
+PASS: ZIP-code validation present
+PASS: 10-mile option present
+PASS: 25-mile option present
+PASS: 50-mile option present
+PASS: Farther-distance option present
+PASS: Flexible-distance option present
+PASS: Online friendship option present
+PASS: Exact-location privacy text present
+PASS: No map widget added
+PASS: Page 8 imports Page 9
+PASS: Page 8 navigates to Page 9
 PASS: Widget tests updated
 
 OVERALL: PASS
 
-This repair patch:
-- Rewrites Page 8 only.
-- Does not modify the working Interests screen.
-- Adds Catholic as a faith option.
-- Retains Christian as a separate faith option.
-- Adds editable Minimum Age and Maximum Age controls.
-- Adds dropdown arrows for age selection.
-- Enforces a minimum possible age of 18.
-- Uses 80+ as the open-ended maximum.
-- Prevents maximum age from falling below minimum age.
-- Automatically raises maximum when minimum exceeds it.
-- Updates Page 8 widget tests.
-- Does not persist preferences to the backend yet.
+This patch:
+- Adds Page 9: Location & Discovery.
+- Adds current-device-location selection UI.
+- Adds a 5-digit ZIP-code alternative.
+- Adds plain-language meeting-distance choices.
+- Adds an optional online-friendship setting.
+- Adds exact-location privacy messaging.
+- Does not add an embedded map.
+- Does not request GPS permission yet.
+- Does not resolve ZIP codes to coordinates yet.
+- Does not persist location data to the backend yet.
+- Connects Page 8 to Page 9.

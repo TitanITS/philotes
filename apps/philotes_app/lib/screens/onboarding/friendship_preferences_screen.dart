@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/philotes_colors.dart';
+import 'location_discovery_screen.dart';
 
 class FriendshipPreferencesScreen extends StatefulWidget {
   const FriendshipPreferencesScreen({super.key});
@@ -180,11 +181,10 @@ class _FriendshipPreferencesScreenState
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Location & Discovery will be the next onboarding step.',
-        ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            const LocationDiscoveryScreen(),
       ),
     );
   }
