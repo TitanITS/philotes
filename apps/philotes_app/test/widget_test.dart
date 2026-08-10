@@ -1,71 +1,174 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:philotes/screens/onboarding/interests_screen.dart';
+import 'package:philotes/screens/onboarding/friendship_preferences_screen.dart';
 
 void main() {
-  testWidgets('Interests requires five selections and supports favorites', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpWidget(const MaterialApp(home: InterestsScreen()));
+  testWidgets(
+    'Friendship Preferences validates required sections',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: FriendshipPreferencesScreen(),
+        ),
+      );
 
-    expect(find.text('Your Interests'), findsOneWidget);
+      expect(
+        find.text('Friendship Preferences'),
+        findsOneWidget,
+      );
 
-    expect(find.text('0 selected'), findsOneWidget);
+      final continueButton = find.byKey(
+        const Key(
+          'friendshipPreferencesContinueButton',
+        ),
+      );
 
-    final continueButton = find.byKey(const Key('interestsContinueButton'));
+      await tester.ensureVisible(
+        continueButton,
+      );
 
-    await tester.ensureVisible(continueButton);
-    await tester.pumpAndSettle();
-
-    await tester.tap(continueButton);
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text('Choose at least 5 interests before continuing.'),
-      findsOneWidget,
-    );
-
-    final interestsToSelect = [
-      'golf',
-      'bowling',
-      'sporting_events',
-      'movies',
-      'technology',
-    ];
-
-    for (final id in interestsToSelect) {
-      final finder = find.byKey(Key('interest-$id'));
-
-      await tester.ensureVisible(finder);
       await tester.pumpAndSettle();
 
-      await tester.tap(finder);
+      await tester.tap(
+        continueButton,
+      );
+
       await tester.pumpAndSettle();
-    }
 
-    expect(find.text('5 selected'), findsOneWidget);
+      expect(
+        find.textContaining(
+          'Please complete the required friendship',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
 
-    final golfFavorite = find.byKey(const Key('favorite-golf'));
+  testWidgets(
+    'Friendship Preferences contains age and compatibility controls',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: FriendshipPreferencesScreen(),
+        ),
+      );
 
-    await tester.ensureVisible(golfFavorite);
-    await tester.pumpAndSettle();
+      expect(
+        find.text('Friendship Style'),
+        findsOneWidget,
+      );
 
-    await tester.tap(golfFavorite);
-    await tester.pumpAndSettle();
+      expect(
+        find.text('Social Pace'),
+        findsOneWidget,
+      );
 
-    expect(find.text('1 of 5 favorites'), findsOneWidget);
-  });
+      expect(
+        find.text(
+          'Shared Interests & New Experiences',
+        ),
+        findsOneWidget,
+      );
 
-  testWidgets('Interests supports search', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: InterestsScreen()));
+      expect(
+        find.text('Friendship Age Range'),
+        findsOneWidget,
+      );
 
-    final searchField = find.byKey(const Key('interestSearchField'));
+      expect(
+        find.byKey(
+          const Key('minimumFriendAgeField'),
+        ),
+        findsOneWidget,
+      );
 
-    await tester.enterText(searchField, 'sporting events');
+      expect(
+        find.byKey(
+          const Key('maximumFriendAgeField'),
+        ),
+        findsOneWidget,
+      );
 
-    await tester.pump();
+      expect(
+        find.text(
+          'Preferred friendship range: 18 - 80+',
+        ),
+        findsOneWidget,
+      );
 
-    expect(find.text('Going to Sporting Events'), findsOneWidget);
-  });
+      expect(
+        find.text('Compatibility Preferences'),
+        findsOneWidget,
+      );
+
+      expect(
+        find.byKey(
+          const Key('flexibleDiscoveryCheckbox'),
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Friendship age minimum cannot go below 18',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: FriendshipPreferencesScreen(),
+        ),
+      );
+
+      final minimumAgeField = find.byKey(
+        const Key('minimumFriendAgeField'),
+      );
+
+      await tester.ensureVisible(
+        minimumAgeField,
+      );
+
+      await tester.pumpAndSettle();
+
+      final textField = find.descendant(
+        of: minimumAgeField,
+        matching: find.byType(TextField),
+      );
+
+      await tester.enterText(
+        textField,
+        '12',
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'Preferred friendship range: 18 - 80+',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Catholic is available as a faith preference',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: FriendshipPreferencesScreen(),
+        ),
+      );
+
+      expect(
+        find.text('Faith / Religion'),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text('Compatibility Preferences'),
+        findsOneWidget,
+      );
+    },
+  );
 }

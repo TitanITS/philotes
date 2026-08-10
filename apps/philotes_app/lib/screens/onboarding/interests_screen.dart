@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/interests.dart';
 import '../../models/interest_item.dart';
 import '../../theme/philotes_colors.dart';
+import 'friendship_preferences_screen.dart';
 
 class InterestsScreen extends StatefulWidget {
   const InterestsScreen({super.key});
@@ -135,11 +136,9 @@ class _InterestsScreenState extends State<InterestsScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Friendship Preferences will be the next onboarding step.',
-        ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => const FriendshipPreferencesScreen(),
       ),
     );
   }

@@ -1,40 +1,37 @@
-PHILOTES PAGE 7 - INTERESTS PATCH REPORT
+PHILOTES PAGE 8 AGE RANGE + FAITH REPAIR PATCH REPORT
 ============================================================================
-Generated: 2026-08-10T14:45:09
+Generated: 2026-08-10T15:59:27
 Project root: C:\Titan Information Technology Solutions\philotes
 
-PASS: Interest model exists
-PASS: Interest data exists
-PASS: Interests screen exists
-PASS: Sports & Recreation category present
-PASS: Sports Fans & Live Events category present
-PASS: Going to Sporting Events present
-PASS: Entertainment category present
-PASS: Gaming & Technology category present
-PASS: Food & Social Activities category present
-PASS: Creative & Hobbies category present
-PASS: Learning & Culture category present
-PASS: Outdoors & Travel category present
-PASS: Community & Lifestyle category present
-PASS: Minimum five interests enforced
-PASS: Three favorites maximum present
-PASS: Interest search present
-PASS: Custom interest support present
-PASS: Favorite controls present
-PASS: Basic Profile navigates to Interests
+PASS: Friendship Preferences screen exists
+PASS: Friendship Age Range present
+PASS: Minimum Age field present
+PASS: Maximum Age field present
+PASS: Minimum age starts at 18
+PASS: Maximum age uses 80 plus
+PASS: Typed ages are clamped
+PASS: Maximum cannot be below minimum
+PASS: Minimum can raise maximum
+PASS: Minimum dropdown present
+PASS: Maximum dropdown present
+PASS: Catholic faith option present
+PASS: Christian faith option retained
+PASS: Material checkbox fix retained
+PASS: Location remains next step
 PASS: Widget tests updated
 
 OVERALL: PASS
 
-This patch:
-- Adds Page 7: Your Interests.
-- Requires at least 5 selected interests.
-- Allows up to 3 optional favorites.
-- Adds searchable interest categories.
-- Adds Sports Fans & Live Events.
-- Distinguishes sports participation from fandom.
-- Adds Going to Sporting Events.
-- Adds custom interests.
-- Connects Basic Profile to Interests.
-- Does not persist interests to the backend yet.
-- Does not perform friendship matching yet.
+This repair patch:
+- Rewrites Page 8 only.
+- Does not modify the working Interests screen.
+- Adds Catholic as a faith option.
+- Retains Christian as a separate faith option.
+- Adds editable Minimum Age and Maximum Age controls.
+- Adds dropdown arrows for age selection.
+- Enforces a minimum possible age of 18.
+- Uses 80+ as the open-ended maximum.
+- Prevents maximum age from falling below minimum age.
+- Automatically raises maximum when minimum exceeds it.
+- Updates Page 8 widget tests.
+- Does not persist preferences to the backend yet.
