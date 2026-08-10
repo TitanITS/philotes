@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/community_standards.dart';
 import '../../theme/philotes_colors.dart';
+import 'create_account_screen.dart';
 
 class CommunityStandardsScreen extends StatefulWidget {
   const CommunityStandardsScreen({super.key});
@@ -90,9 +91,9 @@ class _CommunityStandardsScreenState extends State<CommunityStandardsScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Account creation will be the next onboarding step.'),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => const CreateAccountScreen(),
       ),
     );
   }

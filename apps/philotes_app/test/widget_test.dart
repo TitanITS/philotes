@@ -1,71 +1,71 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:philotes/app.dart';
+import 'package:philotes/screens/onboarding/interests_screen.dart';
 
 void main() {
-  testWidgets(
-    'Philotes onboarding reaches Community Standards',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(const PhilotesApp());
+  testWidgets('Interests requires five selections and supports favorites', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: InterestsScreen()));
 
-      expect(find.text('PHILOTES'), findsOneWidget);
-      expect(find.text('Join the Community'), findsOneWidget);
+    expect(find.text('Your Interests'), findsOneWidget);
 
-      final joinButton = find.text('Join the Community');
+    expect(find.text('0 selected'), findsOneWidget);
 
-      await tester.ensureVisible(joinButton);
+    final continueButton = find.byKey(const Key('interestsContinueButton'));
+
+    await tester.ensureVisible(continueButton);
+    await tester.pumpAndSettle();
+
+    await tester.tap(continueButton);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Choose at least 5 interests before continuing.'),
+      findsOneWidget,
+    );
+
+    final interestsToSelect = [
+      'golf',
+      'bowling',
+      'sporting_events',
+      'movies',
+      'technology',
+    ];
+
+    for (final id in interestsToSelect) {
+      final finder = find.byKey(Key('interest-$id'));
+
+      await tester.ensureVisible(finder);
       await tester.pumpAndSettle();
 
-      await tester.tap(joinButton);
+      await tester.tap(finder);
       await tester.pumpAndSettle();
+    }
 
-      expect(find.text('Before You Join'), findsOneWidget);
+    expect(find.text('5 selected'), findsOneWidget);
 
-      final introContinue = find.text('Continue');
+    final golfFavorite = find.byKey(const Key('favorite-golf'));
 
-      await tester.ensureVisible(introContinue);
-      await tester.pumpAndSettle();
+    await tester.ensureVisible(golfFavorite);
+    await tester.pumpAndSettle();
 
-      await tester.tap(introContinue);
-      await tester.pumpAndSettle();
+    await tester.tap(golfFavorite);
+    await tester.pumpAndSettle();
 
-      expect(find.text('Community Standards'), findsOneWidget);
-      expect(
-        find.text('Community Standards Reviewed: 0 of 6'),
-        findsOneWidget,
-      );
+    expect(find.text('1 of 5 favorites'), findsOneWidget);
+  });
 
-      expect(find.textContaining('Friendship Comes First'), findsOneWidget);
-      expect(find.textContaining('Be Yourself'), findsOneWidget);
-      expect(
-        find.textContaining('Treat People With Respect'),
-        findsOneWidget,
-      );
-      expect(
-        find.textContaining('Respect Boundaries and Privacy'),
-        findsOneWidget,
-      );
-      expect(find.textContaining('Put Safety First'), findsOneWidget);
-      expect(
-        find.textContaining('Help Protect the Community'),
-        findsOneWidget,
-      );
+  testWidgets('Interests supports search', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: InterestsScreen()));
 
-      final firstStandard =
-          find.textContaining('Friendship Comes First');
+    final searchField = find.byKey(const Key('interestSearchField'));
 
-      await tester.ensureVisible(firstStandard);
-      await tester.pumpAndSettle();
+    await tester.enterText(searchField, 'sporting events');
 
-      await tester.tap(firstStandard);
-      await tester.pumpAndSettle();
+    await tester.pump();
 
-      expect(find.text('Reviewed'), findsOneWidget);
-
-      expect(
-        find.textContaining('Community Standards Version 1.0'),
-        findsOneWidget,
-      );
-    },
-  );
+    expect(find.text('Going to Sporting Events'), findsOneWidget);
+  });
 }
