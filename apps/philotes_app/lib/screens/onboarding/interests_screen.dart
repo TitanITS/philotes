@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/interests.dart';
 import '../../models/interest_item.dart';
 import '../../theme/philotes_colors.dart';
+import '../../models/onboarding_profile_data.dart';
 import 'friendship_preferences_screen.dart';
 
 class InterestsScreen extends StatefulWidget {
@@ -135,6 +136,28 @@ class _InterestsScreenState extends State<InterestsScreen> {
 
       return;
     }
+
+    final profile = OnboardingProfileData.instance;
+
+    profile.selectedInterests = _allInterests
+        .where(
+          (interest) =>
+              _selectedIds.contains(interest.id),
+        )
+        .map(
+          (interest) => interest.name,
+        )
+        .toList();
+
+    profile.favoriteInterests = _allInterests
+        .where(
+          (interest) =>
+              _favoriteIds.contains(interest.id),
+        )
+        .map(
+          (interest) => interest.name,
+        )
+        .toList();
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(

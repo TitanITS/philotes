@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/philotes_colors.dart';
+import '../../models/onboarding_profile_data.dart';
 import 'interests_screen.dart';
 
 class BasicProfileScreen extends StatefulWidget {
@@ -122,7 +123,35 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
       return;
     }
 
-    Navigator.of(context).push(
+    final profile = OnboardingProfileData.instance;
+
+    profile.firstName =
+        _firstNameController.text.trim();
+
+    profile.lastName =
+        _lastNameController.text.trim();
+
+    profile.displayName =
+        _displayNameController.text.trim();
+
+    profile.dateOfBirth = _dateOfBirth;
+
+    profile.sex = _sex;
+
+    profile.otherSexDescription =
+        _otherSexController.text.trim().isEmpty
+            ? null
+            : _otherSexController.text.trim();
+
+    profile.pronouns =
+        _pronounsController.text.trim().isEmpty
+            ? null
+            : _pronounsController.text.trim();
+
+    profile.introduction =
+        _introductionController.text.trim();
+
+  Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) => const InterestsScreen(),
       ),

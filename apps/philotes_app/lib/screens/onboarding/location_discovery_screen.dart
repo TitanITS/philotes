@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/philotes_colors.dart';
+import '../../models/onboarding_profile_data.dart';
 import 'verification_safety_screen.dart';
 
 class LocationDiscoveryScreen extends StatefulWidget {
@@ -98,6 +99,23 @@ class _LocationDiscoveryScreenState
 
       return;
     }
+
+    final profile =
+        OnboardingProfileData.instance;
+
+    profile.locationSource =
+        _locationSource;
+
+    profile.zipCode =
+        _locationSource == 'zip'
+            ? _zipController.text.trim()
+            : null;
+
+    profile.meetingDistance =
+        _meetingDistance;
+
+    profile.onlineFriendships =
+        _onlineFriendships;
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/philotes_colors.dart';
+import '../../models/onboarding_profile_data.dart';
+import 'review_profile_screen.dart';
 
 class ProfilePhotoScreen extends StatefulWidget {
   const ProfilePhotoScreen({super.key});
@@ -39,11 +41,19 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Review Your Profile will be the next onboarding step.',
-        ),
+    final profile =
+        OnboardingProfileData.instance;
+
+    profile.photoSelected =
+        _photoSelected;
+
+    profile.photoSource =
+        _photoSource;
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            const ReviewProfileScreen(),
       ),
     );
   }

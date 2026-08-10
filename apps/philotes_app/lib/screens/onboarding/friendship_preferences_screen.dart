@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/philotes_colors.dart';
+import '../../models/onboarding_profile_data.dart';
 import 'location_discovery_screen.dart';
 
 class FriendshipPreferencesScreen extends StatefulWidget {
@@ -180,6 +181,45 @@ class _FriendshipPreferencesScreenState
 
       return;
     }
+
+    final profile =
+        OnboardingProfileData.instance;
+
+    profile.friendshipStyles =
+        _friendshipStyles.toList();
+
+    profile.socialFrequency =
+        _socialFrequency;
+
+    profile.planningStyle =
+        _planningStyle;
+
+    profile.interestStyle =
+        _interestStyle;
+
+    profile.newActivityComfort =
+        _newActivityComfort;
+
+    profile.minimumFriendAge =
+        _minimumFriendAge;
+
+    profile.maximumFriendAge =
+        _maximumFriendAge;
+
+    profile.politicsImportance =
+        _politicsImportance;
+
+    profile.politicalOutlook =
+        _politicalOutlook;
+
+    profile.faithImportance =
+        _faithImportance;
+
+    profile.faithDescription =
+        _faithDescription;
+
+    profile.flexibleDiscovery =
+        _flexibleDiscovery;
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
