@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/onboarding_profile_data.dart';
+import 'welcome_to_philotes_screen.dart';
 import '../../theme/philotes_colors.dart';
 
 class ReviewProfileScreen extends StatelessWidget {
@@ -19,12 +20,13 @@ class ReviewProfileScreen extends StatelessWidget {
     );
   }
 
-  void _completeProfile(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Welcome to Philotes will be the next onboarding step.',
-        ),
+  void _completeProfile(
+    BuildContext context,
+  ) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            const WelcomeToPhilotesScreen(),
       ),
     );
   }
