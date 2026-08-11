@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/development/development_member_fixture.dart';
 import '../../screens/home/philotes_home_screen.dart';
+import '../../screens/discover/discover_screen.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
@@ -40,14 +41,7 @@ class _PhilotesShellScreenState
         return const PhilotesHomeScreen();
 
       case 1:
-        return const _DevelopmentDestination(
-          title: 'Discover',
-          description:
-              'Discover will become the place '
-              'to meet people who fit your '
-              'friendship preferences and '
-              'share meaningful interests.',
-        );
+        return const DiscoverScreen();
 
       case 2:
         return const _DevelopmentDestination(

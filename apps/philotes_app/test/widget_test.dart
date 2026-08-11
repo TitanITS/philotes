@@ -147,15 +147,17 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(
-          'Discover',
+        find.byKey(
+          const Key(
+            'discoverScreen',
+          ),
         ),
-        findsWidgets,
+        findsOneWidget,
       );
 
       expect(
-        find.textContaining(
-          'friendship preferences',
+        find.text(
+          'People To Discover',
         ),
         findsOneWidget,
       );

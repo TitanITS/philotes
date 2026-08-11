@@ -7,6 +7,7 @@ class SuggestedMember {
     required this.initials,
     required this.introduction,
     required this.compatibility,
+    this.distanceMiles = 0,
   });
 
   final String id;
@@ -21,4 +22,11 @@ class SuggestedMember {
   final String introduction;
 
   final CompatibilityResult compatibility;
+
+  /// Development/frontend representation of
+  /// approximate discovery distance.
+  ///
+  /// Production distance will eventually come
+  /// from the backend discovery service.
+  final int distanceMiles;
 }

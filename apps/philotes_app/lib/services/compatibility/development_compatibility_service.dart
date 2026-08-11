@@ -14,6 +14,7 @@ class DevelopmentCompatibilityService
       id: 'dev-jordan',
       displayName: 'Jordan',
       initials: 'J',
+      distanceMiles: 32,
       introduction:
           'I enjoy getting out for activities, '
           'trying new places, attending sporting events, '
@@ -58,6 +59,7 @@ class DevelopmentCompatibilityService
       id: 'dev-taylor',
       displayName: 'Taylor',
       initials: 'T',
+      distanceMiles: 18,
       introduction:
           'I like live music, casual outings, '
           'weekend road trips, and discovering '
@@ -98,6 +100,7 @@ class DevelopmentCompatibilityService
       id: 'dev-casey',
       displayName: 'Casey',
       initials: 'C',
+      distanceMiles: 11,
       introduction:
           'I enjoy technology, museums, movies, '
           'and quieter social activities.',
