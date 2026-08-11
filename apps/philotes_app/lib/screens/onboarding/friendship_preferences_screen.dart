@@ -476,6 +476,13 @@ class _FriendshipPreferencesScreenState
                             ),
                             DropdownMenuItem(
                               value:
+                                  "Whenever we're both available",
+                              child: Text(
+                                "Whenever we're both available",
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value:
                                   'No strong preference',
                               child: Text(
                                 'No strong preference',
@@ -492,6 +499,42 @@ class _FriendshipPreferencesScreenState
                             });
                           },
                         ),
+
+                        if (_socialFrequency ==
+                            "Whenever we're both available") ...[
+                          const SizedBox(height: 10),
+
+                          Container(
+                            key: const Key(
+                              'flexibleSocialPaceExplanation',
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: PhilotesColors.gold.withValues(
+                                alpha: 0.10,
+                              ),
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              border: Border.all(
+                                color:
+                                    PhilotesColors.gold.withValues(
+                                  alpha: 0.70,
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              "I'm flexible. If we're both free "
+                              "and want to get together, I'm open "
+                              "to making plans.",
+                              style: TextStyle(
+                                color: PhilotesColors.navy,
+                                fontSize: 12,
+                                height: 1.45,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
 
                         const SizedBox(height: 20),
 

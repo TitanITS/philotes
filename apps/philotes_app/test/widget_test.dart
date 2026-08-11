@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:philotes/models/onboarding_profile_data.dart';
-import 'package:philotes/screens/onboarding/welcome_to_philotes_screen.dart';
+import 'package:philotes/screens/app/philotes_shell_screen.dart';
 
 void main() {
   setUp(() {
@@ -13,28 +13,41 @@ void main() {
 
     profile.displayName =
         'Test Friend';
+
+    profile.favoriteInterests =
+        <String>[
+      'Going to Sporting Events',
+      'Movies',
+      'Dining Out',
+      'Bowling',
+      'Live Music',
+    ];
   });
 
   testWidgets(
-    'Welcome screen greets member by display name',
+    'Philotes Home greets member',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home:
-              WelcomeToPhilotesScreen(),
+              PhilotesShellScreen(),
         ),
       );
 
+      await tester.pumpAndSettle();
+
       expect(
-        find.text(
-          'Welcome to Philotes, Test Friend!',
+        find.byKey(
+          const Key(
+            'philotesHomeScreen',
+          ),
         ),
         findsOneWidget,
       );
 
       expect(
         find.text(
-          'Your profile is ready.',
+          'Welcome back, Test Friend',
         ),
         findsOneWidget,
       );
@@ -42,20 +55,55 @@ void main() {
   );
 
   testWidgets(
-    'Welcome screen shows three next-step cards',
+    'Philotes shell has five destinations',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home:
-              WelcomeToPhilotesScreen(),
+              PhilotesShellScreen(),
         ),
       );
 
       expect(
-        find.byKey(
-          const Key(
-            'discoverPeopleCard',
-          ),
+        find.text('Home'),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text('Discover'),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text('Plans'),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text('Messages'),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text('You'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Home shows simulated community content',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home:
+              PhilotesShellScreen(),
+        ),
+      );
+
+      expect(
+        find.text(
+          'Your Community',
         ),
         findsOneWidget,
       );
@@ -63,16 +111,7 @@ void main() {
       expect(
         find.byKey(
           const Key(
-            'startConversationsCard',
-          ),
-        ),
-        findsOneWidget,
-      );
-
-      expect(
-        find.byKey(
-          const Key(
-            'makePlansTogetherCard',
+            'peoplePreviewCard',
           ),
         ),
         findsOneWidget,
@@ -80,21 +119,7 @@ void main() {
 
       expect(
         find.text(
-          'Discover People',
-        ),
-        findsOneWidget,
-      );
-
-      expect(
-        find.text(
-          'Start Conversations',
-        ),
-        findsOneWidget,
-      );
-
-      expect(
-        find.text(
-          'Make Plans Together',
+          'People You May Enjoy Meeting',
         ),
         findsOneWidget,
       );
@@ -102,34 +127,35 @@ void main() {
   );
 
   testWidgets(
-    'Welcome screen includes safety reminder',
+    'Discover navigation works',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home:
-              WelcomeToPhilotesScreen(),
+              PhilotesShellScreen(),
         ),
       );
 
-      expect(
-        find.byKey(
-          const Key(
-            'welcomeSafetyReminder',
-          ),
+      final discover =
+          find.byKey(
+        const Key(
+          'navDiscover',
         ),
-        findsOneWidget,
       );
+
+      await tester.tap(discover);
+      await tester.pumpAndSettle();
 
       expect(
         find.text(
-          'A Friendly Reminder',
+          'Discover',
         ),
-        findsOneWidget,
+        findsWidgets,
       );
 
       expect(
         find.textContaining(
-          'safe public place',
+          'friendship preferences',
         ),
         findsOneWidget,
       );
@@ -137,67 +163,82 @@ void main() {
   );
 
   testWidgets(
-    'Welcome screen contains Enter Philotes button',
+    'Plans navigation works',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home:
-              WelcomeToPhilotesScreen(),
+              PhilotesShellScreen(),
         ),
       );
-
-      final enterButton =
-          find.byKey(
-        const Key(
-          'enterPhilotesButton',
-        ),
-      );
-
-      await tester.ensureVisible(
-        enterButton,
-      );
-
-      await tester.pumpAndSettle();
-
-      expect(
-        enterButton,
-        findsOneWidget,
-      );
-    },
-  );
-
-  testWidgets(
-    'Enter Philotes shows development completion message',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home:
-              WelcomeToPhilotesScreen(),
-        ),
-      );
-
-      final enterButton =
-          find.byKey(
-        const Key(
-          'enterPhilotesButton',
-        ),
-      );
-
-      await tester.ensureVisible(
-        enterButton,
-      );
-
-      await tester.pumpAndSettle();
 
       await tester.tap(
-        enterButton,
+        find.byKey(
+          const Key('navPlans'),
+        ),
       );
 
       await tester.pumpAndSettle();
 
       expect(
         find.textContaining(
-          'Philotes onboarding complete',
+          'organize future activities',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Messages navigation works',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home:
+              PhilotesShellScreen(),
+        ),
+      );
+
+      await tester.tap(
+        find.byKey(
+          const Key(
+            'navMessages',
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining(
+          'conversations with Philotes',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'You navigation works',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home:
+              PhilotesShellScreen(),
+        ),
+      );
+
+      await tester.tap(
+        find.byKey(
+          const Key('navYou'),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining(
+          'profile, preferences',
         ),
         findsOneWidget,
       );

@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../../models/onboarding_profile_data.dart';
 import '../../theme/philotes_colors.dart';
+import '../app/philotes_shell_screen.dart';
 
 class WelcomeToPhilotesScreen extends StatelessWidget {
   const WelcomeToPhilotesScreen({super.key});
 
-  void _enterPhilotes(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Philotes onboarding complete. '
-          'The Philotes home experience is coming next.',
-        ),
+  void _enterPhilotes(
+    BuildContext context,
+  ) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            const PhilotesShellScreen(),
       ),
     );
   }
