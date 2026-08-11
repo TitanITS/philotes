@@ -1,17 +1,20 @@
-PHILOTES DISCOVER LEGACY TEST REPAIR REPORT
+PHILOTES PLANS LEGACY TEST REPAIR REPORT
 ========================================================================
-Generated: 2026-08-11T18:16:45
+Generated: 2026-08-11T18:53:55
 
-PASS: Legacy Discover test replaced
-PASS: Discover screen key tested
-PASS: People To Discover tested
-PASS: Discover navigation key retained
+PASS: Old Plans placeholder assertion removed
+PASS: Plans screen key is tested
+PASS: Today section is tested
+PASS: Upcoming section is tested
+PASS: Recent Past section is tested
+PASS: Plans navigation key retained
 
 OVERALL: PASS
 
 This repair:
-- Updates only the stale Discover navigation test.
-- Does not modify Discover UI code.
-- Does not modify Home v2.
+- Updates only the stale Plans navigation test.
+- Does not modify Plans UI code.
+- Does not modify Plan Detail.
+- Does not modify Home.
+- Does not modify Discover.
 - Does not modify onboarding.
-- Does not modify compatibility data.

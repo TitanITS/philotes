@@ -174,17 +174,44 @@ void main() {
         ),
       );
 
+      await tester.pumpAndSettle();
+
       await tester.tap(
         find.byKey(
-          const Key('navPlans'),
+          const Key(
+            'navPlans',
+          ),
         ),
       );
 
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining(
-          'organize future activities',
+        find.byKey(
+          const Key(
+            'plansScreen',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text(
+          'Today',
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text(
+          'Upcoming',
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text(
+          'Recent Past',
         ),
         findsOneWidget,
       );

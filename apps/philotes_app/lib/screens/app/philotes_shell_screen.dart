@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../data/development/development_member_fixture.dart';
 import '../../screens/home/philotes_home_screen.dart';
 import '../../screens/discover/discover_screen.dart';
+import '../../screens/plans/plans_screen.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
@@ -44,13 +45,7 @@ class _PhilotesShellScreenState
         return const DiscoverScreen();
 
       case 2:
-        return const _DevelopmentDestination(
-          title: 'Plans',
-          description:
-              'Plans will help friends decide '
-              'what to do together and organize '
-              'future activities and gatherings.',
-        );
+        return const PlansScreen();
 
       case 3:
         return const _DevelopmentDestination(
