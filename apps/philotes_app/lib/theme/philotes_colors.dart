@@ -6,5 +6,6 @@ abstract final class PhilotesColors {
   static const Color ivory = Color(0xFFF8F4EB);
   static const Color ivoryDark = Color(0xFFF2EBDD);
   static const Color silver = Color(0xFF7B8794);
+  static const Color bronze = Color(0xFF9A6A3A);
   static const Color blue = Color(0xFF315D88);
 }

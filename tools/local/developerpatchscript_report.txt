@@ -1,36 +1,65 @@
-PHILOTES PAGE 8 - FLEXIBLE SOCIAL PACE SAFE REPAIR REPORT
+PHILOTES HOME V2 + COMPATIBILITY PROFILE PATCH REPORT
 ============================================================================
-Generated: 2026-08-11T16:53:05
+Generated: 2026-08-11T17:32:37
 Project root: C:\Titan Information Technology Solutions\philotes
 
-PASS: Flexible Social Pace option present
-PASS: Flexible helper widget present
-PASS: Helper opening wording present
-PASS: Helper planning wording present
-PASS: Several-times-a-week option preserved
-PASS: Once-a-week option preserved
-PASS: Few-times-a-month option preserved
-PASS: Occasionally option preserved
-PASS: No-strong-preference option preserved
-PASS: Shared model Social Pace field preserved
-PASS: Shared model Social Pace reset preserved
-PASS: Page 12 Social Pace review preserved
-PASS: Page 12 Social pace label preserved
-PASS: Development fixture uses flexible pace
-PASS: Dedicated Social Pace test exists
-PASS: Flexible option test present
-PASS: Helper explanation test present
-PASS: Page 12 review test present
+PASS: Philotes design system exists
+PASS: Bronze color centralized
+PASS: Strong gold borders defined
+PASS: Compatibility service boundary exists
+PASS: Development compatibility service exists
+PASS: Development service disclaimer exists
+PASS: Suggested members use display names only
+PASS: Strong compatibility present
+PASS: Moderate compatibility present
+PASS: Limited compatibility present
+PASS: Home v2 exists
+PASS: Home supports responsive layout
+PASS: Wide Home layout exists
+PASS: Mobile Home layout exists
+PASS: Only two people shown on Home
+PASS: Home has no Show Interest
+PASS: Today empty-state fixture exists
+PASS: Today outing suggestion exists
+PASS: Member Profile exists
+PASS: Member Profile shows percentage
+PASS: Member Profile explains compatibility
+PASS: Member Profile shows shared favorites
+PASS: Member Profile shows other interests
+PASS: Member Profile shows friendship compatibility
+PASS: Member Profile shows activity ideas
+PASS: Decision action lives on profile
+PASS: Shell imports Home v2
+PASS: Home navigation retained
+PASS: Discover navigation retained
+PASS: Plans navigation retained
+PASS: Messages navigation retained
+PASS: You navigation retained
+PASS: Dedicated Home v2 tests created
+PASS: Tests verify no Home decision action
+PASS: Tests verify profile navigation
 
 OVERALL: PASS
 
-This repair:
-- Is safe to run after the previous patch.
-- Does not duplicate the new Social Pace option.
-- Does not duplicate the helper box.
-- Fixes the checker so split Dart strings are valid.
-- Preserves all existing Social Pace choices.
-- Preserves Page 12 review behavior.
-- Preserves the shared onboarding model.
-- Preserves Home v1.
-- Keeps compatibility scoring for Home v2.
+HOME V2 SUMMARY
+----------------------------------------------------------------------------
+- Separates Home from the application shell.
+- Uses one responsive screen for mobile and wide/web layouts.
+- Uses two suggested people on Home.
+- Uses Strong / Moderate / Limited compatibility labels.
+- Uses Gold / Silver / Bronze compatibility colors.
+- Uses display names only; no manufactured last-name initials.
+- Keeps Like / Show Interest decisions off Home.
+- Opens a dedicated Member Compatibility Profile.
+- Shows the detailed percentage only on the Member Profile.
+- Explains why two members may connect.
+- Shows shared favorite and additional interests.
+- Shows friendship preference alignment.
+- Shows contextual activities on the Member Profile.
+- Uses Today rather than a weekly Home calendar.
+- Uses a suggested outing when Today has no plans.
+- Leaves local-business sponsorship/Featured placement for later.
+- Uses simulated compatibility data behind a service boundary.
+- Does NOT implement the production compatibility engine.
+- Does NOT implement backend friendship requests.
+- Keeps Discover, Plans, Messages, and You as development placeholders.
