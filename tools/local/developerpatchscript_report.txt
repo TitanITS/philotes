@@ -1,20 +1,35 @@
-PHILOTES PLANS LEGACY TEST REPAIR REPORT
-========================================================================
-Generated: 2026-08-11T18:53:55
+PHILOTES MESSAGES BULK READ / UNREAD PATCH REPORT
+============================================================================
+Generated: 2026-08-13T18:35:36
 
-PASS: Old Plans placeholder assertion removed
-PASS: Plans screen key is tested
-PASS: Today section is tested
-PASS: Upcoming section is tested
-PASS: Recent Past section is tested
-PASS: Plans navigation key retained
+PASS: MessageService has Mark Read
+PASS: MessageService has Mark Unread
+PASS: Development service stores overrides
+PASS: Automatic read behavior preserved
+FAIL: Select Conversations menu added
+PASS: Selection toolbar added
+PASS: Checkboxes added in selection mode
+PASS: Long press selection added
+PASS: Select All added
+PASS: Bulk Mark Read added
+PASS: Bulk Mark Unread added
+PASS: Conversation contextual read toggle added
+PASS: Conversation shows Mark Read
+PASS: Conversation shows Mark Unread
+PASS: Bulk selection test added
+PASS: Long press test added
+PASS: Conversation toggle test added
 
-OVERALL: PASS
+OVERALL: FAIL
 
-This repair:
-- Updates only the stale Plans navigation test.
-- Does not modify Plans UI code.
-- Does not modify Plan Detail.
-- Does not modify Home.
-- Does not modify Discover.
-- Does not modify onboarding.
+EXPECTED BEHAVIOR
+----------------------------------------------------------------------------
+- Normal Messages view remains uncluttered.
+- Select Conversations enters checkbox mode.
+- Long press enters selection mode and selects that thread.
+- Select All applies only to currently displayed conversations.
+- Bulk Mark Read clears unread state on selected threads.
+- Bulk Mark Unread marks each selected thread with one unread conversation indicator.
+- Individual conversations use one contextual Mark Read / Mark Unread menu item.
+- Opening an unread conversation still automatically marks it read.
+- Existing navy, gold, ivory Philotes styling is preserved.

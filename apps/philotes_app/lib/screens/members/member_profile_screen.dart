@@ -5,13 +5,23 @@ import '../../models/compatibility/suggested_member.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
+enum MemberProfileMode {
+  discovery,
+  friend,
+}
+
 class MemberProfileScreen extends StatelessWidget {
   const MemberProfileScreen({
     super.key,
     required this.member,
+    this.mode =
+        MemberProfileMode.discovery,
+    this.onMessage,
   });
 
   final SuggestedMember member;
+  final MemberProfileMode mode;
+  final VoidCallback? onMessage;
 
   Color get _levelColor {
     switch (member.compatibility.level) {
@@ -40,6 +50,94 @@ class MemberProfileScreen extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            key: const Key(
+              'memberProfileOptionsMenu',
+            ),
+            icon: const Icon(
+              Icons.more_vert,
+            ),
+            onSelected: (value) {
+              String message;
+
+              switch (value) {
+                case 'unfriend':
+                  message =
+                      'Unfriend will require '
+                      'confirmation and backend '
+                      'friendship authorization.';
+                  break;
+
+                case 'hide':
+                  message =
+                      'This member will be hidden '
+                      'from future suggestions '
+                      'when discovery preferences '
+                      'are connected.';
+                  break;
+
+                case 'block':
+                  message =
+                      'Block will prevent future '
+                      'contact when the production '
+                      'safety backend is connected.';
+                  break;
+
+                default:
+                  message =
+                      'The report flow will be '
+                      'connected to Philotes '
+                      'moderation and safety.';
+              }
+
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                ),
+              );
+            },
+            itemBuilder: (context) {
+              if (
+                mode ==
+                MemberProfileMode.friend
+              ) {
+                return const [
+                  PopupMenuItem<String>(
+                    value: 'unfriend',
+                    child: Text('Unfriend'),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'block',
+                    child: Text('Block'),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'report',
+                    child: Text('Report'),
+                  ),
+                ];
+              }
+
+              return const [
+                PopupMenuItem<String>(
+                  value: 'hide',
+                  child: Text(
+                    "Don't Suggest Again",
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'block',
+                  child: Text('Block'),
+                ),
+                PopupMenuItem<String>(
+                  value: 'report',
+                  child: Text('Report'),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -317,57 +415,103 @@ class MemberProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  SizedBox(
-                    height: 56,
-                    child: FilledButton(
-                      key: const Key(
-                        'showInterestButton',
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Showing interest in '
-                              '${member.displayName} '
-                              'will be connected to '
-                              'the friendship-request '
-                              'system later.',
+                  if (
+                    mode ==
+                    MemberProfileMode.friend
+                  )
+                    SizedBox(
+                      height: 56,
+                      child: FilledButton.icon(
+                        key: const Key(
+                          'messageFriendFromProfileButton',
+                        ),
+                        onPressed: onMessage,
+                        style:
+                            FilledButton.styleFrom(
+                          backgroundColor:
+                              PhilotesColors.navy,
+                          foregroundColor:
+                              Colors.white,
+                          shape:
+                              RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(
+                              14,
+                            ),
+                            side:
+                                const BorderSide(
+                              color:
+                                  PhilotesColors.gold,
+                              width: 1.5,
                             ),
                           ),
-                        );
-                      },
-                      style:
-                          FilledButton.styleFrom(
-                        backgroundColor:
-                            PhilotesColors.navy,
-                        foregroundColor:
-                            Colors.white,
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                            14,
-                          ),
-                          side:
-                              const BorderSide(
-                            color:
-                                PhilotesColors.gold,
-                            width: 1.5,
+                        ),
+                        icon: const Icon(
+                          Icons.chat_bubble_outline,
+                        ),
+                        label: Text(
+                          'Message '
+                          '${member.displayName}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight:
+                                FontWeight.w700,
                           ),
                         ),
                       ),
-                      child: const Text(
-                        'Show Interest',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight:
-                              FontWeight.w700,
+                    )
+                  else
+                    SizedBox(
+                      height: 56,
+                      child: FilledButton(
+                        key: const Key(
+                          'showInterestButton',
+                        ),
+                        onPressed: () {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Showing interest in '
+                                '${member.displayName} '
+                                'will be connected to '
+                                'the friendship-request '
+                                'system later.',
+                              ),
+                            ),
+                          );
+                        },
+                        style:
+                            FilledButton.styleFrom(
+                          backgroundColor:
+                              PhilotesColors.navy,
+                          foregroundColor:
+                              Colors.white,
+                          shape:
+                              RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(
+                              14,
+                            ),
+                            side:
+                                const BorderSide(
+                              color:
+                                  PhilotesColors.gold,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          'Show Interest',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight:
+                                FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

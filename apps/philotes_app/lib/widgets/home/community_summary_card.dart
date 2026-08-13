@@ -8,7 +8,10 @@ class CommunitySummaryCard
     extends StatelessWidget {
   const CommunitySummaryCard({
     super.key,
+    this.onUnreadConversationsTap,
   });
+
+  final VoidCallback? onUnreadConversationsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,8 @@ class CommunitySummaryCard
                 DevelopmentHomeFixture
                     .unreadConversations,
             label: 'unread conversations',
+            onTap: onUnreadConversationsTap,
+            showChevron: true,
           ),
 
           const Divider(height: 26),
@@ -46,14 +51,18 @@ class _CommunityRow extends StatelessWidget {
   const _CommunityRow({
     required this.value,
     required this.label,
+    this.onTap,
+    this.showChevron = false,
   });
 
   final int value;
   final String label;
+  final VoidCallback? onTap;
+  final bool showChevron;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final content = Row(
       children: [
         Container(
           width: 36,
@@ -89,7 +98,37 @@ class _CommunityRow extends StatelessWidget {
             ),
           ),
         ),
+
+        if (showChevron)
+          const Icon(
+            Icons.chevron_right,
+            color: PhilotesColors.gold,
+            size: 20,
+          ),
       ],
+    );
+
+    if (onTap == null) {
+      return content;
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        key: const Key(
+          'openMessagesFromHomeButton',
+        ),
+        onTap: onTap,
+        borderRadius:
+            BorderRadius.circular(12),
+        child: Padding(
+          padding:
+              const EdgeInsets.symmetric(
+            vertical: 3,
+          ),
+          child: content,
+        ),
+      ),
     );
   }
 }

@@ -228,6 +228,8 @@ void main() {
         ),
       );
 
+      await tester.pumpAndSettle();
+
       await tester.tap(
         find.byKey(
           const Key(
@@ -239,8 +241,17 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining(
-          'conversations with Philotes',
+        find.byKey(
+          const Key(
+            'messagesScreen',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text(
+          'Recent Conversations',
         ),
         findsOneWidget,
       );

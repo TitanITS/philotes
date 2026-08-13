@@ -17,10 +17,13 @@ class PhilotesHomeScreen extends StatelessWidget {
     super.key,
     this.compatibilityService =
         const DevelopmentCompatibilityService(),
+    this.onOpenMessages,
   });
 
   final CompatibilityService
   compatibilityService;
+
+  final VoidCallback? onOpenMessages;
 
   void _openMember(
     BuildContext context,
@@ -114,6 +117,8 @@ class PhilotesHomeScreen extends StatelessWidget {
                   if (isWide)
                     _WideHomeLayout(
                       members: members,
+                      onOpenMessages:
+                          onOpenMessages,
                       onOpenMember: (
                         member,
                       ) {
@@ -126,6 +131,8 @@ class PhilotesHomeScreen extends StatelessWidget {
                   else
                     _MobileHomeLayout(
                       members: members,
+                      onOpenMessages:
+                          onOpenMessages,
                       onOpenMember: (
                         member,
                       ) {
@@ -191,11 +198,13 @@ class _MobileHomeLayout
   const _MobileHomeLayout({
     required this.members,
     required this.onOpenMember,
+    this.onOpenMessages,
   });
 
   final List<SuggestedMember> members;
   final ValueChanged<SuggestedMember>
   onOpenMember;
+  final VoidCallback? onOpenMessages;
 
   @override
   Widget build(BuildContext context) {
@@ -232,7 +241,10 @@ class _MobileHomeLayout
 
         const SizedBox(height: 10),
 
-        const CommunitySummaryCard(),
+        CommunitySummaryCard(
+          onUnreadConversationsTap:
+              onOpenMessages,
+        ),
       ],
     );
   }
@@ -244,11 +256,13 @@ class _WideHomeLayout
   const _WideHomeLayout({
     required this.members,
     required this.onOpenMember,
+    this.onOpenMessages,
   });
 
   final List<SuggestedMember> members;
   final ValueChanged<SuggestedMember>
   onOpenMember;
+  final VoidCallback? onOpenMessages;
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +282,7 @@ class _WideHomeLayout
 
         const SizedBox(width: 26),
 
-        const Expanded(
+        Expanded(
           flex: 3,
           child: Column(
             crossAxisAlignment:
@@ -295,7 +309,10 @@ class _WideHomeLayout
 
               SizedBox(height: 10),
 
-              CommunitySummaryCard(),
+              CommunitySummaryCard(
+                onUnreadConversationsTap:
+                    onOpenMessages,
+              ),
             ],
           ),
         ),

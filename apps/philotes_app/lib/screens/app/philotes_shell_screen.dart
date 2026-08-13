@@ -5,6 +5,7 @@ import '../../data/development/development_member_fixture.dart';
 import '../../screens/home/philotes_home_screen.dart';
 import '../../screens/discover/discover_screen.dart';
 import '../../screens/plans/plans_screen.dart';
+import '../../screens/messages/messages_screen.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
@@ -39,7 +40,11 @@ class _PhilotesShellScreenState
   Widget _buildCurrentDestination() {
     switch (_selectedIndex) {
       case 0:
-        return const PhilotesHomeScreen();
+        return PhilotesHomeScreen(
+          onOpenMessages: () {
+            _selectDestination(3);
+          },
+        );
 
       case 1:
         return const DiscoverScreen();
@@ -48,13 +53,7 @@ class _PhilotesShellScreenState
         return const PlansScreen();
 
       case 3:
-        return const _DevelopmentDestination(
-          title: 'Messages',
-          description:
-              'Messages will contain your '
-              'conversations with Philotes '
-              'friends and future group chats.',
-        );
+        return const MessagesScreen();
 
       case 4:
         return const _DevelopmentDestination(
@@ -66,7 +65,11 @@ class _PhilotesShellScreenState
         );
 
       default:
-        return const PhilotesHomeScreen();
+        return PhilotesHomeScreen(
+          onOpenMessages: () {
+            _selectDestination(3);
+          },
+        );
     }
   }
 
