@@ -1,35 +1,59 @@
-PHILOTES MESSAGES BULK READ / UNREAD PATCH REPORT
+PHILOTES YOU V1 PATCH REPORT
 ============================================================================
-Generated: 2026-08-13T18:35:36
+Generated: 2026-08-13T19:34:19
 
-PASS: MessageService has Mark Read
-PASS: MessageService has Mark Unread
-PASS: Development service stores overrides
-PASS: Automatic read behavior preserved
-FAIL: Select Conversations menu added
-PASS: Selection toolbar added
-PASS: Checkboxes added in selection mode
-PASS: Long press selection added
-PASS: Select All added
-PASS: Bulk Mark Read added
-PASS: Bulk Mark Unread added
-PASS: Conversation contextual read toggle added
-PASS: Conversation shows Mark Read
-PASS: Conversation shows Mark Unread
-PASS: Bulk selection test added
-PASS: Long press test added
-PASS: Conversation toggle test added
+PASS: You screen created
+PASS: Shell imports You
+PASS: You placeholder replaced
+PASS: Five-tab navigation preserved
+PASS: Profile hero created
+PASS: View My Profile created
+PASS: Edit My Profile created
+PASS: Existing profile data reused
+PASS: Interests section created
+PASS: Friendship preferences created
+PASS: Permanent discovery preferences created
+PASS: Location and distance created
+PASS: Privacy settings created
+PASS: Blocked members created
+PASS: Safety and reporting created
+PASS: Community guidelines created
+PASS: Account information created
+PASS: Email and sign-in created
+PASS: Optional MFA created
+PASS: Active sessions created
+PASS: Notifications created
+PASS: In-app notifications created
+PASS: Email notifications created
+PASS: Email master switch created
+PASS: Email frequency created
+PASS: Email message-preview privacy created
+PASS: Critical security alerts preserved
+PASS: Membership created
+PASS: Accessibility created
+PASS: Help and support created
+PASS: About Philotes created
+PASS: Legal and privacy created
+PASS: Sign out created
+PASS: Deactivate account created
+PASS: Delete account created
+PASS: Dedicated You tests created
+PASS: Notifications test created
+PASS: MFA test created
+PASS: Legacy You placeholder test updated
 
-OVERALL: FAIL
+OVERALL: PASS
 
-EXPECTED BEHAVIOR
+YOU V1 DESIGN CONTRACT
 ----------------------------------------------------------------------------
-- Normal Messages view remains uncluttered.
-- Select Conversations enters checkbox mode.
-- Long press enters selection mode and selects that thread.
-- Select All applies only to currently displayed conversations.
-- Bulk Mark Read clears unread state on selected threads.
-- Bulk Mark Unread marks each selected thread with one unread conversation indicator.
-- Individual conversations use one contextual Mark Read / Mark Unread menu item.
-- Opening an unread conversation still automatically marks it read.
-- Existing navy, gold, ivory Philotes styling is preserved.
+- Existing Home, Discover, Plans, and Messages remain unchanged.
+- You replaces only the existing You development placeholder.
+- Existing OnboardingProfileData is reused for member profile data.
+- Permanent profile preferences belong under You.
+- Discover remains focused on temporary discovery refinement.
+- In-app notifications remain the primary notification channel.
+- Email notifications are member-configurable.
+- Critical security and account alerts remain enabled.
+- Email message previews are off by default for privacy.
+- MFA is optional for normal members in this frontend design.
+- Backend-dependent security, email, membership, and account actions are represented honestly and are not faked as production functionality.

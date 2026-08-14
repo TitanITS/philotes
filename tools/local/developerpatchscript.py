@@ -4,41 +4,38 @@ from datetime import datetime
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
-APP_ROOT = PROJECT_ROOT / "apps" / "philotes_app"
+
+APP_ROOT = (
+    PROJECT_ROOT
+    / "apps"
+    / "philotes_app"
+)
+
 LIB_ROOT = APP_ROOT / "lib"
 TEST_ROOT = APP_ROOT / "test"
 
-SERVICE_FILE = (
-    LIB_ROOT
-    / "services"
-    / "messages"
-    / "message_service.dart"
-)
-
-DEV_SERVICE_FILE = (
-    LIB_ROOT
-    / "services"
-    / "messages"
-    / "development_message_service.dart"
-)
-
-MESSAGES_FILE = (
+SHELL_FILE = (
     LIB_ROOT
     / "screens"
-    / "messages"
-    / "messages_screen.dart"
+    / "app"
+    / "philotes_shell_screen.dart"
 )
 
-CONVERSATION_FILE = (
+YOU_FILE = (
     LIB_ROOT
     / "screens"
-    / "messages"
-    / "conversation_screen.dart"
+    / "you"
+    / "you_screen.dart"
 )
 
-TEST_FILE = (
+YOU_TEST_FILE = (
     TEST_ROOT
-    / "messages_v1_test.dart"
+    / "you_v1_test.dart"
+)
+
+WIDGET_TEST_FILE = (
+    TEST_ROOT
+    / "widget_test.dart"
 )
 
 REPORT_FILE = (
@@ -47,806 +44,96 @@ REPORT_FILE = (
 )
 
 
-SERVICE_CONTENT = r"""import '../../models/compatibility/suggested_member.dart';
-import '../../models/messages/message_thread.dart';
+YOU_CONTENT = r"""import 'package:flutter/material.dart';
+
 import '../../models/onboarding_profile_data.dart';
-
-abstract class MessageService {
-  const MessageService();
-
-  List<MessageThread> threads(
-    OnboardingProfileData currentMember,
-  );
-
-  List<SuggestedMember> messageableFriends(
-    OnboardingProfileData currentMember,
-  );
-
-  SuggestedMember? friendById(
-    String memberId,
-    OnboardingProfileData currentMember,
-  );
-
-  void markThreadRead(
-    String threadId,
-  );
-
-  void markThreadUnread(
-    String threadId,
-  );
-}
-"""
-
-
-DEV_SERVICE_CONTENT = r"""import '../../models/compatibility/compatibility_level.dart';
-import '../../models/compatibility/compatibility_result.dart';
-import '../../models/compatibility/suggested_member.dart';
-import '../../models/messages/message_thread.dart';
-import '../../models/onboarding_profile_data.dart';
-import '../compatibility/development_compatibility_service.dart';
-import 'message_service.dart';
-
-class DevelopmentMessageService
-    extends MessageService {
-  const DevelopmentMessageService({
-    this.compatibilityService =
-        const DevelopmentCompatibilityService(),
-  });
-
-  final DevelopmentCompatibilityService
-      compatibilityService;
-
-  //
-  // Development-only read-state overrides.
-  //
-  // Production read state will eventually
-  // come from the authenticated backend.
-  //
-  static final Map<String, int>
-      _unreadOverrides =
-      <String, int>{};
-
-  @override
-  void markThreadRead(
-    String threadId,
-  ) {
-    _unreadOverrides[threadId] = 0;
-  }
-
-  @override
-  void markThreadUnread(
-    String threadId,
-  ) {
-    _unreadOverrides[threadId] = 1;
-  }
-
-  int _unreadCount(
-    String threadId,
-    int defaultCount,
-  ) {
-    return _unreadOverrides[
-            threadId] ??
-        defaultCount;
-  }
-
-  static const SuggestedMember _morgan =
-      SuggestedMember(
-    id: 'dev-morgan',
-    displayName: 'Morgan',
-    initials: 'M',
-    distanceMiles: 14,
-    introduction:
-        'I enjoy local events, casual dinners, '
-        'movies, and getting together with '
-        'friends for weekend activities.',
-    compatibility: CompatibilityResult(
-      score: 81,
-      level: CompatibilityLevel.strong,
-      sharedFavoriteInterests: <String>[
-        'Dining Out',
-        'Movies',
-      ],
-      sharedInterests: <String>[
-        'Local Events',
-        'Live Music',
-        'Road Trips',
-        'Bowling',
-      ],
-      reasons: <String>[
-        '2 shared Like the Most interests',
-        '4 additional shared interests',
-        'Compatible social pace',
-        'Similar planning style',
-      ],
-      socialPaceAlignment: 'Strong',
-      friendshipStyleAlignment: 'Strong',
-      planningStyleAlignment: 'Strong',
-      newActivityAlignment: 'Moderate',
-      suggestedActivities: <String>[
-        'Dining Out',
-        'Movies',
-        'Local Events',
-        'Bowling',
-      ],
-    ),
-  );
-
-  List<SuggestedMember> _friends(
-    OnboardingProfileData currentMember,
-  ) {
-    final discovered =
-        compatibilityService.suggestedMembers(
-      currentMember,
-    );
-
-    final jordan = discovered.firstWhere(
-      (member) => member.id == 'dev-jordan',
-    );
-
-    final taylor = discovered.firstWhere(
-      (member) => member.id == 'dev-taylor',
-    );
-
-    return <SuggestedMember>[
-      jordan,
-      taylor,
-      _morgan,
-    ];
-  }
-
-  MessageParticipant _self(
-    OnboardingProfileData currentMember,
-  ) {
-    final name =
-        currentMember.displayName.trim().isEmpty
-            ? 'You'
-            : currentMember.displayName.trim();
-
-    return MessageParticipant(
-      id: 'self',
-      displayName: name,
-      initials:
-          name.isEmpty
-              ? 'Y'
-              : name
-                  .substring(0, 1)
-                  .toUpperCase(),
-      isCurrentUser: true,
-    );
-  }
-
-  MessageParticipant _participant(
-    SuggestedMember member,
-  ) {
-    return MessageParticipant(
-      id: member.id,
-      displayName: member.displayName,
-      initials: member.initials,
-    );
-  }
-
-  @override
-  List<SuggestedMember> messageableFriends(
-    OnboardingProfileData currentMember,
-  ) {
-    return _friends(currentMember);
-  }
-
-  @override
-  SuggestedMember? friendById(
-    String memberId,
-    OnboardingProfileData currentMember,
-  ) {
-    for (
-      final friend
-          in _friends(currentMember)
-    ) {
-      if (friend.id == memberId) {
-        return friend;
-      }
-    }
-
-    return null;
-  }
-
-  @override
-  List<MessageThread> threads(
-    OnboardingProfileData currentMember,
-  ) {
-    final friends =
-        _friends(currentMember);
-
-    final jordan =
-        friends.firstWhere(
-      (member) =>
-          member.id == 'dev-jordan',
-    );
-
-    final taylor =
-        friends.firstWhere(
-      (member) =>
-          member.id == 'dev-taylor',
-    );
-
-    final morgan =
-        friends.firstWhere(
-      (member) =>
-          member.id == 'dev-morgan',
-    );
-
-    final self =
-        _self(currentMember);
-
-    return <MessageThread>[
-      MessageThread(
-        id: 'thread-jordan',
-        type:
-            MessageThreadType.direct,
-        title: jordan.displayName,
-        participants:
-            <MessageParticipant>[
-          self,
-          _participant(jordan),
-        ],
-        unreadCount: _unreadCount(
-          'thread-jordan',
-          2,
-        ),
-        latestActivity:
-            DateTime(
-          2026,
-          8,
-          13,
-          16,
-          42,
-        ),
-        messages:
-            <PhilotesMessage>[
-          PhilotesMessage(
-            id: 'jordan-1',
-            senderId: jordan.id,
-            text:
-                'Are you free Saturday?',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              13,
-              16,
-              28,
-            ),
-          ),
-          PhilotesMessage(
-            id: 'jordan-2',
-            senderId: 'self',
-            text: 'I should be.',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              13,
-              16,
-              31,
-            ),
-          ),
-          PhilotesMessage(
-            id: 'jordan-3',
-            senderId: jordan.id,
-            text:
-                'Want to go axe throwing?',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              13,
-              16,
-              37,
-            ),
-          ),
-          PhilotesMessage(
-            id: 'jordan-4',
-            senderId: 'self',
-            text:
-                'That sounds good. '
-                'Saturday works.',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              13,
-              16,
-              42,
-            ),
-          ),
-        ],
-      ),
-
-      MessageThread(
-        id:
-            'thread-bowling-night',
-        type:
-            MessageThreadType.group,
-        title: 'Bowling Night',
-        participants:
-            <MessageParticipant>[
-          self,
-          _participant(jordan),
-          _participant(taylor),
-          _participant(morgan),
-        ],
-        unreadCount: _unreadCount(
-          'thread-bowling-night',
-          1,
-        ),
-        latestActivity:
-            DateTime(
-          2026,
-          8,
-          13,
-          14,
-          18,
-        ),
-        messages:
-            <PhilotesMessage>[
-          PhilotesMessage(
-            id: 'bowling-1',
-            senderId: jordan.id,
-            text: 'How about 7?',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              13,
-              14,
-              5,
-            ),
-          ),
-          PhilotesMessage(
-            id: 'bowling-2',
-            senderId: taylor.id,
-            text:
-                'Works for me. '
-                'I will reserve '
-                'the second lane.',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              13,
-              14,
-              18,
-            ),
-          ),
-        ],
-      ),
-
-      MessageThread(
-        id: 'thread-morgan',
-        type:
-            MessageThreadType.direct,
-        title: morgan.displayName,
-        participants:
-            <MessageParticipant>[
-          self,
-          _participant(morgan),
-        ],
-        unreadCount: _unreadCount(
-          'thread-morgan',
-          0,
-        ),
-        latestActivity:
-            DateTime(
-          2026,
-          8,
-          13,
-          11,
-          4,
-        ),
-        messages:
-            <PhilotesMessage>[
-          PhilotesMessage(
-            id: 'morgan-1',
-            senderId: morgan.id,
-            text:
-                'Great, see you then!',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              13,
-              11,
-              4,
-            ),
-          ),
-        ],
-      ),
-
-      MessageThread(
-        id: 'thread-taylor',
-        type:
-            MessageThreadType.direct,
-        title: taylor.displayName,
-        participants:
-            <MessageParticipant>[
-          self,
-          _participant(taylor),
-        ],
-        unreadCount: _unreadCount(
-          'thread-taylor',
-          0,
-        ),
-        latestActivity:
-            DateTime(
-          2026,
-          8,
-          12,
-          20,
-          31,
-        ),
-        messages:
-            <PhilotesMessage>[
-          PhilotesMessage(
-            id: 'taylor-1',
-            senderId: taylor.id,
-            text:
-                'I will check and '
-                'let you know.',
-            sentAt:
-                DateTime(
-              2026,
-              8,
-              12,
-              20,
-              31,
-            ),
-          ),
-        ],
-      ),
-    ];
-  }
-}
-"""
-
-
-MESSAGES_CONTENT = r"""import 'package:flutter/material.dart';
-
-import '../../models/messages/message_thread.dart';
-import '../../models/onboarding_profile_data.dart';
-import '../../services/messages/development_message_service.dart';
-import '../../services/messages/message_service.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
-import 'conversation_screen.dart';
-import 'new_message_screen.dart';
 
-class MessagesScreen
-    extends StatefulWidget {
-  const MessagesScreen({
+
+class YouScreen extends StatelessWidget {
+  const YouScreen({
     super.key,
-    this.messageService =
-        const DevelopmentMessageService(),
   });
-
-  final MessageService messageService;
-
-  @override
-  State<MessagesScreen> createState() =>
-      _MessagesScreenState();
-}
-
-class _MessagesScreenState
-    extends State<MessagesScreen> {
-  final TextEditingController
-      _searchController =
-      TextEditingController();
-
-  final Set<String>
-      _selectedThreadIds =
-      <String>{};
-
-  String _query = '';
-  bool _selectionMode = false;
 
   OnboardingProfileData get _profile =>
       OnboardingProfileData.instance;
 
-  List<MessageThread> get _threads {
-    final values =
-        widget.messageService
-            .threads(_profile)
-            .where(_matchesSearch)
-            .toList();
+  String get _displayName {
+    final value =
+        _profile.displayName.trim();
 
-    //
-    // Latest activity always controls
-    // conversation order.
-    //
-    values.sort(
-      (a, b) =>
-          b.latestActivity.compareTo(
-        a.latestActivity,
-      ),
-    );
-
-    return values;
-  }
-
-  bool _matchesSearch(
-    MessageThread thread,
-  ) {
-    final query =
-        _query.trim().toLowerCase();
-
-    if (query.isEmpty) {
-      return true;
+    if (value.isNotEmpty) {
+      return value;
     }
 
-    return thread.title
-            .toLowerCase()
-            .contains(query) ||
-        thread.latestPreview
-            .toLowerCase()
-            .contains(query);
+    final first =
+        _profile.firstName.trim();
+
+    if (first.isNotEmpty) {
+      return first;
+    }
+
+    return 'Philotes Member';
   }
 
-  void _openThread(
-    MessageThread thread,
+  String get _initial {
+    final value = _displayName;
+
+    if (value.isEmpty) {
+      return 'P';
+    }
+
+    return value
+        .substring(0, 1)
+        .toUpperCase();
+  }
+
+  void _open(
+    BuildContext context,
+    Widget screen,
   ) {
-    widget.messageService
-        .markThreadRead(
-      thread.id,
-    );
-
-    setState(() {
-      thread.unreadCount = 0;
-    });
-
-    Navigator.of(context)
-        .push(
-      MaterialPageRoute<void>(
-        builder: (context) =>
-            ConversationScreen(
-          thread: thread,
-          messageService:
-              widget.messageService,
-        ),
-      ),
-    )
-        .then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  void _createMessage() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) =>
-            NewMessageScreen(
-          messageService:
-              widget.messageService,
-        ),
+            screen,
       ),
     );
   }
 
-  void _enterSelectionMode({
-    MessageThread? selectedThread,
-  }) {
-    setState(() {
-      _selectionMode = true;
-
-      if (selectedThread != null) {
-        _selectedThreadIds.add(
-          selectedThread.id,
-        );
-      }
-    });
-  }
-
-  void _cancelSelectionMode() {
-    setState(() {
-      _selectionMode = false;
-      _selectedThreadIds.clear();
-    });
-  }
-
-  void _toggleSelection(
-    MessageThread thread,
+  void _showBackendNotice(
+    BuildContext context,
+    String title,
   ) {
-    setState(() {
-      if (
-        _selectedThreadIds.contains(
-          thread.id,
-        )
-      ) {
-        _selectedThreadIds.remove(
-          thread.id,
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: const Text(
+            'This control is part of the '
+            'approved Philotes design. '
+            'Its production action will be '
+            'connected when the authenticated '
+            'backend is built.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pop();
+              },
+              child:
+                  const Text('Close'),
+            ),
+          ],
         );
-      } else {
-        _selectedThreadIds.add(
-          thread.id,
-        );
-      }
-
-      if (_selectedThreadIds.isEmpty) {
-        _selectionMode = false;
-      }
-    });
-  }
-
-  void _toggleSelectAll() {
-    final visibleIds =
-        _threads
-            .map(
-              (thread) =>
-                  thread.id,
-            )
-            .toSet();
-
-    final allVisibleSelected =
-        visibleIds.isNotEmpty &&
-        visibleIds.every(
-          _selectedThreadIds.contains,
-        );
-
-    setState(() {
-      if (allVisibleSelected) {
-        _selectedThreadIds
-            .removeAll(
-          visibleIds,
-        );
-
-        if (
-          _selectedThreadIds.isEmpty
-        ) {
-          _selectionMode = false;
-        }
-      } else {
-        _selectionMode = true;
-
-        _selectedThreadIds
-            .addAll(
-          visibleIds,
-        );
-      }
-    });
-  }
-
-  void _markSelectedRead() {
-    if (_selectedThreadIds.isEmpty) {
-      return;
-    }
-
-    for (
-      final threadId
-          in _selectedThreadIds
-    ) {
-      widget.messageService
-          .markThreadRead(
-        threadId,
-      );
-    }
-
-    _cancelSelectionMode();
-  }
-
-  void _markSelectedUnread() {
-    if (_selectedThreadIds.isEmpty) {
-      return;
-    }
-
-    for (
-      final threadId
-          in _selectedThreadIds
-    ) {
-      widget.messageService
-          .markThreadUnread(
-        threadId,
-      );
-    }
-
-    _cancelSelectionMode();
-  }
-
-  String _timestampLabel(
-    DateTime value,
-  ) {
-    const months = <String>[
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-
-    final now = DateTime.now();
-
-    final sameDate =
-        now.year == value.year &&
-        now.month == value.month &&
-        now.day == value.day;
-
-    final yesterday =
-        DateTime(
-          now.year,
-          now.month,
-          now.day,
-        ).subtract(
-          const Duration(days: 1),
-        );
-
-    final valueDate =
-        DateTime(
-      value.year,
-      value.month,
-      value.day,
+      },
     );
-
-    final minute =
-        value.minute
-            .toString()
-            .padLeft(2, '0');
-
-    final hour =
-        value.hour == 0
-            ? 12
-            : value.hour > 12
-                ? value.hour - 12
-                : value.hour;
-
-    final period =
-        value.hour >= 12
-            ? 'PM'
-            : 'AM';
-
-    final time =
-        '$hour:$minute $period';
-
-    if (sameDate) {
-      return 'Today â€¢ $time';
-    }
-
-    if (valueDate == yesterday) {
-      return 'Yesterday â€¢ $time';
-    }
-
-    return '${months[value.month - 1]} '
-        '${value.day} â€¢ $time';
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final threads = _threads;
-
-    final visibleIds =
-        threads
-            .map(
-              (thread) =>
-                  thread.id,
-            )
-            .toSet();
-
-    final allVisibleSelected =
-        visibleIds.isNotEmpty &&
-        visibleIds.every(
-          _selectedThreadIds.contains,
-        );
-
     return LayoutBuilder(
       builder: (
         BuildContext context,
@@ -859,7 +146,7 @@ class _MessagesScreenState
 
         return SingleChildScrollView(
           key: const Key(
-            'messagesScreen',
+            'youScreen',
           ),
           padding:
               EdgeInsets.fromLTRB(
@@ -874,7 +161,7 @@ class _MessagesScreenState
                     .widePadding
                 : PhilotesDesign
                     .mobilePadding,
-            40,
+            48,
           ),
           child: Center(
             child: ConstrainedBox(
@@ -889,370 +176,578 @@ class _MessagesScreenState
                     CrossAxisAlignment
                         .stretch,
                 children: [
-                  if (_selectionMode)
-                    _SelectionHeader(
-                      selectedCount:
-                          _selectedThreadIds
-                              .length,
-                      allVisibleSelected:
-                          allVisibleSelected,
-                      onCancel:
-                          _cancelSelectionMode,
-                      onToggleSelectAll:
-                          _toggleSelectAll,
-                      onMarkRead:
-                          _markSelectedRead,
-                      onMarkUnread:
-                          _markSelectedUnread,
-                    )
-                  else ...[
-                    Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment
-                              .start,
-                      children: [
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
-                            children: [
-                              Text(
-                                'Messages',
-                                style:
-                                    TextStyle(
-                                  color:
-                                      PhilotesColors
-                                          .navy,
-                                  fontSize: 30,
-                                  fontWeight:
-                                      FontWeight
-                                          .w800,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 6,
-                              ),
-                              Text(
-                                'Your conversations '
-                                'with Philotes friends.',
-                                style:
-                                    TextStyle(
-                                  color:
-                                      PhilotesColors
-                                          .silver,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        PopupMenuButton<String>(
-                          key: const Key(
-                            'messagesOptionsMenu',
-                          ),
-                          icon: const Icon(
-                            Icons.more_vert,
-                            color:
-                                PhilotesColors
-                                    .navy,
-                          ),
-                          onSelected:
-                              (value) {
-                            if (
-                              value ==
-                              'select'
-                            ) {
-                              _enterSelectionMode();
-                            }
-                          },
-                          itemBuilder:
-                              (context) =>
-                                  const [
-                            PopupMenuItem<
-                                String>(
-                              value: 'select',
-                              child: Text(
-                                'Select '
-                                'Conversations',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                  const Text(
+                    'You',
+                    style: TextStyle(
+                      color:
+                          PhilotesColors
+                              .navy,
+                      fontSize: 30,
+                      fontWeight:
+                          FontWeight
+                              .w800,
                     ),
+                  ),
 
-                    const SizedBox(
-                      height: 24,
+                  const SizedBox(
+                    height: 6,
+                  ),
+
+                  const Text(
+                    'Your profile, preferences, '
+                    'privacy, security, and account.',
+                    style: TextStyle(
+                      color:
+                          PhilotesColors
+                              .silver,
+                      fontSize: 14,
                     ),
+                  ),
 
-                    LayoutBuilder(
-                      builder: (
-                        BuildContext context,
-                        BoxConstraints inner,
-                      ) {
-                        final stacked =
-                            inner.maxWidth <
-                            620;
+                  const SizedBox(
+                    height: 24,
+                  ),
 
-                        final search =
-                            TextField(
-                          key: const Key(
-                            'messageSearchField',
-                          ),
-                          controller:
-                              _searchController,
-                          onChanged:
-                              (value) {
-                            setState(() {
-                              _query =
-                                  value;
-                            });
-                          },
-                          decoration:
-                              InputDecoration(
-                            hintText:
-                                'Search messages...',
-                            prefixIcon:
-                                const Icon(
-                              Icons.search,
-                              color:
-                                  PhilotesColors
-                                      .gold,
-                            ),
-                            filled: true,
-                            fillColor:
-                                Colors.white,
-                            enabledBorder:
-                                OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                PhilotesDesign
-                                    .cardRadius,
-                              ),
-                              borderSide:
-                                  const BorderSide(
-                                color:
-                                    PhilotesColors
-                                        .gold,
-                                width: 1.4,
-                              ),
-                            ),
-                            focusedBorder:
-                                OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius
-                                      .circular(
-                                PhilotesDesign
-                                    .cardRadius,
-                              ),
-                              borderSide:
-                                  const BorderSide(
-                                color:
-                                    PhilotesColors
-                                        .navy,
-                                width: 1.8,
-                              ),
-                            ),
-                          ),
-                        );
+                  _ProfileHeroCard(
+                    displayName:
+                        _displayName,
+                    initial:
+                        _initial,
+                    area:
+                        _profile
+                            .generalAreaLabel,
+                    onViewProfile: () {
+                      _open(
+                        context,
+                        const MyProfilePreviewScreen(),
+                      );
+                    },
+                    onEditProfile: () {
+                      _open(
+                        context,
+                        const EditProfileHubScreen(),
+                      );
+                    },
+                  ),
 
-                        final create =
-                            FilledButton
-                                .icon(
-                          key: const Key(
-                            'createMessageButton',
-                          ),
-                          onPressed:
-                              _createMessage,
-                          style:
-                              FilledButton
-                                  .styleFrom(
-                            backgroundColor:
-                                PhilotesColors
-                                    .navy,
-                            foregroundColor:
-                                Colors.white,
-                            padding:
-                                const EdgeInsets
-                                    .symmetric(
-                              horizontal:
-                                  18,
-                              vertical: 15,
-                            ),
-                          ),
-                          icon:
-                              const Icon(
-                            Icons.add,
-                            size: 18,
-                          ),
-                          label:
-                              const Text(
-                            'Create Message',
-                            style:
-                                TextStyle(
-                              fontWeight:
-                                  FontWeight
-                                      .w700,
-                            ),
-                          ),
-                        );
+                  const SizedBox(
+                    height: 28,
+                  ),
 
-                        if (stacked) {
-                          return Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .stretch,
-                            children: [
-                              search,
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              create,
-                            ],
-                          );
-                        }
-
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: search,
-                            ),
-                            const SizedBox(
-                              width: 14,
-                            ),
-                            create,
-                          ],
-                        );
-                      },
-                    ),
-                  ],
-
-                  const SizedBox(height: 30),
-
-                  Row(
+                  _SettingsSection(
+                    title:
+                        'Profile & Discovery',
                     children: [
-                      Container(
-                        width: 4,
-                        height: 22,
-                        decoration:
-                            BoxDecoration(
-                          color:
-                              PhilotesColors
-                                  .gold,
-                          borderRadius:
-                              BorderRadius
-                                  .circular(4),
+                      _SettingsTile(
+                        key: const Key(
+                          'youInterestsTile',
                         ),
+                        icon:
+                            Icons
+                                .interests_outlined,
+                        title:
+                            'Interests',
+                        subtitle:
+                            'Manage interests, '
+                            'favorites, and activities.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const ProfileInterestsScreen(),
+                          );
+                        },
                       ),
-
-                      const SizedBox(width: 9),
-
-                      const Expanded(
-                        child: Text(
-                          'Recent Conversations',
-                          style: TextStyle(
-                            color:
-                                PhilotesColors
-                                    .navy,
-                            fontSize: 18,
-                            fontWeight:
-                                FontWeight
-                                    .w800,
-                          ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youFriendshipPreferencesTile',
                         ),
+                        icon:
+                            Icons
+                                .people_outline,
+                        title:
+                            'Friendship Preferences',
+                        subtitle:
+                            'Social pace, friendship '
+                            'style, planning, and '
+                            'new activities.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const FriendshipPreferencesSummaryScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youDiscoveryPreferencesTile',
+                        ),
+                        icon:
+                            Icons
+                                .tune_outlined,
+                        title:
+                            'Discovery Preferences',
+                        subtitle:
+                            'Permanent discovery '
+                            'defaults for your account.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const DiscoveryPreferencesSummaryScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youLocationDistanceTile',
+                        ),
+                        icon:
+                            Icons
+                                .location_on_outlined,
+                        title:
+                            'Location & Distance',
+                        subtitle:
+                            'Your normal discovery '
+                            'area and travel preference.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const LocationDistanceSummaryScreen(),
+                          );
+                        },
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 14),
+                  const SizedBox(
+                    height: 24,
+                  ),
 
-                  if (threads.isEmpty)
-                    Container(
-                      key: const Key(
-                        'messageNoResults',
+                  _SettingsSection(
+                    title:
+                        'Privacy & Safety',
+                    children: [
+                      _SettingsTile(
+                        key: const Key(
+                          'youPrivacySettingsTile',
+                        ),
+                        icon:
+                            Icons
+                                .shield_outlined,
+                        title:
+                            'Privacy Settings',
+                        subtitle:
+                            'Control discovery and '
+                            'profile visibility.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const PrivacySettingsScreen(),
+                          );
+                        },
                       ),
-                      padding:
-                          const EdgeInsets
-                              .all(22),
-                      decoration:
-                          PhilotesDesign
-                              .secondaryCardDecoration(),
-                      child: Text(
-                        'No conversations '
-                        'match your search.',
-                        textAlign:
-                            TextAlign.center,
-                        style:
-                            PhilotesDesign
-                                .supportingText,
+                      _SettingsTile(
+                        key: const Key(
+                          'youBlockedMembersTile',
+                        ),
+                        icon:
+                            Icons
+                                .block_outlined,
+                        title:
+                            'Blocked Members',
+                        subtitle:
+                            'Review and manage '
+                            'blocked accounts.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const InformationScreen(
+                              title:
+                                  'Blocked Members',
+                              description:
+                                  'Blocked-member '
+                                  'management will be '
+                                  'connected to the '
+                                  'Philotes safety '
+                                  'backend.',
+                              items: [
+                                'View blocked members',
+                                'Unblock a member',
+                                'Blocking help',
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    )
-                  else
-                    Column(
-                      children: [
-                        for (
-                          var index = 0;
-                          index <
-                              threads.length;
-                          index++
-                        ) ...[
-                          _ConversationCard(
-                            thread:
-                                threads[index],
-                            timestamp:
-                                _timestampLabel(
-                              threads[index]
-                                  .latestActivity,
-                            ),
-                            selectionMode:
-                                _selectionMode,
-                            selected:
-                                _selectedThreadIds
-                                    .contains(
-                              threads[index]
-                                  .id,
-                            ),
-                            onOpen: () {
-                              if (
-                                _selectionMode
-                              ) {
-                                _toggleSelection(
-                                  threads[
-                                      index],
-                                );
-                              } else {
-                                _openThread(
-                                  threads[
-                                      index],
-                                );
-                              }
-                            },
-                            onLongPress: () {
-                              if (
-                                !_selectionMode
-                              ) {
-                                _enterSelectionMode(
-                                  selectedThread:
-                                      threads[
-                                          index],
-                                );
-                              }
-                            },
-                          ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youSafetyReportingTile',
+                        ),
+                        icon:
+                            Icons
+                                .health_and_safety_outlined,
+                        title:
+                            'Safety & Reporting',
+                        subtitle:
+                            'Safety guidance, '
+                            'reporting, and member '
+                            'protections.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const SafetyReportingScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youCommunityGuidelinesTile',
+                        ),
+                        icon:
+                            Icons
+                                .groups_outlined,
+                        title:
+                            'Community Guidelines',
+                        subtitle:
+                            'Expected conduct for '
+                            'the Philotes community.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const CommunityGuidelinesScreen(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
 
-                          if (
-                            index <
-                            threads.length - 1
-                          )
-                            const SizedBox(
-                              height: 12,
+                  const SizedBox(
+                    height: 24,
+                  ),
+
+                  _SettingsSection(
+                    title:
+                        'Account & Security',
+                    children: [
+                      _SettingsTile(
+                        key: const Key(
+                          'youAccountInformationTile',
+                        ),
+                        icon:
+                            Icons
+                                .badge_outlined,
+                        title:
+                            'Account Information',
+                        subtitle:
+                            'Your Philotes account '
+                            'identity and status.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const AccountInformationScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youEmailSignInTile',
+                        ),
+                        icon:
+                            Icons
+                                .alternate_email,
+                        title:
+                            'Email & Sign-In',
+                        subtitle:
+                            'Verified email, password, '
+                            'and account recovery.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const EmailSignInScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youMfaTile',
+                        ),
+                        icon:
+                            Icons
+                                .phonelink_lock_outlined,
+                        title:
+                            'Multi-Factor Authentication',
+                        subtitle:
+                            'Optional additional '
+                            'sign-in protection.',
+                        trailingText:
+                            'Off',
+                        onTap: () {
+                          _open(
+                            context,
+                            const MfaSettingsScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youSessionsTile',
+                        ),
+                        icon:
+                            Icons
+                                .devices_outlined,
+                        title:
+                            'Active Sessions & Devices',
+                        subtitle:
+                            'Review where your '
+                            'account is signed in.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const SessionsDevicesScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youNotificationsTile',
+                        ),
+                        icon:
+                            Icons
+                                .notifications_outlined,
+                        title:
+                            'Notifications',
+                        subtitle:
+                            'Choose in-app and email '
+                            'notification preferences.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const NotificationsSettingsScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youMembershipTile',
+                        ),
+                        icon:
+                            Icons
+                                .workspace_premium_outlined,
+                        title:
+                            'Subscription / Membership',
+                        subtitle:
+                            'Membership status and '
+                            'billing settings.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const MembershipScreen(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(
+                    height: 24,
+                  ),
+
+                  _SettingsSection(
+                    title: 'Application',
+                    children: [
+                      _SettingsTile(
+                        key: const Key(
+                          'youAppearanceTile',
+                        ),
+                        icon:
+                            Icons
+                                .palette_outlined,
+                        title:
+                            'Appearance',
+                        subtitle:
+                            'Visual preferences '
+                            'for Philotes.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const InformationScreen(
+                              title:
+                                  'Appearance',
+                              description:
+                                  'Application display '
+                                  'preferences will live '
+                                  'here.',
+                              items: [
+                                'Theme',
+                                'Display preferences',
+                                'Text presentation',
+                              ],
                             ),
-                        ],
-                      ],
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youAccessibilityTile',
+                        ),
+                        icon:
+                            Icons
+                                .accessibility_new_outlined,
+                        title:
+                            'Accessibility',
+                        subtitle:
+                            'Accessibility and '
+                            'usability preferences.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const AccessibilitySettingsScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youHelpSupportTile',
+                        ),
+                        icon:
+                            Icons
+                                .help_outline,
+                        title:
+                            'Help & Support',
+                        subtitle:
+                            'Help using Philotes '
+                            'and technical support.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const HelpSupportScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youAboutTile',
+                        ),
+                        icon:
+                            Icons
+                                .info_outline,
+                        title:
+                            'About Philotes',
+                        subtitle:
+                            'Application and '
+                            'version information.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const AboutPhilotesScreen(),
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youLegalPrivacyTile',
+                        ),
+                        icon:
+                            Icons
+                                .gavel_outlined,
+                        title:
+                            'Legal & Privacy',
+                        subtitle:
+                            'Terms, privacy, and '
+                            'important policies.',
+                        onTap: () {
+                          _open(
+                            context,
+                            const LegalPrivacyScreen(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(
+                    height: 24,
+                  ),
+
+                  _SettingsSection(
+                    title:
+                        'Account Actions',
+                    children: [
+                      _SettingsTile(
+                        key: const Key(
+                          'youSignOutTile',
+                        ),
+                        icon:
+                            Icons
+                                .logout_outlined,
+                        title:
+                            'Sign Out',
+                        subtitle:
+                            'Sign out of this device.',
+                        onTap: () {
+                          _showBackendNotice(
+                            context,
+                            'Sign Out',
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youDeactivateAccountTile',
+                        ),
+                        icon:
+                            Icons
+                                .pause_circle_outline,
+                        title:
+                            'Deactivate Account',
+                        subtitle:
+                            'Temporarily make your '
+                            'account inactive.',
+                        onTap: () {
+                          _showBackendNotice(
+                            context,
+                            'Deactivate Account',
+                          );
+                        },
+                      ),
+                      _SettingsTile(
+                        key: const Key(
+                          'youDeleteAccountTile',
+                        ),
+                        icon:
+                            Icons
+                                .delete_outline,
+                        title:
+                            'Delete Account',
+                        subtitle:
+                            'Permanently request '
+                            'account deletion.',
+                        destructive:
+                            true,
+                        onTap: () {
+                          _showBackendNotice(
+                            context,
+                            'Delete Account',
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(
+                    height: 30,
+                  ),
+
+                  const Center(
+                    child: Text(
+                      'Philotes development build',
+                      style: TextStyle(
+                        color:
+                            PhilotesColors
+                                .silver,
+                        fontSize: 11,
+                      ),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -1264,98 +759,103 @@ class _MessagesScreenState
 }
 
 
-class _SelectionHeader
+class _ProfileHeroCard
     extends StatelessWidget {
-  const _SelectionHeader({
-    required this.selectedCount,
-    required this.allVisibleSelected,
-    required this.onCancel,
-    required this.onToggleSelectAll,
-    required this.onMarkRead,
-    required this.onMarkUnread,
+  const _ProfileHeroCard({
+    required this.displayName,
+    required this.initial,
+    required this.area,
+    required this.onViewProfile,
+    required this.onEditProfile,
   });
 
-  final int selectedCount;
-  final bool allVisibleSelected;
-  final VoidCallback onCancel;
-  final VoidCallback onToggleSelectAll;
-  final VoidCallback onMarkRead;
-  final VoidCallback onMarkUnread;
+  final String displayName;
+  final String initial;
+  final String area;
+  final VoidCallback onViewProfile;
+  final VoidCallback onEditProfile;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       key: const Key(
-        'messageSelectionToolbar',
+        'youProfileHeroCard',
       ),
       padding:
-          const EdgeInsets.all(16),
+          const EdgeInsets.all(22),
       decoration:
           PhilotesDesign
               .primaryCardDecoration(),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '$selectedCount selected',
-                  style:
-                      const TextStyle(
-                    color:
-                        PhilotesColors.navy,
-                    fontSize: 20,
-                    fontWeight:
-                        FontWeight.w800,
-                  ),
-                ),
+          Container(
+            width: 96,
+            height: 96,
+            decoration:
+                BoxDecoration(
+              shape: BoxShape.circle,
+              color:
+                  PhilotesColors.navy,
+              border: Border.all(
+                color:
+                    PhilotesColors.gold,
+                width: 2.4,
               ),
-
-              TextButton(
-                key: const Key(
-                  'cancelMessageSelectionButton',
-                ),
-                onPressed: onCancel,
-                child: const Text(
-                  'Cancel',
-                ),
+            ),
+            alignment:
+                Alignment.center,
+            child: Text(
+              initial,
+              style:
+                  const TextStyle(
+                color: Colors.white,
+                fontSize: 36,
+                fontWeight:
+                    FontWeight.w800,
               ),
-            ],
+            ),
           ),
 
-          const SizedBox(height: 8),
-
-          Row(
-            children: [
-              TextButton.icon(
-                key: const Key(
-                  'selectAllMessagesButton',
-                ),
-                onPressed:
-                    onToggleSelectAll,
-                icon: Icon(
-                  allVisibleSelected
-                      ? Icons
-                          .check_box
-                      : Icons
-                          .check_box_outline_blank,
-                  color:
-                      PhilotesColors.gold,
-                ),
-                label: Text(
-                  allVisibleSelected
-                      ? 'Clear All'
-                      : 'Select All',
-                ),
-              ),
-
-              const Spacer(),
-            ],
+          const SizedBox(
+            height: 14,
           ),
 
-          const SizedBox(height: 8),
+          Text(
+            displayName,
+            key: const Key(
+              'youDisplayName',
+            ),
+            textAlign:
+                TextAlign.center,
+            style:
+                const TextStyle(
+              color:
+                  PhilotesColors.navy,
+              fontSize: 24,
+              fontWeight:
+                  FontWeight.w800,
+            ),
+          ),
+
+          const SizedBox(
+            height: 4,
+          ),
+
+          Text(
+            area,
+            textAlign:
+                TextAlign.center,
+            style:
+                const TextStyle(
+              color:
+                  PhilotesColors.silver,
+              fontSize: 12,
+            ),
+          ),
+
+          const SizedBox(
+            height: 18,
+          ),
 
           LayoutBuilder(
             builder: (
@@ -1364,77 +864,67 @@ class _SelectionHeader
             ) {
               final stacked =
                   constraints.maxWidth <
-                  420;
+                  430;
 
-              final markRead =
+              final view =
                   OutlinedButton.icon(
                 key: const Key(
-                  'bulkMarkReadButton',
+                  'viewMyProfileButton',
                 ),
                 onPressed:
-                    selectedCount == 0
-                        ? null
-                        : onMarkRead,
+                    onViewProfile,
                 icon: const Icon(
                   Icons
-                      .mark_email_read_outlined,
-                  size: 18,
+                      .visibility_outlined,
                 ),
                 label:
                     const Text(
-                  'Mark Read',
+                  'View My Profile',
                 ),
                 style:
                     OutlinedButton
                         .styleFrom(
                   foregroundColor:
-                      PhilotesColors
-                          .navy,
+                      PhilotesColors.navy,
                   side:
                       const BorderSide(
                     color:
-                        PhilotesColors
-                            .gold,
-                    width: 1.3,
+                        PhilotesColors.gold,
+                    width: 1.4,
                   ),
                   padding:
                       const EdgeInsets
                           .symmetric(
-                    vertical: 13,
+                    vertical: 14,
                   ),
                 ),
               );
 
-              final markUnread =
+              final edit =
                   FilledButton.icon(
                 key: const Key(
-                  'bulkMarkUnreadButton',
+                  'editMyProfileButton',
                 ),
                 onPressed:
-                    selectedCount == 0
-                        ? null
-                        : onMarkUnread,
+                    onEditProfile,
                 icon: const Icon(
-                  Icons
-                      .mark_email_unread_outlined,
-                  size: 18,
+                  Icons.edit_outlined,
                 ),
                 label:
                     const Text(
-                  'Mark Unread',
+                  'Edit My Profile',
                 ),
                 style:
                     FilledButton
                         .styleFrom(
                   backgroundColor:
-                      PhilotesColors
-                          .navy,
+                      PhilotesColors.navy,
                   foregroundColor:
                       Colors.white,
                   padding:
                       const EdgeInsets
                           .symmetric(
-                    vertical: 13,
+                    vertical: 14,
                   ),
                 ),
               );
@@ -1445,11 +935,11 @@ class _SelectionHeader
                       CrossAxisAlignment
                           .stretch,
                   children: [
-                    markRead,
+                    view,
                     const SizedBox(
                       height: 10,
                     ),
-                    markUnread,
+                    edit,
                   ],
                 );
               }
@@ -1457,13 +947,13 @@ class _SelectionHeader
               return Row(
                 children: [
                   Expanded(
-                    child: markRead,
+                    child: view,
                   ),
                   const SizedBox(
                     width: 12,
                   ),
                   Expanded(
-                    child: markUnread,
+                    child: edit,
                   ),
                 ],
               );
@@ -1476,150 +966,2266 @@ class _SelectionHeader
 }
 
 
-class _ConversationCard
+class _SettingsSection
     extends StatelessWidget {
-  const _ConversationCard({
-    required this.thread,
-    required this.timestamp,
-    required this.selectionMode,
-    required this.selected,
-    required this.onOpen,
-    required this.onLongPress,
+  const _SettingsSection({
+    required this.title,
+    required this.children,
   });
 
-  final MessageThread thread;
-  final String timestamp;
-  final bool selectionMode;
-  final bool selected;
-  final VoidCallback onOpen;
-  final VoidCallback onLongPress;
+  final String title;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    final unread =
-        thread.unreadCount > 0;
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 4,
+              height: 22,
+              decoration:
+                  BoxDecoration(
+                color:
+                    PhilotesColors.gold,
+                borderRadius:
+                    BorderRadius
+                        .circular(4),
+              ),
+            ),
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        key: Key(
-          'messageThread-${thread.id}',
+            const SizedBox(
+              width: 9,
+            ),
+
+            Expanded(
+              child: Text(
+                title,
+                style:
+                    PhilotesDesign
+                        .sectionHeading,
+              ),
+            ),
+          ],
         ),
-        onTap: onOpen,
-        onLongPress: onLongPress,
-        borderRadius:
-            BorderRadius.circular(
-          PhilotesDesign.cardRadius,
+
+        const SizedBox(
+          height: 10,
         ),
-        child: Ink(
-          padding:
-              const EdgeInsets.all(17),
+
+        Container(
           decoration:
               PhilotesDesign
                   .primaryCardDecoration(),
-          child: Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+          child: Column(
             children: [
-              if (selectionMode) ...[
-                Padding(
-                  padding:
-                      const EdgeInsets
-                          .only(
-                    top: 11,
+              for (
+                var index = 0;
+                index <
+                    children.length;
+                index++
+              ) ...[
+                children[index],
+                if (
+                  index <
+                  children.length - 1
+                )
+                  const Divider(
+                    height: 1,
                   ),
-                  child: Icon(
-                    selected
-                        ? Icons
-                            .check_box
-                        : Icons
-                            .check_box_outline_blank,
-                    key: Key(
-                      'messageCheckbox-${thread.id}',
-                    ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class _SettingsTile
+    extends StatelessWidget {
+  const _SettingsTile({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.trailingText,
+    this.destructive = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final String? trailingText;
+  final bool destructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground =
+        destructive
+            ? Colors.red.shade700
+            : PhilotesColors.navy;
+
+    return ListTile(
+      onTap: onTap,
+      contentPadding:
+          const EdgeInsets
+              .symmetric(
+        horizontal: 16,
+        vertical: 5,
+      ),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration:
+            BoxDecoration(
+          shape: BoxShape.circle,
+          color:
+              PhilotesColors.navy
+                  .withValues(
+            alpha: 0.06,
+          ),
+          border: Border.all(
+            color:
+                PhilotesColors.gold,
+            width: 1,
+          ),
+        ),
+        alignment:
+            Alignment.center,
+        child: Icon(
+          icon,
+          color: foreground,
+          size: 20,
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: foreground,
+          fontSize: 14,
+          fontWeight:
+              FontWeight.w700,
+        ),
+      ),
+      subtitle: Padding(
+        padding:
+            const EdgeInsets
+                .only(
+          top: 3,
+        ),
+        child: Text(
+          subtitle,
+          style:
+              const TextStyle(
+            color:
+                PhilotesColors.silver,
+            fontSize: 11,
+            height: 1.3,
+          ),
+        ),
+      ),
+      trailing: Row(
+        mainAxisSize:
+            MainAxisSize.min,
+        children: [
+          if (trailingText !=
+              null) ...[
+            Text(
+              trailingText!,
+              style:
+                  const TextStyle(
+                color:
+                    PhilotesColors
+                        .silver,
+                fontSize: 11,
+                fontWeight:
+                    FontWeight.w600,
+              ),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+          ],
+          const Icon(
+            Icons.chevron_right,
+            color:
+                PhilotesColors.gold,
+            size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class MyProfilePreviewScreen
+    extends StatelessWidget {
+  const MyProfilePreviewScreen({
+    super.key,
+  });
+
+  OnboardingProfileData get _profile =>
+      OnboardingProfileData.instance;
+
+  String get _name {
+    final value =
+        _profile.displayName.trim();
+
+    return value.isEmpty
+        ? 'Philotes Member'
+        : value;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      key: const Key(
+        'myProfilePreviewScreen',
+      ),
+      title: 'My Profile',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          const Text(
+            'This preview shows the profile '
+            'information Philotes can use when '
+            'presenting you to other members.',
+            style:
+                PhilotesDesign
+                    .supportingText,
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          Container(
+            padding:
+                const EdgeInsets
+                    .all(22),
+            decoration:
+                PhilotesDesign
+                    .primaryCardDecoration(),
+            child: Column(
+              children: [
+                Container(
+                  width: 110,
+                  height: 110,
+                  decoration:
+                      BoxDecoration(
+                    shape:
+                        BoxShape.circle,
                     color:
-                        selected
-                            ? PhilotesColors
-                                .gold
-                            : PhilotesColors
-                                .silver,
-                    size: 24,
+                        PhilotesColors
+                            .navy,
+                    border:
+                        Border.all(
+                      color:
+                          PhilotesColors
+                              .gold,
+                      width: 2.4,
+                    ),
+                  ),
+                  alignment:
+                      Alignment.center,
+                  child: Text(
+                    _name
+                        .substring(
+                          0,
+                          1,
+                        )
+                        .toUpperCase(),
+                    style:
+                        const TextStyle(
+                      color:
+                          Colors.white,
+                      fontSize: 38,
+                      fontWeight:
+                          FontWeight
+                              .w800,
+                    ),
                   ),
                 ),
 
                 const SizedBox(
-                  width: 12,
+                  height: 14,
                 ),
-              ],
 
-              Container(
-                width: 48,
-                height: 48,
-                decoration:
-                    BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      PhilotesColors
-                          .navy,
-                  border: Border.all(
+                Text(
+                  _name,
+                  style:
+                      const TextStyle(
                     color:
                         PhilotesColors
-                            .gold,
-                    width: 1.8,
+                            .navy,
+                    fontSize: 26,
+                    fontWeight:
+                        FontWeight
+                            .w800,
                   ),
                 ),
-                alignment:
-                    Alignment.center,
-                child: Icon(
-                  thread.isGroup
-                      ? Icons
-                          .groups_outlined
-                      : Icons
-                          .person_outline,
-                  color: Colors.white,
-                  size: 22,
+
+                const SizedBox(
+                  height: 5,
                 ),
+
+                Text(
+                  _profile
+                      .generalAreaLabel,
+                  style:
+                      const TextStyle(
+                    color:
+                        PhilotesColors
+                            .silver,
+                    fontSize: 12,
+                  ),
+                ),
+
+                if (
+                  _profile
+                      .introduction
+                      .trim()
+                      .isNotEmpty
+                ) ...[
+                  const SizedBox(
+                    height: 14,
+                  ),
+                  Text(
+                    _profile
+                        .introduction,
+                    textAlign:
+                        TextAlign
+                            .center,
+                    style:
+                        PhilotesDesign
+                            .supportingText,
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          _ProfileValuesCard(
+            title:
+                'Favorites / Like the Most',
+            values:
+                _profile
+                    .favoriteInterests,
+            emptyText:
+                'No favorites selected.',
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          _ProfileValuesCard(
+            title: 'Interests',
+            values:
+                _profile
+                    .selectedInterests,
+            emptyText:
+                'No interests selected.',
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          _ProfileValuesCard(
+            title:
+                'Friendship Styles',
+            values:
+                _profile
+                    .friendshipStyles,
+            emptyText:
+                'No friendship styles selected.',
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          _ProfileDetailCard(
+            title:
+                'Friendship Preferences',
+            rows: [
+              _ProfileDetail(
+                label:
+                    'Social Frequency',
+                value:
+                    _profile
+                            .socialFrequency ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'Planning Style',
+                value:
+                    _profile
+                            .planningStyle ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'Interest Style',
+                value:
+                    _profile
+                            .interestStyle ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'Trying New Activities',
+                value:
+                    _profile
+                            .newActivityComfort ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'Friend Age Range',
+                value:
+                    _profile
+                        .friendAgeRangeLabel,
+              ),
+            ],
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          _ProfileDetailCard(
+            title:
+                'Discovery',
+            rows: [
+              _ProfileDetail(
+                label:
+                    'General Area',
+                value:
+                    _profile
+                        .generalAreaLabel,
+              ),
+              _ProfileDetail(
+                label:
+                    'Meeting Distance',
+                value:
+                    _profile
+                        .meetingDistanceLabel,
+              ),
+              _ProfileDetail(
+                label:
+                    'Flexible Discovery',
+                value:
+                    _profile
+                            .flexibleDiscovery
+                        ? 'On'
+                        : 'Off',
+              ),
+              _ProfileDetail(
+                label:
+                    'Online Friendships',
+                value:
+                    _profile
+                            .onlineFriendships
+                        ? 'Allowed'
+                        : 'Not selected',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class EditProfileHubScreen
+    extends StatelessWidget {
+  const EditProfileHubScreen({
+    super.key,
+  });
+
+  void _open(
+    BuildContext context,
+    Widget screen,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) =>
+            screen,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      key: const Key(
+        'editProfileHubScreen',
+      ),
+      title:
+          'Edit My Profile',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          const Text(
+            'Permanent profile changes belong '
+            'here. Discover remains focused on '
+            'temporary discovery refinement.',
+            style:
+                PhilotesDesign
+                    .supportingText,
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          _SettingsSection(
+            title:
+                'Profile Editing',
+            children: [
+              _SettingsTile(
+                icon:
+                    Icons
+                        .person_outline,
+                title:
+                    'Personal Profile',
+                subtitle:
+                    'Name, introduction, photo, '
+                    'and personal details.',
+                onTap: () {
+                  _open(
+                    context,
+                    const InformationScreen(
+                      title:
+                          'Personal Profile',
+                      description:
+                          'These fields already '
+                          'exist in the Philotes '
+                          'profile model and will '
+                          'be made editable here.',
+                      items: [
+                        'First name',
+                        'Last name',
+                        'Display name',
+                        'Introduction / bio',
+                        'Profile photo',
+                        'Pronouns',
+                      ],
+                    ),
+                  );
+                },
+              ),
+              _SettingsTile(
+                icon:
+                    Icons
+                        .interests_outlined,
+                title:
+                    'Interests',
+                subtitle:
+                    'Interests and Like the '
+                    'Most selections.',
+                onTap: () {
+                  _open(
+                    context,
+                    const ProfileInterestsScreen(),
+                  );
+                },
+              ),
+              _SettingsTile(
+                icon:
+                    Icons
+                        .people_outline,
+                title:
+                    'Friendship Preferences',
+                subtitle:
+                    'Social and friendship '
+                    'compatibility preferences.',
+                onTap: () {
+                  _open(
+                    context,
+                    const FriendshipPreferencesSummaryScreen(),
+                  );
+                },
+              ),
+              _SettingsTile(
+                icon:
+                    Icons
+                        .person_search_outlined,
+                title:
+                    'Discovery Preferences',
+                subtitle:
+                    'Permanent discovery '
+                    'defaults.',
+                onTap: () {
+                  _open(
+                    context,
+                    const DiscoveryPreferencesSummaryScreen(),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class ProfileInterestsScreen
+    extends StatelessWidget {
+  const ProfileInterestsScreen({
+    super.key,
+  });
+
+  OnboardingProfileData get _profile =>
+      OnboardingProfileData.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      title: 'Interests',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          _ProfileValuesCard(
+            title:
+                'Favorites / Like the Most',
+            values:
+                _profile
+                    .favoriteInterests,
+            emptyText:
+                'No favorite interests selected.',
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          _ProfileValuesCard(
+            title:
+                'Other Interests',
+            values:
+                _profile
+                    .selectedInterests
+                    .where(
+                      (value) =>
+                          !_profile
+                              .favoriteInterests
+                              .contains(
+                            value,
+                          ),
+                    )
+                    .toList(),
+            emptyText:
+                'No additional interests selected.',
+          ),
+
+          const SizedBox(
+            height: 18,
+          ),
+
+          const _DevelopmentNotice(
+            text:
+                'The production edit controls '
+                'will reuse the existing onboarding '
+                'interest catalog rather than '
+                'creating a second interest system.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class FriendshipPreferencesSummaryScreen
+    extends StatelessWidget {
+  const FriendshipPreferencesSummaryScreen({
+    super.key,
+  });
+
+  OnboardingProfileData get _profile =>
+      OnboardingProfileData.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      title:
+          'Friendship Preferences',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          _ProfileValuesCard(
+            title:
+                'Friendship Styles',
+            values:
+                _profile
+                    .friendshipStyles,
+            emptyText:
+                'No friendship styles selected.',
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          _ProfileDetailCard(
+            title:
+                'Compatibility Preferences',
+            rows: [
+              _ProfileDetail(
+                label:
+                    'Social Frequency',
+                value:
+                    _profile
+                            .socialFrequency ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'Planning Style',
+                value:
+                    _profile
+                            .planningStyle ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'Interest Style',
+                value:
+                    _profile
+                            .interestStyle ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'New Activities',
+                value:
+                    _profile
+                            .newActivityComfort ??
+                        'Not selected',
+              ),
+              _ProfileDetail(
+                label:
+                    'Friend Age Range',
+                value:
+                    _profile
+                        .friendAgeRangeLabel,
+              ),
+            ],
+          ),
+
+          const SizedBox(
+            height: 18,
+          ),
+
+          const _DevelopmentNotice(
+            text:
+                'Editing these values will later '
+                'update the member profile and '
+                'trigger compatibility recalculation '
+                'through the backend.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class DiscoveryPreferencesSummaryScreen
+    extends StatelessWidget {
+  const DiscoveryPreferencesSummaryScreen({
+    super.key,
+  });
+
+  OnboardingProfileData get _profile =>
+      OnboardingProfileData.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      title:
+          'Discovery Preferences',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          _ProfileDetailCard(
+            title:
+                'Permanent Defaults',
+            rows: [
+              _ProfileDetail(
+                label:
+                    'Flexible Discovery',
+                value:
+                    _profile
+                            .flexibleDiscovery
+                        ? 'On'
+                        : 'Off',
+              ),
+              _ProfileDetail(
+                label:
+                    'Friend Age Range',
+                value:
+                    _profile
+                        .friendAgeRangeLabel,
+              ),
+              _ProfileDetail(
+                label:
+                    'Meeting Distance',
+                value:
+                    _profile
+                        .meetingDistanceLabel,
+              ),
+              _ProfileDetail(
+                label:
+                    'Online Friendships',
+                value:
+                    _profile
+                            .onlineFriendships
+                        ? 'Allowed'
+                        : 'Off',
+              ),
+            ],
+          ),
+
+          const SizedBox(
+            height: 18,
+          ),
+
+          const _DevelopmentNotice(
+            text:
+                'Permanent settings belong here. '
+                'The Discover page remains free '
+                'to make temporary search '
+                'refinements without changing '
+                'the member profile.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class LocationDistanceSummaryScreen
+    extends StatelessWidget {
+  const LocationDistanceSummaryScreen({
+    super.key,
+  });
+
+  OnboardingProfileData get _profile =>
+      OnboardingProfileData.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      title:
+          'Location & Distance',
+      child: _ProfileDetailCard(
+        title:
+            'Discovery Area',
+        rows: [
+          _ProfileDetail(
+            label:
+                'Location Source',
+            value:
+                _profile.locationSource ==
+                        'device'
+                    ? 'Current device area'
+                    : _profile.locationSource ==
+                            'zip'
+                        ? 'ZIP area'
+                        : 'Not selected',
+          ),
+          _ProfileDetail(
+            label:
+                'General Area',
+            value:
+                _profile
+                    .generalAreaLabel,
+          ),
+          _ProfileDetail(
+            label:
+                'Normal Distance',
+            value:
+                _profile
+                    .meetingDistanceLabel,
+          ),
+          _ProfileDetail(
+            label:
+                'Flexible Discovery',
+            value:
+                _profile
+                        .flexibleDiscovery
+                    ? 'On'
+                    : 'Off',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class PrivacySettingsScreen
+    extends StatefulWidget {
+  const PrivacySettingsScreen({
+    super.key,
+  });
+
+  @override
+  State<PrivacySettingsScreen>
+      createState() =>
+          _PrivacySettingsScreenState();
+}
+
+
+class _PrivacySettingsScreenState
+    extends State<
+        PrivacySettingsScreen> {
+  bool _discoverable = true;
+  bool _showApproximateDistance = true;
+  bool _showOnlineStatus = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      key: const Key(
+        'privacySettingsScreen',
+      ),
+      title:
+          'Privacy Settings',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          _ToggleCard(
+            title:
+                'Profile Privacy',
+            children: [
+              _ToggleTile(
+                title:
+                    'Allow discovery',
+                subtitle:
+                    'Allow your profile to '
+                    'appear to compatible members.',
+                value:
+                    _discoverable,
+                onChanged: (value) {
+                  setState(() {
+                    _discoverable =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'Show approximate distance',
+                subtitle:
+                    'Display general distance '
+                    'rather than precise location.',
+                value:
+                    _showApproximateDistance,
+                onChanged: (value) {
+                  setState(() {
+                    _showApproximateDistance =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'Show online status',
+                subtitle:
+                    'Allow friends to see when '
+                    'you are currently active.',
+                value:
+                    _showOnlineStatus,
+                onChanged: (value) {
+                  setState(() {
+                    _showOnlineStatus =
+                        value;
+                  });
+                },
+              ),
+            ],
+          ),
+
+          const SizedBox(
+            height: 18,
+          ),
+
+          const _DevelopmentNotice(
+            text:
+                'Privacy controls are visual '
+                'during frontend development. '
+                'Production enforcement must '
+                'occur in the backend.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class SafetyReportingScreen
+    extends StatelessWidget {
+  const SafetyReportingScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      key: Key(
+        'safetyReportingScreen',
+      ),
+      title:
+          'Safety & Reporting',
+      description:
+          'Philotes provides safety tools '
+          'and guidance, but members remain '
+          'responsible for their real-world '
+          'decisions and personal safety.',
+      items: [
+        'How Philotes helps members stay safer',
+        'Reporting a member',
+        'Blocking a member',
+        'Safe first-meeting guidance',
+        'Scams & suspicious behavior',
+        'Harassment & threatening behavior',
+        'Emergency situations',
+        'My submitted reports',
+      ],
+    );
+  }
+}
+
+
+class CommunityGuidelinesScreen
+    extends StatelessWidget {
+  const CommunityGuidelinesScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      key: Key(
+        'communityGuidelinesScreen',
+      ),
+      title:
+          'Community Guidelines',
+      description:
+          'Philotes is a community for '
+          'friendship. Members are expected '
+          'to treat one another safely, '
+          'honestly, and respectfully.',
+      items: [
+        'No harassment or threats',
+        'No stalking or unwanted contact',
+        'No sexual misconduct',
+        'No impersonation or deception',
+        'No scams or exploitation',
+        'No hate-based abuse',
+        'Do not bypass blocking or safety tools',
+        'Serious violations may result in '
+            'restrictions or account removal',
+      ],
+    );
+  }
+}
+
+
+class AccountInformationScreen
+    extends StatelessWidget {
+  const AccountInformationScreen({
+    super.key,
+  });
+
+  OnboardingProfileData get _profile =>
+      OnboardingProfileData.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      title:
+          'Account Information',
+      child: _ProfileDetailCard(
+        title:
+            'Member Information',
+        rows: [
+          _ProfileDetail(
+            label:
+                'Display Name',
+            value:
+                _profile
+                        .displayName
+                        .trim()
+                        .isEmpty
+                    ? 'Not selected'
+                    : _profile
+                        .displayName,
+          ),
+          _ProfileDetail(
+            label:
+                'First Name',
+            value:
+                _profile
+                        .firstName
+                        .trim()
+                        .isEmpty
+                    ? 'Not selected'
+                    : _profile
+                        .firstName,
+          ),
+          _ProfileDetail(
+            label:
+                'Account Status',
+            value:
+                'Development account',
+          ),
+          _ProfileDetail(
+            label:
+                'Profile Photo',
+            value:
+                _profile.photoSelected
+                    ? 'Selected'
+                    : 'Not selected',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class EmailSignInScreen
+    extends StatelessWidget {
+  const EmailSignInScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const _YouSubpageScaffold(
+      key: Key(
+        'emailSignInScreen',
+      ),
+      title:
+          'Email & Sign-In',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          _ProfileDetailCard(
+            title:
+                'Verified Email',
+            rows: [
+              _ProfileDetail(
+                label:
+                    'Account Email',
+                value:
+                    'Backend connection required',
+              ),
+              _ProfileDetail(
+                label:
+                    'Verification',
+                value:
+                    'Backend connection required',
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          _ProfileDetailCard(
+            title:
+                'Sign-In & Recovery',
+            rows: [
+              _ProfileDetail(
+                label:
+                    'Change Password',
+                value:
+                    'Backend connection required',
+              ),
+              _ProfileDetail(
+                label:
+                    'Account Recovery',
+                value:
+                    'Backend connection required',
+              ),
+              _ProfileDetail(
+                label:
+                    'Change Email',
+                value:
+                    'Verification required',
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 18,
+          ),
+          _DevelopmentNotice(
+            text:
+                'Philotes signup will use a '
+                'verified email address. The '
+                'email will be used for account '
+                'recovery, security notices, '
+                'and optional email notifications.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class MfaSettingsScreen
+    extends StatelessWidget {
+  const MfaSettingsScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      key: const Key(
+        'mfaSettingsScreen',
+      ),
+      title:
+          'Multi-Factor Authentication',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          Container(
+            padding:
+                const EdgeInsets
+                    .all(18),
+            decoration:
+                PhilotesDesign
+                    .primaryCardDecoration(),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment
+                      .stretch,
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Status',
+                        style:
+                            TextStyle(
+                          color:
+                              PhilotesColors
+                                  .navy,
+                          fontSize: 15,
+                          fontWeight:
+                              FontWeight
+                                  .w800,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          const EdgeInsets
+                              .symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration:
+                          BoxDecoration(
+                        borderRadius:
+                            BorderRadius
+                                .circular(
+                          20,
+                        ),
+                        border:
+                            Border.all(
+                          color:
+                              PhilotesColors
+                                  .gold,
+                        ),
+                      ),
+                      child:
+                          const Text(
+                        'Off',
+                        style:
+                            TextStyle(
+                          color:
+                              PhilotesColors
+                                  .navy,
+                          fontWeight:
+                              FontWeight
+                                  .w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(
+                  height: 14,
+                ),
+
+                const Text(
+                  'MFA is optional for regular '
+                  'Philotes members. Members who '
+                  'choose to enable it will use '
+                  'a supported standards-based '
+                  'authenticator.',
+                  style:
+                      PhilotesDesign
+                          .supportingText,
+                ),
+
+                const SizedBox(
+                  height: 16,
+                ),
+
+                FilledButton.icon(
+                  key: const Key(
+                    'setupMfaButton',
+                  ),
+                  onPressed: () {
+                    showDialog<void>(
+                      context:
+                          context,
+                      builder:
+                          (context) {
+                        return AlertDialog(
+                          title:
+                              const Text(
+                            'Set Up MFA',
+                          ),
+                          content:
+                              const Text(
+                            'MFA enrollment '
+                            'will become active '
+                            'when the Philotes '
+                            'authentication '
+                            'backend is built.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed:
+                                  () {
+                                Navigator.of(
+                                  context,
+                                ).pop();
+                              },
+                              child:
+                                  const Text(
+                                'Close',
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  icon:
+                      const Icon(
+                    Icons
+                        .phonelink_lock_outlined,
+                  ),
+                  label:
+                      const Text(
+                    'Set Up MFA',
+                  ),
+                  style:
+                      FilledButton
+                          .styleFrom(
+                    backgroundColor:
+                        PhilotesColors
+                            .navy,
+                    foregroundColor:
+                        Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(
+            height: 16,
+          ),
+
+          const _DevelopmentNotice(
+            text:
+                'Recovery methods will be '
+                'designed with the backend so '
+                'members do not lose access '
+                'because of an MFA device change.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class SessionsDevicesScreen
+    extends StatelessWidget {
+  const SessionsDevicesScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      title:
+          'Active Sessions & Devices',
+      description:
+          'Authenticated session management '
+          'will be connected to the backend.',
+      items: [
+        'Current device',
+        'Other signed-in devices',
+        'Sign out other sessions',
+        'Recent security activity',
+        'New sign-in history',
+      ],
+    );
+  }
+}
+
+
+class NotificationsSettingsScreen
+    extends StatefulWidget {
+  const NotificationsSettingsScreen({
+    super.key,
+  });
+
+  @override
+  State<NotificationsSettingsScreen>
+      createState() =>
+          _NotificationsSettingsScreenState();
+}
+
+
+class _NotificationsSettingsScreenState
+    extends State<
+        NotificationsSettingsScreen> {
+  bool _inAppFriendshipInterest = true;
+  bool _inAppConnection = true;
+  bool _inAppDirectMessage = true;
+  bool _inAppGroupMessage = true;
+  bool _inAppPlanInvitation = true;
+  bool _inAppPlanUpdate = true;
+  bool _inAppPlanReminder = true;
+
+  bool _emailEnabled = true;
+  bool _emailFriendshipInterest = true;
+  bool _emailConnection = true;
+  bool _emailDirectMessage = true;
+  bool _emailGroupMessage = false;
+  bool _emailPlanInvitation = true;
+  bool _emailPlanUpdate = true;
+  bool _emailPlanReminder = true;
+  bool _emailGeneralUpdates = false;
+  bool _emailProductAnnouncements = false;
+  bool _emailMessagePreview = false;
+
+  String _emailFrequency =
+      'Immediately';
+
+  @override
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      key: const Key(
+        'notificationsSettingsScreen',
+      ),
+      title:
+          'Notifications',
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          const Text(
+            'In-app notifications are the '
+            'primary notification channel. '
+            'Email delivery can be adjusted '
+            'for the events you want.',
+            style:
+                PhilotesDesign
+                    .supportingText,
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          _ToggleCard(
+            title:
+                'In-App Notifications',
+            children: [
+              _ToggleTile(
+                title:
+                    'New friendship interest',
+                value:
+                    _inAppFriendshipInterest,
+                onChanged: (value) {
+                  setState(() {
+                    _inAppFriendshipInterest =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'New friendship connection',
+                value:
+                    _inAppConnection,
+                onChanged: (value) {
+                  setState(() {
+                    _inAppConnection =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'New direct message',
+                value:
+                    _inAppDirectMessage,
+                onChanged: (value) {
+                  setState(() {
+                    _inAppDirectMessage =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'New group message',
+                value:
+                    _inAppGroupMessage,
+                onChanged: (value) {
+                  setState(() {
+                    _inAppGroupMessage =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'Plan invitation',
+                value:
+                    _inAppPlanInvitation,
+                onChanged: (value) {
+                  setState(() {
+                    _inAppPlanInvitation =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'Plan update',
+                value:
+                    _inAppPlanUpdate,
+                onChanged: (value) {
+                  setState(() {
+                    _inAppPlanUpdate =
+                        value;
+                  });
+                },
+              ),
+              _ToggleTile(
+                title:
+                    'Plan reminder',
+                value:
+                    _inAppPlanReminder,
+                onChanged: (value) {
+                  setState(() {
+                    _inAppPlanReminder =
+                        value;
+                  });
+                },
+              ),
+              const _LockedToggleTile(
+                title:
+                    'Safety & account alerts',
+                subtitle:
+                    'Important security and '
+                    'safety notices remain on.',
+              ),
+            ],
+          ),
+
+          const SizedBox(
+            height: 22,
+          ),
+
+          _ToggleCard(
+            title:
+                'Email Notifications',
+            children: [
+              _ToggleTile(
+                key: const Key(
+                  'emailNotificationsMasterToggle',
+                ),
+                title:
+                    'Email notifications',
+                subtitle:
+                    'Send selected Philotes '
+                    'notifications to the '
+                    'verified account email.',
+                value:
+                    _emailEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _emailEnabled =
+                        value;
+                  });
+                },
               ),
 
-              const SizedBox(width: 13),
+              if (_emailEnabled) ...[
+                _ToggleTile(
+                  title:
+                      'New friendship interest',
+                  value:
+                      _emailFriendshipInterest,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailFriendshipInterest =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'New friendship connection',
+                  value:
+                      _emailConnection,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailConnection =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'New direct message',
+                  value:
+                      _emailDirectMessage,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailDirectMessage =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'New group message',
+                  value:
+                      _emailGroupMessage,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailGroupMessage =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'Plan invitation',
+                  value:
+                      _emailPlanInvitation,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailPlanInvitation =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'Plan update',
+                  value:
+                      _emailPlanUpdate,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailPlanUpdate =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'Plan reminder',
+                  value:
+                      _emailPlanReminder,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailPlanReminder =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'General Philotes updates',
+                  value:
+                      _emailGeneralUpdates,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailGeneralUpdates =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  title:
+                      'Product announcements',
+                  value:
+                      _emailProductAnnouncements,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailProductAnnouncements =
+                          value;
+                    });
+                  },
+                ),
+                _ToggleTile(
+                  key: const Key(
+                    'emailMessagePreviewToggle',
+                  ),
+                  title:
+                      'Show message previews '
+                      'in email',
+                  subtitle:
+                      'Off by default for privacy.',
+                  value:
+                      _emailMessagePreview,
+                  onChanged:
+                      (value) {
+                    setState(() {
+                      _emailMessagePreview =
+                          value;
+                    });
+                  },
+                ),
+                const _LockedToggleTile(
+                  title:
+                      'Security & account alerts',
+                  subtitle:
+                      'Critical account-security '
+                      'emails remain enabled.',
+                ),
+              ],
+            ],
+          ),
 
-              Expanded(
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment
-                          .start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            thread.title,
-                            style:
-                                TextStyle(
-                              color:
-                                  PhilotesColors
-                                      .navy,
-                              fontSize: 16,
-                              fontWeight:
-                                  unread
-                                      ? FontWeight
-                                          .w900
-                                      : FontWeight
-                                          .w700,
-                            ),
-                          ),
+          if (_emailEnabled) ...[
+            const SizedBox(
+              height: 22,
+            ),
+
+            Container(
+              padding:
+                  const EdgeInsets
+                      .all(16),
+              decoration:
+                  PhilotesDesign
+                      .primaryCardDecoration(),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment
+                        .stretch,
+                children: [
+                  const Text(
+                    'Email Frequency',
+                    style:
+                        TextStyle(
+                      color:
+                          PhilotesColors
+                              .navy,
+                      fontSize: 15,
+                      fontWeight:
+                          FontWeight
+                              .w800,
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 6,
+                  ),
+
+                  const Text(
+                    'Security and critical '
+                    'account alerts are always '
+                    'sent immediately.',
+                    style:
+                        PhilotesDesign
+                            .supportingText,
+                  ),
+
+                  const SizedBox(
+                    height: 12,
+                  ),
+
+                  DropdownButtonFormField<
+                      String>(
+                    key: const Key(
+                      'emailFrequencyDropdown',
+                    ),
+                    value:
+                        _emailFrequency,
+                    decoration:
+                        const InputDecoration(
+                      labelText:
+                          'Regular notification email',
+                    ),
+                    items:
+                        const [
+                      DropdownMenuItem<
+                          String>(
+                        value:
+                            'Immediately',
+                        child:
+                            Text(
+                          'Immediately',
                         ),
+                      ),
+                      DropdownMenuItem<
+                          String>(
+                        value:
+                            'Daily summary',
+                        child:
+                            Text(
+                          'Daily summary',
+                        ),
+                      ),
+                      DropdownMenuItem<
+                          String>(
+                        value: 'Off',
+                        child:
+                            Text('Off'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value ==
+                          null) {
+                        return;
+                      }
 
-                        if (unread)
+                      setState(() {
+                        _emailFrequency =
+                            value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          const SizedBox(
+            height: 18,
+          ),
+
+          const _DevelopmentNotice(
+            text:
+                'These controls are visual '
+                'during frontend development. '
+                'The backend notification engine '
+                'will persist and enforce member '
+                'preferences and prevent repeated '
+                'email flooding.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class MembershipScreen
+    extends StatelessWidget {
+  const MembershipScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      title:
+          'Subscription / Membership',
+      description:
+          'Philotes membership and billing '
+          'will be connected to production '
+          'subscription services later.',
+      items: [
+        'Membership status',
+        'Billing method',
+        'Payment history',
+        'Manage membership',
+        'Cancellation settings',
+      ],
+    );
+  }
+}
+
+
+class AccessibilitySettingsScreen
+    extends StatelessWidget {
+  const AccessibilitySettingsScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      title:
+          'Accessibility',
+      description:
+          'Accessibility options will remain '
+          'a first-class part of Philotes '
+          'rather than an afterthought.',
+      items: [
+        'Text size',
+        'Motion preferences',
+        'Visual assistance',
+        'Interaction assistance',
+        'Screen-reader support',
+      ],
+    );
+  }
+}
+
+
+class HelpSupportScreen
+    extends StatelessWidget {
+  const HelpSupportScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      title:
+          'Help & Support',
+      description:
+          'Members will be able to get '
+          'application and account help here.',
+      items: [
+        'Help center',
+        'Contact support',
+        'Report a technical issue',
+        'Account help',
+        'Safety help',
+      ],
+    );
+  }
+}
+
+
+class AboutPhilotesScreen
+    extends StatelessWidget {
+  const AboutPhilotesScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      title:
+          'About Philotes',
+      description:
+          'PHILOTES — A Community for Friendship.',
+      items: [
+        'Brought to you by Titan',
+        'Application information',
+        'Version information',
+        'Acknowledgements',
+      ],
+    );
+  }
+}
+
+
+class LegalPrivacyScreen
+    extends StatelessWidget {
+  const LegalPrivacyScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const InformationScreen(
+      title:
+          'Legal & Privacy',
+      description:
+          'Production legal documents will '
+          'be finalized and professionally '
+          'reviewed before launch.',
+      items: [
+        'Terms of Service',
+        'Privacy Policy',
+        'Community Guidelines',
+        'Safety information',
+        'Account deletion information',
+      ],
+    );
+  }
+}
+
+
+class _ToggleCard
+    extends StatelessWidget {
+  const _ToggleCard({
+    required this.title,
+    required this.children,
+  });
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          title,
+          style:
+              PhilotesDesign
+                  .sectionHeading,
+        ),
+
+        const SizedBox(
+          height: 10,
+        ),
+
+        Container(
+          decoration:
+              PhilotesDesign
+                  .primaryCardDecoration(),
+          child: Column(
+            children: [
+              for (
+                var index = 0;
+                index <
+                    children.length;
+                index++
+              ) ...[
+                children[index],
+                if (
+                  index <
+                  children.length - 1
+                )
+                  const Divider(
+                    height: 1,
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class _ToggleTile
+    extends StatelessWidget {
+  const _ToggleTile({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.subtitle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final ValueChanged<bool>
+      onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      title: Text(
+        title,
+        style:
+            const TextStyle(
+          color:
+              PhilotesColors.navy,
+          fontSize: 13,
+          fontWeight:
+              FontWeight.w700,
+        ),
+      ),
+      subtitle:
+          subtitle == null
+              ? null
+              : Text(
+                  subtitle!,
+                  style:
+                      const TextStyle(
+                    color:
+                        PhilotesColors
+                            .silver,
+                    fontSize: 10,
+                  ),
+                ),
+      value: value,
+      onChanged:
+          onChanged,
+    );
+  }
+}
+
+
+class _LockedToggleTile
+    extends StatelessWidget {
+  const _LockedToggleTile({
+    required this.title,
+    required this.subtitle,
+  });
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      title: Text(
+        title,
+        style:
+            const TextStyle(
+          color:
+              PhilotesColors.navy,
+          fontSize: 13,
+          fontWeight:
+              FontWeight.w700,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style:
+            const TextStyle(
+          color:
+              PhilotesColors.silver,
+          fontSize: 10,
+        ),
+      ),
+      value: true,
+      onChanged: null,
+    );
+  }
+}
+
+
+class _ProfileValuesCard
+    extends StatelessWidget {
+  const _ProfileValuesCard({
+    required this.title,
+    required this.values,
+    required this.emptyText,
+  });
+
+  final String title;
+  final List<String> values;
+  final String emptyText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          title,
+          style:
+              PhilotesDesign
+                  .sectionHeading,
+        ),
+
+        const SizedBox(
+          height: 10,
+        ),
+
+        Container(
+          padding:
+              const EdgeInsets
+                  .all(16),
+          decoration:
+              PhilotesDesign
+                  .secondaryCardDecoration(),
+          child:
+              values.isEmpty
+                  ? Text(
+                      emptyText,
+                      style:
+                          PhilotesDesign
+                              .supportingText,
+                    )
+                  : Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (
+                          final value
+                              in values
+                        )
                           Container(
-                            key: Key(
-                              'unreadBadge-${thread.id}',
-                            ),
                             padding:
                                 const EdgeInsets
                                     .symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                              horizontal: 12,
+                              vertical: 8,
                             ),
                             decoration:
                                 BoxDecoration(
@@ -1629,351 +3235,317 @@ class _ConversationCard
                               borderRadius:
                                   BorderRadius
                                       .circular(
-                                18,
+                                22,
                               ),
                               border:
                                   Border.all(
                                 color:
                                     PhilotesColors
                                         .gold,
-                                width: 1,
+                                width: 1.2,
                               ),
                             ),
                             child: Text(
-                              '${thread.unreadCount} '
-                              'unread',
+                              value,
                               style:
                                   const TextStyle(
                                 color:
                                     Colors.white,
-                                fontSize: 9,
+                                fontSize: 11,
                                 fontWeight:
                                     FontWeight
-                                        .w700,
+                                        .w600,
                               ),
                             ),
                           ),
                       ],
                     ),
+        ),
+      ],
+    );
+  }
+}
 
-                    const SizedBox(height: 6),
 
-                    Text(
-                      thread.latestPreview,
-                      maxLines: 2,
-                      overflow:
-                          TextOverflow
-                              .ellipsis,
-                      style: TextStyle(
-                        color:
-                            unread
-                                ? PhilotesColors
-                                    .navy
-                                : PhilotesColors
-                                    .silver,
-                        fontSize: 12,
-                        fontWeight:
-                            unread
-                                ? FontWeight
-                                    .w600
-                                : FontWeight
-                                    .w400,
-                        height: 1.35,
+class _ProfileDetail {
+  const _ProfileDetail({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+}
+
+
+class _ProfileDetailCard
+    extends StatelessWidget {
+  const _ProfileDetailCard({
+    required this.title,
+    required this.rows,
+  });
+
+  final String title;
+  final List<_ProfileDetail> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          title,
+          style:
+              PhilotesDesign
+                  .sectionHeading,
+        ),
+
+        const SizedBox(
+          height: 10,
+        ),
+
+        Container(
+          decoration:
+              PhilotesDesign
+                  .primaryCardDecoration(),
+          child: Column(
+            children: [
+              for (
+                var index = 0;
+                index <
+                    rows.length;
+                index++
+              ) ...[
+                Padding(
+                  padding:
+                      const EdgeInsets
+                          .symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  child: Row(
+                    crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          rows[index]
+                              .label,
+                          style:
+                              const TextStyle(
+                            color:
+                                PhilotesColors
+                                    .navy,
+                            fontSize: 12,
+                            fontWeight:
+                                FontWeight
+                                    .w700,
+                          ),
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 7),
-
-                    Row(
-                      children: [
-                        Text(
-                          timestamp,
+                      const SizedBox(
+                        width: 14,
+                      ),
+                      Flexible(
+                        child: Text(
+                          rows[index]
+                              .value,
+                          textAlign:
+                              TextAlign
+                                  .right,
                           style:
                               const TextStyle(
                             color:
                                 PhilotesColors
                                     .silver,
-                            fontSize: 10,
+                            fontSize: 11,
                           ),
                         ),
-
-                        const Spacer(),
-
-                        if (!selectionMode)
-                          const Icon(
-                            Icons
-                                .chevron_right,
-                            color:
-                                PhilotesColors
-                                    .gold,
-                            size: 19,
-                          ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                if (
+                  index <
+                  rows.length - 1
+                )
+                  const Divider(
+                    height: 1,
+                  ),
+              ],
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }
-"""
 
 
-CONVERSATION_CONTENT = r"""import 'package:flutter/material.dart';
-
-import '../../models/compatibility/suggested_member.dart';
-import '../../models/messages/message_thread.dart';
-import '../../models/onboarding_profile_data.dart';
-import '../../screens/members/member_profile_screen.dart';
-import '../../services/messages/message_service.dart';
-import '../../theme/philotes_colors.dart';
-import '../../theme/philotes_design.dart';
-
-class ConversationScreen
-    extends StatefulWidget {
-  const ConversationScreen({
-    super.key,
-    required this.thread,
-    required this.messageService,
+class _DevelopmentNotice
+    extends StatelessWidget {
+  const _DevelopmentNotice({
+    required this.text,
   });
 
-  final MessageThread thread;
-  final MessageService messageService;
+  final String text;
 
   @override
-  State<ConversationScreen> createState() =>
-      _ConversationScreenState();
+  Widget build(BuildContext context) {
+    return Container(
+      padding:
+          const EdgeInsets.all(15),
+      decoration:
+          PhilotesDesign
+              .secondaryCardDecoration(),
+      child: Row(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons
+                .construction_outlined,
+            color:
+                PhilotesColors.gold,
+            size: 20,
+          ),
+
+          const SizedBox(
+            width: 10,
+          ),
+
+          Expanded(
+            child: Text(
+              text,
+              style:
+                  PhilotesDesign
+                      .supportingText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _ConversationScreenState
-    extends State<ConversationScreen> {
-  final TextEditingController
-      _composerController =
-      TextEditingController();
 
-  late List<PhilotesMessage>
-      _messages;
+class InformationScreen
+    extends StatelessWidget {
+  const InformationScreen({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.items,
+  });
 
-  OnboardingProfileData get _profile =>
-      OnboardingProfileData.instance;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _messages =
-        List<PhilotesMessage>.from(
-      widget.thread.messages,
-    );
-
-    widget.messageService.markThreadRead(
-      widget.thread.id,
-    );
-
-    widget.thread.unreadCount = 0;
-  }
+  final String title;
+  final String description;
+  final List<String> items;
 
   @override
-  void dispose() {
-    _composerController.dispose();
-    super.dispose();
-  }
+  Widget build(BuildContext context) {
+    return _YouSubpageScaffold(
+      key: key,
+      title: title,
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment
+                .stretch,
+        children: [
+          Text(
+            description,
+            style:
+                PhilotesDesign
+                    .supportingText,
+          ),
 
-  MessageParticipant? get _otherParticipant {
-    if (!widget.thread.isDirect) {
-      return null;
-    }
+          const SizedBox(
+            height: 18,
+          ),
 
-    for (
-      final participant
-          in widget.thread.participants
-    ) {
-      if (!participant.isCurrentUser) {
-        return participant;
-      }
-    }
+          Container(
+            decoration:
+                PhilotesDesign
+                    .primaryCardDecoration(),
+            child: Column(
+              children: [
+                for (
+                  var index = 0;
+                  index <
+                      items.length;
+                  index++
+                ) ...[
+                  ListTile(
+                    leading:
+                        const Icon(
+                      Icons
+                          .check_circle_outline,
+                      color:
+                          PhilotesColors
+                              .gold,
+                      size: 20,
+                    ),
+                    title: Text(
+                      items[index],
+                      style:
+                          const TextStyle(
+                        color:
+                            PhilotesColors
+                                .navy,
+                        fontSize: 13,
+                        fontWeight:
+                            FontWeight
+                                .w600,
+                      ),
+                    ),
+                  ),
+                  if (
+                    index <
+                    items.length - 1
+                  )
+                    const Divider(
+                      height: 1,
+                    ),
+                ],
+              ],
+            ),
+          ),
 
-    return null;
-  }
+          const SizedBox(
+            height: 18,
+          ),
 
-  SuggestedMember? get _otherFriend {
-    final participant =
-        _otherParticipant;
-
-    if (participant == null) {
-      return null;
-    }
-
-    return widget.messageService
-        .friendById(
-      participant.id,
-      _profile,
-    );
-  }
-
-  String _timeLabel(
-    DateTime value,
-  ) {
-    final minute =
-        value.minute
-            .toString()
-            .padLeft(2, '0');
-
-    final hour =
-        value.hour == 0
-            ? 12
-            : value.hour > 12
-                ? value.hour - 12
-                : value.hour;
-
-    final period =
-        value.hour >= 12
-            ? 'PM'
-            : 'AM';
-
-    return '$hour:$minute $period';
-  }
-
-  String _senderName(
-    String senderId,
-  ) {
-    if (senderId == 'self') {
-      return 'You';
-    }
-
-    for (
-      final participant
-          in widget.thread.participants
-    ) {
-      if (
-        participant.id ==
-        senderId
-      ) {
-        return participant
-            .displayName;
-      }
-    }
-
-    return 'Member';
-  }
-
-  void _sendMessage() {
-    final value =
-        _composerController.text
-            .trim();
-
-    if (value.isEmpty) {
-      return;
-    }
-
-    final now = DateTime.now();
-
-    setState(() {
-      _messages.add(
-        PhilotesMessage(
-          id:
-              'local-${now.microsecondsSinceEpoch}',
-          senderId: 'self',
-          text: value,
-          sentAt: now,
-        ),
-      );
-
-      widget.thread.latestActivity =
-          now;
-    });
-
-    _composerController.clear();
-  }
-
-  void _toggleReadState() {
-    setState(() {
-      if (
-        widget.thread.unreadCount >
-        0
-      ) {
-        widget.messageService
-            .markThreadRead(
-          widget.thread.id,
-        );
-
-        widget.thread.unreadCount =
-            0;
-      } else {
-        widget.messageService
-            .markThreadUnread(
-          widget.thread.id,
-        );
-
-        widget.thread.unreadCount =
-            1;
-      }
-    });
-  }
-
-  void _showNotice(
-    String message,
-  ) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-      SnackBar(
-        content: Text(message),
+          const _DevelopmentNotice(
+            text:
+                'Production actions on this '
+                'page will be persisted and '
+                'enforced by the Philotes '
+                'backend.',
+          ),
+        ],
       ),
     );
   }
+}
 
-  void _openFriendProfile() {
-    final friend =
-        _otherFriend;
 
-    if (friend == null) {
-      return;
-    }
+class _YouSubpageScaffold
+    extends StatelessWidget {
+  const _YouSubpageScaffold({
+    super.key,
+    required this.title,
+    required this.child,
+  });
 
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) =>
-            MemberProfileScreen(
-          member: friend,
-          mode:
-              MemberProfileMode.friend,
-          onMessage: () {
-            Navigator.of(context)
-                .pop();
-          },
-        ),
-      ),
-    );
-  }
-
-  void _showParticipants() {
-    final names =
-        widget.thread.participants
-            .map(
-              (participant) =>
-                  participant
-                          .isCurrentUser
-                      ? 'You'
-                      : participant
-                          .displayName,
-            )
-            .join(', ');
-
-    _showNotice(
-      'Participants: $names',
-    );
-  }
+  final String title;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: const Key(
-        'conversationScreen',
-      ),
+      key: key,
       backgroundColor:
           PhilotesColors.ivory,
       appBar: AppBar(
@@ -1983,185 +3555,23 @@ class _ConversationScreenState
             PhilotesColors.navy,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          key: const Key(
-            'backToMessagesButton',
-          ),
-          tooltip:
-              'Back to Messages',
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(
-            Icons.arrow_back,
+        title: Text(
+          title,
+          style:
+              const TextStyle(
+            color:
+                PhilotesColors.navy,
+            fontSize: 17,
+            fontWeight:
+                FontWeight.w800,
           ),
         ),
-        title: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.thread.title,
-              style:
-                  const TextStyle(
-                color:
-                    PhilotesColors.navy,
-                fontSize: 16,
-                fontWeight:
-                    FontWeight.w800,
-              ),
-            ),
-
-            if (widget.thread.isGroup)
-              Text(
-                '${widget.thread.participants.length} '
-                'participants',
-                style:
-                    const TextStyle(
-                  color:
-                      PhilotesColors
-                          .silver,
-                  fontSize: 10,
-                ),
-              ),
-          ],
-        ),
-        actions: [
-          PopupMenuButton<String>(
-            key: const Key(
-              'conversationOptionsMenu',
-            ),
-            icon: const Icon(
-              Icons.more_vert,
-              color:
-                  PhilotesColors.navy,
-            ),
-            onSelected: (value) {
-              switch (value) {
-                case 'toggle-read':
-                  _toggleReadState();
-                  break;
-
-                case 'view-profile':
-                  _openFriendProfile();
-                  break;
-
-                case 'participants':
-                  _showParticipants();
-                  break;
-
-                case 'group-info':
-                  _showNotice(
-                    'Group information will '
-                    'be connected during a '
-                    'later messaging phase.',
-                  );
-                  break;
-
-                case 'leave-group':
-                  _showNotice(
-                    'Leaving a group will '
-                    'require confirmation '
-                    'and backend authorization.',
-                  );
-                  break;
-
-                case 'block':
-                  _showNotice(
-                    'Block will immediately '
-                    'prevent future contact '
-                    'when the production '
-                    'safety backend is '
-                    'connected.',
-                  );
-                  break;
-
-                case 'report':
-                  _showNotice(
-                    'The report flow will be '
-                    'connected to Philotes '
-                    'moderation and safety.',
-                  );
-                  break;
-              }
-            },
-            itemBuilder: (context) {
-              final toggleItem =
-                  PopupMenuItem<String>(
-                value: 'toggle-read',
-                child: Text(
-                  widget.thread
-                              .unreadCount >
-                          0
-                      ? 'Mark Read'
-                      : 'Mark Unread',
-                ),
-              );
-
-              if (
-                widget.thread.isDirect
-              ) {
-                return [
-                  toggleItem,
-                  const PopupMenuItem<
-                      String>(
-                    value:
-                        'view-profile',
-                    child: Text(
-                      'View Profile',
-                    ),
-                  ),
-                  const PopupMenuItem<
-                      String>(
-                    value: 'block',
-                    child: Text(
-                      'Block',
-                    ),
-                  ),
-                  const PopupMenuItem<
-                      String>(
-                    value: 'report',
-                    child: Text(
-                      'Report',
-                    ),
-                  ),
-                ];
-              }
-
-              return [
-                toggleItem,
-                const PopupMenuItem<
-                    String>(
-                  value:
-                      'participants',
-                  child: Text(
-                    'View Participants',
-                  ),
-                ),
-                const PopupMenuItem<
-                    String>(
-                  value:
-                      'group-info',
-                  child: Text(
-                    'Group Information',
-                  ),
-                ),
-                const PopupMenuItem<
-                    String>(
-                  value:
-                      'leave-group',
-                  child: Text(
-                    'Leave Group',
-                  ),
-                ),
-              ];
-            },
-          ),
-        ],
         bottom:
             const PreferredSize(
           preferredSize:
-              Size.fromHeight(1.2),
+              Size.fromHeight(
+            1.2,
+          ),
           child: Divider(
             height: 1.2,
             thickness:
@@ -2172,281 +3582,45 @@ class _ConversationScreenState
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              key: const Key(
-                'conversationMessageList',
-              ),
-              padding:
-                  const EdgeInsets
-                      .fromLTRB(
-                18,
-                22,
-                18,
-                22,
-              ),
-              itemCount:
-                  _messages.length,
-              itemBuilder: (
-                BuildContext context,
-                int index,
-              ) {
-                final message =
-                    _messages[index];
+      body: LayoutBuilder(
+        builder: (
+          BuildContext context,
+          BoxConstraints constraints,
+        ) {
+          final wide =
+              constraints.maxWidth >=
+              PhilotesDesign
+                  .wideBreakpoint;
 
-                return _MessageBubble(
-                  mine:
-                      message.senderId ==
-                      'self',
-                  senderName:
-                      _senderName(
-                    message.senderId,
-                  ),
-                  text:
-                      message.text,
-                  time:
-                      _timeLabel(
-                    message.sentAt,
-                  ),
-                );
-              },
-            ),
-          ),
-
-          Container(
-            decoration:
-                const BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(
-                  color:
-                      PhilotesColors.gold,
-                  width: 1.2,
-                ),
-              ),
-            ),
+          return SingleChildScrollView(
             padding:
-                const EdgeInsets
-                    .fromLTRB(
-              14,
-              12,
-              14,
-              14,
+                EdgeInsets.fromLTRB(
+              wide
+                  ? PhilotesDesign
+                      .widePadding
+                  : PhilotesDesign
+                      .mobilePadding,
+              24,
+              wide
+                  ? PhilotesDesign
+                      .widePadding
+                  : PhilotesDesign
+                      .mobilePadding,
+              44,
             ),
-            child: SafeArea(
-              top: false,
-              child: Row(
-                crossAxisAlignment:
-                    CrossAxisAlignment
-                        .end,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      key: const Key(
-                        'messageComposerField',
-                      ),
-                      controller:
-                          _composerController,
-                      minLines: 1,
-                      maxLines: 5,
-                      decoration:
-                          InputDecoration(
-                        hintText:
-                            'Type a message...',
-                        filled: true,
-                        fillColor:
-                            PhilotesColors
-                                .ivory,
-                        enabledBorder:
-                            OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius
-                                  .circular(
-                            16,
-                          ),
-                          borderSide:
-                              const BorderSide(
-                            color:
-                                PhilotesColors
-                                    .gold,
-                            width: 1.2,
-                          ),
-                        ),
-                        focusedBorder:
-                            OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius
-                                  .circular(
-                            16,
-                          ),
-                          borderSide:
-                              const BorderSide(
-                            color:
-                                PhilotesColors
-                                    .navy,
-                            width: 1.6,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(
-                    width: 10,
-                  ),
-
-                  FilledButton(
-                    key: const Key(
-                      'sendMessageButton',
-                    ),
-                    onPressed:
-                        _sendMessage,
-                    style:
-                        FilledButton
-                            .styleFrom(
-                      backgroundColor:
-                          PhilotesColors
-                              .navy,
-                      foregroundColor:
-                          Colors.white,
-                      minimumSize:
-                          const Size(
-                        72,
-                        50,
-                      ),
-                    ),
-                    child:
-                        const Text(
-                      'Send',
-                      style:
-                          TextStyle(
-                        fontWeight:
-                            FontWeight
-                                .w700,
-                      ),
-                    ),
-                  ),
-                ],
+            child: Center(
+              child: ConstrainedBox(
+                constraints:
+                    const BoxConstraints(
+                  maxWidth:
+                      PhilotesDesign
+                          .contentMaxWidth,
+                ),
+                child: child,
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class _MessageBubble
-    extends StatelessWidget {
-  const _MessageBubble({
-    required this.mine,
-    required this.senderName,
-    required this.text,
-    required this.time,
-  });
-
-  final bool mine;
-  final String senderName;
-  final String text;
-  final String time;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment:
-          mine
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-      child: Container(
-        constraints:
-            const BoxConstraints(
-          maxWidth: 520,
-        ),
-        margin:
-            const EdgeInsets.only(
-          bottom: 14,
-        ),
-        padding:
-            const EdgeInsets
-                .fromLTRB(
-          14,
-          10,
-          14,
-          9,
-        ),
-        decoration:
-            BoxDecoration(
-          color:
-              mine
-                  ? PhilotesColors.navy
-                  : Colors.white,
-          borderRadius:
-              BorderRadius.circular(
-            16,
-          ),
-          border: Border.all(
-            color:
-                PhilotesColors.gold,
-            width: 1.2,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment
-                  .start,
-          children: [
-            Text(
-              senderName,
-              style: TextStyle(
-                color:
-                    mine
-                        ? PhilotesColors
-                            .gold
-                        : PhilotesColors
-                            .navy,
-                fontSize: 10,
-                fontWeight:
-                    FontWeight.w800,
-              ),
-            ),
-
-            const SizedBox(
-              height: 4,
-            ),
-
-            Text(
-              text,
-              style: TextStyle(
-                color:
-                    mine
-                        ? Colors.white
-                        : PhilotesColors
-                            .navy,
-                fontSize: 13,
-                height: 1.4,
-              ),
-            ),
-
-            const SizedBox(
-              height: 5,
-            ),
-
-            Text(
-              time,
-              style: TextStyle(
-                color:
-                    mine
-                        ? Colors.white70
-                        : PhilotesColors
-                            .silver,
-                fontSize: 9,
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -2454,120 +3628,262 @@ class _MessageBubble
 """
 
 
-TEST_ADDITION = r"""
+YOU_TEST_CONTENT = r"""import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:philotes/models/onboarding_profile_data.dart';
+import 'package:philotes/screens/app/philotes_shell_screen.dart';
+
+
+void main() {
+  setUp(() {
+    final profile =
+        OnboardingProfileData.instance;
+
+    profile.reset();
+
+    profile.firstName = 'Alex';
+    profile.displayName = 'Alex';
+    profile.introduction =
+        'I enjoy good conversation, '
+        'live events, and activities '
+        'with friends.';
+
+    profile.favoriteInterests =
+        <String>[
+      'Movies',
+      'Dining Out',
+      'Bowling',
+    ];
+
+    profile.selectedInterests =
+        <String>[
+      'Movies',
+      'Dining Out',
+      'Bowling',
+      'Technology',
+      'Road Trips',
+    ];
+
+    profile.friendshipStyles =
+        <String>[
+      'One-on-one friendships',
+      'Small groups',
+    ];
+
+    profile.socialFrequency =
+        "Whenever we're both available";
+    profile.planningStyle =
+        'A little of both';
+    profile.interestStyle =
+        'A balance of shared interests '
+        'and new experiences';
+    profile.newActivityComfort =
+        'Maybe';
+
+    profile.minimumFriendAge = 30;
+    profile.maximumFriendAge = 55;
+
+    profile.locationSource =
+        'device';
+    profile.meetingDistance =
+        '25';
+    profile.flexibleDiscovery =
+        true;
+  });
+
+  Future<void> openYou(
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home:
+            PhilotesShellScreen(),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.byKey(
+        const Key(
+          'navYou',
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+  }
+
   testWidgets(
-    'Messages bulk selection marks threads read and unread',
+    'You navigation opens You V1',
     (
       WidgetTester tester,
     ) async {
-      await openMessages(tester);
+      await openYou(tester);
 
-      await tester.tap(
+      expect(
         find.byKey(
           const Key(
-            'messagesOptionsMenu',
+            'youScreen',
           ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.byKey(
+          const Key(
+            'youProfileHeroCard',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text('Alex'),
+        findsWidgets,
+      );
+    },
+  );
+
+  testWidgets(
+    'View My Profile opens member preview',
+    (
+      WidgetTester tester,
+    ) async {
+      await openYou(tester);
+
+      final button =
+          find.byKey(
+        const Key(
+          'viewMyProfileButton',
         ),
       );
 
+      await tester.ensureVisible(
+        button,
+      );
+
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
-      await tester.tap(
+      expect(
+        find.byKey(
+          const Key(
+            'myProfilePreviewScreen',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
         find.text(
-          'Select Conversations',
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      expect(
-        find.byKey(
-          const Key(
-            'messageSelectionToolbar',
-          ),
+          'Favorites / Like the Most',
         ),
         findsOneWidget,
       );
 
-      final jordan = find.byKey(
-        const Key(
-          'messageThread-thread-jordan',
-        ),
-      );
-
-      final bowling = find.byKey(
-        const Key(
-          'messageThread-thread-bowling-night',
-        ),
-      );
-
-      await tester.tap(jordan);
-      await tester.tap(bowling);
-      await tester.pumpAndSettle();
-
-      await tester.tap(
-        find.byKey(
-          const Key(
-            'bulkMarkReadButton',
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
       expect(
-        find.byKey(
-          const Key(
-            'unreadBadge-thread-jordan',
-          ),
-        ),
-        findsNothing,
-      );
-
-      expect(
-        find.byKey(
-          const Key(
-            'unreadBadge-thread-bowling-night',
-          ),
-        ),
-        findsNothing,
-      );
-
-      await tester.tap(
-        find.byKey(
-          const Key(
-            'messagesOptionsMenu',
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      await tester.tap(
         find.text(
-          'Select Conversations',
+          'Friendship Preferences',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Edit My Profile opens editing hub',
+    (
+      WidgetTester tester,
+    ) async {
+      await openYou(tester);
+
+      final button =
+          find.byKey(
+        const Key(
+          'editMyProfileButton',
         ),
       );
 
-      await tester.pumpAndSettle();
-
-      await tester.tap(jordan);
-      await tester.pumpAndSettle();
-
-      await tester.tap(
-        find.byKey(
-          const Key(
-            'bulkMarkUnreadButton',
-          ),
-        ),
+      await tester.ensureVisible(
+        button,
       );
 
+      await tester.tap(button);
       await tester.pumpAndSettle();
 
       expect(
         find.byKey(
           const Key(
-            'unreadBadge-thread-jordan',
+            'editProfileHubScreen',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text(
+          'Profile Editing',
+        ),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'Notifications settings expose email preferences',
+    (
+      WidgetTester tester,
+    ) async {
+      await openYou(tester);
+
+      final tile =
+          find.byKey(
+        const Key(
+          'youNotificationsTile',
+        ),
+      );
+
+      await tester.ensureVisible(
+        tile,
+      );
+
+      await tester.tap(tile);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(
+          const Key(
+            'notificationsSettingsScreen',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.byKey(
+          const Key(
+            'emailNotificationsMasterToggle',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.byKey(
+          const Key(
+            'emailFrequencyDropdown',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.byKey(
+          const Key(
+            'emailMessagePreviewToggle',
           ),
         ),
         findsOneWidget,
@@ -2576,34 +3892,44 @@ TEST_ADDITION = r"""
   );
 
   testWidgets(
-    'Long press enters Messages selection mode',
+    'MFA is optional and has setup destination',
     (
       WidgetTester tester,
     ) async {
-      await openMessages(tester);
+      await openYou(tester);
 
-      final jordan = find.byKey(
+      final tile =
+          find.byKey(
         const Key(
-          'messageThread-thread-jordan',
+          'youMfaTile',
         ),
       );
 
-      await tester.longPress(jordan);
+      await tester.ensureVisible(
+        tile,
+      );
+
+      await tester.tap(tile);
       await tester.pumpAndSettle();
 
       expect(
         find.byKey(
           const Key(
-            'messageSelectionToolbar',
+            'mfaSettingsScreen',
           ),
         ),
         findsOneWidget,
       );
 
       expect(
+        find.text('Off'),
+        findsOneWidget,
+      );
+
+      expect(
         find.byKey(
           const Key(
-            'messageCheckbox-thread-jordan',
+            'setupMfaButton',
           ),
         ),
         findsOneWidget,
@@ -2612,58 +3938,100 @@ TEST_ADDITION = r"""
   );
 
   testWidgets(
-    'Conversation menu toggles Mark Unread and Mark Read',
+    'Privacy and safety destinations exist',
     (
       WidgetTester tester,
     ) async {
-      await openMessages(tester);
+      await openYou(tester);
 
-      final jordan = find.byKey(
+      final privacy =
+          find.byKey(
         const Key(
-          'messageThread-thread-jordan',
+          'youPrivacySettingsTile',
         ),
       );
 
-      await tester.tap(jordan);
-      await tester.pumpAndSettle();
-
-      await tester.tap(
-        find.byKey(
-          const Key(
-            'conversationOptionsMenu',
-          ),
-        ),
+      await tester.ensureVisible(
+        privacy,
       );
-
-      await tester.pumpAndSettle();
 
       expect(
-        find.text('Mark Unread'),
+        privacy,
         findsOneWidget,
       );
 
-      await tester.tap(
-        find.text('Mark Unread'),
-      );
-
-      await tester.pumpAndSettle();
-
-      await tester.tap(
+      expect(
         find.byKey(
           const Key(
-            'conversationOptionsMenu',
+            'youBlockedMembersTile',
           ),
         ),
+        findsOneWidget,
       );
 
-      await tester.pumpAndSettle();
+      expect(
+        find.byKey(
+          const Key(
+            'youSafetyReportingTile',
+          ),
+        ),
+        findsOneWidget,
+      );
 
       expect(
-        find.text('Mark Read'),
+        find.byKey(
+          const Key(
+            'youCommunityGuidelinesTile',
+          ),
+        ),
         findsOneWidget,
       );
     },
   );
+
+  testWidgets(
+    'Account actions are present',
+    (
+      WidgetTester tester,
+    ) async {
+      await openYou(tester);
+
+      final delete =
+          find.byKey(
+        const Key(
+          'youDeleteAccountTile',
+        ),
+      );
+
+      await tester.ensureVisible(
+        delete,
+      );
+
+      expect(
+        find.byKey(
+          const Key(
+            'youSignOutTile',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        find.byKey(
+          const Key(
+            'youDeactivateAccountTile',
+          ),
+        ),
+        findsOneWidget,
+      );
+
+      expect(
+        delete,
+        findsOneWidget,
+      );
+    },
+  );
+}
 """
 
 
@@ -2671,18 +4039,14 @@ def main() -> None:
     print()
     print("=" * 76)
     print(
-        "PHILOTES MESSAGES BULK "
-        "READ / UNREAD PATCH"
+        "PHILOTES YOU V1 PATCH"
     )
     print("=" * 76)
     print()
 
     required = [
-        SERVICE_FILE,
-        DEV_SERVICE_FILE,
-        MESSAGES_FILE,
-        CONVERSATION_FILE,
-        TEST_FILE,
+        SHELL_FILE,
+        WIDGET_TEST_FILE,
     ]
 
     for path in required:
@@ -2692,182 +4056,395 @@ def main() -> None:
             )
             raise SystemExit(1)
 
-    originals = {
-        path:
-            path.read_text(
-                encoding="utf-8",
-            )
-        for path in required
-    }
+    original_shell = (
+        SHELL_FILE.read_text(
+            encoding="utf-8",
+        )
+    )
+
+    original_widget_test = (
+        WIDGET_TEST_FILE.read_text(
+            encoding="utf-8",
+        )
+    )
+
+    you_existed = YOU_FILE.exists()
+
+    test_existed = YOU_TEST_FILE.exists()
+
+    original_you = (
+        YOU_FILE.read_text(
+            encoding="utf-8",
+        )
+        if you_existed
+        else ""
+    )
+
+    original_you_test = (
+        YOU_TEST_FILE.read_text(
+            encoding="utf-8",
+        )
+        if test_existed
+        else ""
+    )
 
     try:
-        SERVICE_FILE.write_text(
-            SERVICE_CONTENT,
+        YOU_FILE.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        YOU_FILE.write_text(
+            YOU_CONTENT,
             encoding="utf-8",
         )
 
-        DEV_SERVICE_FILE.write_text(
-            DEV_SERVICE_CONTENT,
+        YOU_TEST_FILE.write_text(
+            YOU_TEST_CONTENT,
             encoding="utf-8",
         )
 
-        MESSAGES_FILE.write_text(
-            MESSAGES_CONTENT,
-            encoding="utf-8",
+        shell = original_shell
+
+        messages_import = (
+            "import '../../screens/messages/"
+            "messages_screen.dart';"
         )
 
-        CONVERSATION_FILE.write_text(
-            CONVERSATION_CONTENT,
-            encoding="utf-8",
+        you_import = (
+            "import '../../screens/you/"
+            "you_screen.dart';"
         )
 
-        tests = originals[
-            TEST_FILE
-        ]
-
-        marker = (
-            "Messages bulk selection "
-            "marks threads read and unread"
-        )
-
-        if marker not in tests:
-            closing = tests.rfind(
-                "\n}"
-            )
-
-            if closing == -1:
+        if you_import not in shell:
+            if messages_import not in shell:
                 raise RuntimeError(
-                    "messages_v1_test.dart "
-                    "closing brace not found."
+                    "Messages import anchor "
+                    "not found in shell."
                 )
 
-            tests = (
-                tests[:closing]
-                + TEST_ADDITION
-                + tests[closing:]
+            shell = shell.replace(
+                messages_import,
+                messages_import
+                + "\n"
+                + you_import,
+                1,
             )
 
-        TEST_FILE.write_text(
-            tests,
+        old_you_destination = """      case 4:
+        return const _DevelopmentDestination(
+          title: 'You',
+          description:
+              'You will contain your profile, '
+              'preferences, privacy controls, '
+              'membership, and account settings.',
+        );"""
+
+        new_you_destination = """      case 4:
+        return const YouScreen();"""
+
+        if new_you_destination not in shell:
+            if old_you_destination not in shell:
+                raise RuntimeError(
+                    "You placeholder "
+                    "was not found in shell."
+                )
+
+            shell = shell.replace(
+                old_you_destination,
+                new_you_destination,
+                1,
+            )
+
+        SHELL_FILE.write_text(
+            shell,
+            encoding="utf-8",
+        )
+
+        widget_test = original_widget_test
+
+        old_you_test = """      expect(
+        find.textContaining(
+          'profile, preferences',
+        ),
+        findsOneWidget,
+      );"""
+
+        new_you_test = """      expect(
+        find.byKey(
+          const Key(
+            'youScreen',
+          ),
+        ),
+        findsOneWidget,
+      );"""
+
+        if new_you_test not in widget_test:
+            if old_you_test not in widget_test:
+                raise RuntimeError(
+                    "Existing You navigation "
+                    "test assertion was not found."
+                )
+
+            widget_test = (
+                widget_test.replace(
+                    old_you_test,
+                    new_you_test,
+                    1,
+                )
+            )
+
+        WIDGET_TEST_FILE.write_text(
+            widget_test,
             encoding="utf-8",
         )
 
     except Exception as exc:
-        for path, content in originals.items():
-            path.write_text(
-                content,
+        SHELL_FILE.write_text(
+            original_shell,
+            encoding="utf-8",
+        )
+
+        WIDGET_TEST_FILE.write_text(
+            original_widget_test,
+            encoding="utf-8",
+        )
+
+        if you_existed:
+            YOU_FILE.write_text(
+                original_you,
                 encoding="utf-8",
             )
+        elif YOU_FILE.exists():
+            YOU_FILE.unlink()
+
+        if test_existed:
+            YOU_TEST_FILE.write_text(
+                original_you_test,
+                encoding="utf-8",
+            )
+        elif YOU_TEST_FILE.exists():
+            YOU_TEST_FILE.unlink()
 
         print()
         print(f"FAIL: {exc}")
+        print()
         print(
-            "All Messages files restored."
+            "Existing files restored and "
+            "new You files removed."
         )
 
         raise SystemExit(1)
 
-    service = SERVICE_FILE.read_text(
-        encoding="utf-8",
-    )
-
-    dev = DEV_SERVICE_FILE.read_text(
-        encoding="utf-8",
-    )
-
-    messages = MESSAGES_FILE.read_text(
-        encoding="utf-8",
-    )
-
-    conversation = (
-        CONVERSATION_FILE.read_text(
+    shell = (
+        SHELL_FILE.read_text(
             encoding="utf-8",
         )
     )
 
-    tests = TEST_FILE.read_text(
-        encoding="utf-8",
+    you = (
+        YOU_FILE.read_text(
+            encoding="utf-8",
+        )
+    )
+
+    you_tests = (
+        YOU_TEST_FILE.read_text(
+            encoding="utf-8",
+        )
+    )
+
+    widget_tests = (
+        WIDGET_TEST_FILE.read_text(
+            encoding="utf-8",
+        )
     )
 
     checks = {
-        "MessageService has Mark Read":
-            "markThreadRead"
-            in service,
+        "You screen created":
+            YOU_FILE.exists(),
 
-        "MessageService has Mark Unread":
-            "markThreadUnread"
-            in service,
+        "Shell imports You":
+            "you_screen.dart"
+            in shell,
 
-        "Development service stores overrides":
-            "_unreadOverrides"
-            in dev,
+        "You placeholder replaced":
+            "return const YouScreen();"
+            in shell,
 
-        "Automatic read behavior preserved":
-            "markThreadRead"
-            in messages,
+        "Five-tab navigation preserved":
+            "navYou"
+            in shell
+            and
+            "navMessages"
+            in shell
+            and
+            "navPlans"
+            in shell
+            and
+            "navDiscover"
+            in shell
+            and
+            "navHome"
+            in shell,
 
-        "Select Conversations menu added":
-            "Select Conversations"
-            in messages,
+        "Profile hero created":
+            "youProfileHeroCard"
+            in you,
 
-        "Selection toolbar added":
-            "messageSelectionToolbar"
-            in messages,
+        "View My Profile created":
+            "viewMyProfileButton"
+            in you,
 
-        "Checkboxes added in selection mode":
-            "messageCheckbox-"
-            in messages,
+        "Edit My Profile created":
+            "editMyProfileButton"
+            in you,
 
-        "Long press selection added":
-            "onLongPress"
-            in messages,
+        "Existing profile data reused":
+            "OnboardingProfileData"
+            in you,
 
-        "Select All added":
-            "selectAllMessagesButton"
-            in messages,
+        "Interests section created":
+            "Profile & Discovery"
+            in you
+            and
+            "youInterestsTile"
+            in you,
 
-        "Bulk Mark Read added":
-            "bulkMarkReadButton"
-            in messages,
+        "Friendship preferences created":
+            "youFriendshipPreferencesTile"
+            in you,
 
-        "Bulk Mark Unread added":
-            "bulkMarkUnreadButton"
-            in messages,
+        "Permanent discovery preferences created":
+            "youDiscoveryPreferencesTile"
+            in you,
 
-        "Conversation contextual read toggle added":
-            "toggle-read"
-            in conversation,
+        "Location and distance created":
+            "youLocationDistanceTile"
+            in you,
 
-        "Conversation shows Mark Read":
-            "Mark Read"
-            in conversation,
+        "Privacy settings created":
+            "youPrivacySettingsTile"
+            in you,
 
-        "Conversation shows Mark Unread":
-            "Mark Unread"
-            in conversation,
+        "Blocked members created":
+            "youBlockedMembersTile"
+            in you,
 
-        "Bulk selection test added":
-            "Messages bulk selection "
-            "marks threads read and unread"
-            in tests,
+        "Safety and reporting created":
+            "youSafetyReportingTile"
+            in you,
 
-        "Long press test added":
-            "Long press enters Messages "
-            "selection mode"
-            in tests,
+        "Community guidelines created":
+            "youCommunityGuidelinesTile"
+            in you,
 
-        "Conversation toggle test added":
-            "Conversation menu toggles "
-            "Mark Unread and Mark Read"
-            in tests,
+        "Account information created":
+            "youAccountInformationTile"
+            in you,
+
+        "Email and sign-in created":
+            "youEmailSignInTile"
+            in you,
+
+        "Optional MFA created":
+            "youMfaTile"
+            in you
+            and
+            "Optional additional"
+            in you,
+
+        "Active sessions created":
+            "youSessionsTile"
+            in you,
+
+        "Notifications created":
+            "youNotificationsTile"
+            in you,
+
+        "In-app notifications created":
+            "In-App Notifications"
+            in you,
+
+        "Email notifications created":
+            "Email Notifications"
+            in you,
+
+        "Email master switch created":
+            "emailNotificationsMasterToggle"
+            in you,
+
+        "Email frequency created":
+            "emailFrequencyDropdown"
+            in you,
+
+        "Email message-preview privacy created":
+            "emailMessagePreviewToggle"
+            in you,
+
+        "Critical security alerts preserved":
+            "Security & account alerts"
+            in you,
+
+        "Membership created":
+            "youMembershipTile"
+            in you,
+
+        "Accessibility created":
+            "youAccessibilityTile"
+            in you,
+
+        "Help and support created":
+            "youHelpSupportTile"
+            in you,
+
+        "About Philotes created":
+            "youAboutTile"
+            in you,
+
+        "Legal and privacy created":
+            "youLegalPrivacyTile"
+            in you,
+
+        "Sign out created":
+            "youSignOutTile"
+            in you,
+
+        "Deactivate account created":
+            "youDeactivateAccountTile"
+            in you,
+
+        "Delete account created":
+            "youDeleteAccountTile"
+            in you,
+
+        "Dedicated You tests created":
+            YOU_TEST_FILE.exists(),
+
+        "Notifications test created":
+            "Notifications settings expose "
+            "email preferences"
+            in you_tests,
+
+        "MFA test created":
+            "MFA is optional and has "
+            "setup destination"
+            in you_tests,
+
+        "Legacy You placeholder test updated":
+            "find.byKey("
+            in widget_tests
+            and
+            "'youScreen'"
+            in widget_tests,
     }
 
     passed = True
 
     report = [
         (
-            "PHILOTES MESSAGES BULK "
-            "READ / UNREAD PATCH REPORT"
+            "PHILOTES YOU V1 "
+            "PATCH REPORT"
         ),
         "=" * 76,
         (
@@ -2907,45 +4484,54 @@ def main() -> None:
                 else "FAIL"
             ),
             "",
-            "EXPECTED BEHAVIOR",
+            "YOU V1 DESIGN CONTRACT",
             "-" * 76,
             (
-                "- Normal Messages view "
-                "remains uncluttered."
+                "- Existing Home, Discover, Plans, "
+                "and Messages remain unchanged."
             ),
             (
-                "- Select Conversations "
-                "enters checkbox mode."
+                "- You replaces only the existing "
+                "You development placeholder."
             ),
             (
-                "- Long press enters selection "
-                "mode and selects that thread."
+                "- Existing OnboardingProfileData "
+                "is reused for member profile data."
             ),
             (
-                "- Select All applies only to "
-                "currently displayed conversations."
+                "- Permanent profile preferences "
+                "belong under You."
             ),
             (
-                "- Bulk Mark Read clears unread "
-                "state on selected threads."
+                "- Discover remains focused on "
+                "temporary discovery refinement."
             ),
             (
-                "- Bulk Mark Unread marks each "
-                "selected thread with one unread "
-                "conversation indicator."
+                "- In-app notifications remain "
+                "the primary notification channel."
             ),
             (
-                "- Individual conversations use "
-                "one contextual Mark Read / "
-                "Mark Unread menu item."
+                "- Email notifications are "
+                "member-configurable."
             ),
             (
-                "- Opening an unread conversation "
-                "still automatically marks it read."
+                "- Critical security and account "
+                "alerts remain enabled."
             ),
             (
-                "- Existing navy, gold, ivory "
-                "Philotes styling is preserved."
+                "- Email message previews are "
+                "off by default for privacy."
+            ),
+            (
+                "- MFA is optional for normal "
+                "members in this frontend design."
+            ),
+            (
+                "- Backend-dependent security, "
+                "email, membership, and account "
+                "actions are represented honestly "
+                "and are not faked as production "
+                "functionality."
             ),
         ]
     )

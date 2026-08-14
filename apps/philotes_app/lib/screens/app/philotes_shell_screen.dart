@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/development/development_member_fixture.dart';
@@ -6,6 +6,7 @@ import '../../screens/home/philotes_home_screen.dart';
 import '../../screens/discover/discover_screen.dart';
 import '../../screens/plans/plans_screen.dart';
 import '../../screens/messages/messages_screen.dart';
+import '../../screens/you/you_screen.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
@@ -56,13 +57,7 @@ class _PhilotesShellScreenState
         return const MessagesScreen();
 
       case 4:
-        return const _DevelopmentDestination(
-          title: 'You',
-          description:
-              'You will contain your profile, '
-              'preferences, privacy controls, '
-              'membership, and account settings.',
-        );
+        return const YouScreen();
 
       default:
         return PhilotesHomeScreen(
@@ -270,104 +265,3 @@ class _PhilotesAppHeader
   }
 }
 
-
-class _DevelopmentDestination
-    extends StatelessWidget {
-  const _DevelopmentDestination({
-    required this.title,
-    required this.description,
-  });
-
-  final String title;
-  final String description;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        36,
-        20,
-        36,
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints:
-              const BoxConstraints(
-            maxWidth: 620,
-          ),
-          child: Column(
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color:
-                      PhilotesColors.navy,
-                  fontSize: 30,
-                  fontWeight:
-                      FontWeight.w800,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Container(
-                width: 100,
-                height: 2,
-                color:
-                    PhilotesColors.gold,
-              ),
-
-              const SizedBox(height: 26),
-
-              Container(
-                padding:
-                    const EdgeInsets.all(
-                  22,
-                ),
-                decoration:
-                    PhilotesDesign
-                        .primaryCardDecoration(),
-                child: Column(
-                  children: [
-                    Text(
-                      description,
-                      textAlign:
-                          TextAlign.center,
-                      style:
-                          const TextStyle(
-                        color:
-                            PhilotesColors
-                                .navy,
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 16,
-                    ),
-
-                    const Text(
-                      'This section is part '
-                      'of the next frontend '
-                      'development phase.',
-                      textAlign:
-                          TextAlign.center,
-                      style: TextStyle(
-                        color:
-                            PhilotesColors
-                                .silver,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

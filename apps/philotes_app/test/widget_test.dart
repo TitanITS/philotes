@@ -277,8 +277,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining(
-          'profile, preferences',
+        find.byKey(
+          const Key(
+            'youScreen',
+          ),
         ),
         findsOneWidget,
       );
