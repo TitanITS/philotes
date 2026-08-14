@@ -1,6 +1,6 @@
-PHILOTES YOU V1 PATCH REPORT
+PHILOTES YOU + INTERESTS V3 PATCH REPORT
 ============================================================================
-Generated: 2026-08-13T19:34:19
+Generated: 2026-08-14T18:44:26
 
 PASS: You screen created
 PASS: Shell imports You
@@ -11,6 +11,14 @@ PASS: View My Profile created
 PASS: Edit My Profile created
 PASS: Existing profile data reused
 PASS: Interests section created
+PASS: Interests V2 responsive suggestions created
+PASS: View All Activities catalog created
+PASS: Custom interests created
+PASS: Interests V3 shared catalog created
+PASS: Interests V3 shared styling created
+PASS: You Interests follows Philotes design contract
+PASS: Signup Interests follows shared V3 design
+PASS: Interests V3 responsive tests created
 PASS: Friendship preferences created
 PASS: Permanent discovery preferences created
 PASS: Location and distance created
@@ -56,4 +64,9 @@ YOU V1 DESIGN CONTRACT
 - Critical security and account alerts remain enabled.
 - Email message previews are off by default for privacy.
 - MFA is optional for normal members in this frontend design.
+- Interests V3 uses one shared activity catalog for signup and profile management.
+- Main Interests pages show 8 / 12 / 16 responsive starter activities; categories remain behind View All Activities.
+- Interest controls use the established Philotes navy, gold, ivory, and card language.
+- Selected interests use navy fill, gold borders, light text, and a check indicator.
+- Signup keeps at least 5 interests and up to 5 favorites while using the same catalog.
 - Backend-dependent security, email, membership, and account actions are represented honestly and are not faked as production functionality.

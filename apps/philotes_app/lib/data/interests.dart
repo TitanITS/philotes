@@ -25,21 +25,9 @@ abstract final class InterestsData {
 
   static const List<InterestItem> interests = [
     // Sports & Recreation
-    InterestItem(
-      id: 'golf',
-      name: 'Golf',
-      category: sportsRecreation,
-    ),
-    InterestItem(
-      id: 'bowling',
-      name: 'Bowling',
-      category: sportsRecreation,
-    ),
-    InterestItem(
-      id: 'tennis',
-      name: 'Tennis',
-      category: sportsRecreation,
-    ),
+    InterestItem(id: 'golf', name: 'Golf', category: sportsRecreation),
+    InterestItem(id: 'bowling', name: 'Bowling', category: sportsRecreation),
+    InterestItem(id: 'tennis', name: 'Tennis', category: sportsRecreation),
     InterestItem(
       id: 'pickleball',
       name: 'Pickleball',
@@ -70,41 +58,17 @@ abstract final class InterestsData {
       name: 'Playing Hockey',
       category: sportsRecreation,
     ),
-    InterestItem(
-      id: 'running',
-      name: 'Running',
-      category: sportsRecreation,
-    ),
+    InterestItem(id: 'running', name: 'Running', category: sportsRecreation),
     InterestItem(
       id: 'fitness',
       name: 'Gym & Fitness',
       category: sportsRecreation,
     ),
-    InterestItem(
-      id: 'swimming',
-      name: 'Swimming',
-      category: sportsRecreation,
-    ),
-    InterestItem(
-      id: 'hiking',
-      name: 'Hiking',
-      category: sportsRecreation,
-    ),
-    InterestItem(
-      id: 'biking',
-      name: 'Biking',
-      category: sportsRecreation,
-    ),
-    InterestItem(
-      id: 'fishing',
-      name: 'Fishing',
-      category: sportsRecreation,
-    ),
-    InterestItem(
-      id: 'camping',
-      name: 'Camping',
-      category: sportsRecreation,
-    ),
+    InterestItem(id: 'swimming', name: 'Swimming', category: sportsRecreation),
+    InterestItem(id: 'hiking', name: 'Hiking', category: sportsRecreation),
+    InterestItem(id: 'biking', name: 'Biking', category: sportsRecreation),
+    InterestItem(id: 'fishing', name: 'Fishing', category: sportsRecreation),
+    InterestItem(id: 'camping', name: 'Camping', category: sportsRecreation),
     InterestItem(
       id: 'martial_arts',
       name: 'Martial Arts',
@@ -117,41 +81,21 @@ abstract final class InterestsData {
       name: 'Going to Sporting Events',
       category: sportsFans,
     ),
-    InterestItem(
-      id: 'football_fan',
-      name: 'Football',
-      category: sportsFans,
-    ),
+    InterestItem(id: 'football_fan', name: 'Football', category: sportsFans),
     InterestItem(
       id: 'basketball_fan',
       name: 'Basketball',
       category: sportsFans,
     ),
-    InterestItem(
-      id: 'baseball_fan',
-      name: 'Baseball',
-      category: sportsFans,
-    ),
-    InterestItem(
-      id: 'hockey_fan',
-      name: 'Hockey',
-      category: sportsFans,
-    ),
-    InterestItem(
-      id: 'soccer_fan',
-      name: 'Soccer',
-      category: sportsFans,
-    ),
+    InterestItem(id: 'baseball_fan', name: 'Baseball', category: sportsFans),
+    InterestItem(id: 'hockey_fan', name: 'Hockey', category: sportsFans),
+    InterestItem(id: 'soccer_fan', name: 'Soccer', category: sportsFans),
     InterestItem(
       id: 'college_sports',
       name: 'College Sports',
       category: sportsFans,
     ),
-    InterestItem(
-      id: 'motorsports',
-      name: 'Motorsports',
-      category: sportsFans,
-    ),
+    InterestItem(id: 'motorsports', name: 'Motorsports', category: sportsFans),
     InterestItem(
       id: 'golf_tournaments',
       name: 'Golf Tournaments',
@@ -169,46 +113,18 @@ abstract final class InterestsData {
     ),
 
     // Entertainment
-    InterestItem(
-      id: 'movies',
-      name: 'Movies',
-      category: entertainment,
-    ),
+    InterestItem(id: 'movies', name: 'Movies', category: entertainment),
     InterestItem(
       id: 'television',
       name: 'TV & Streaming',
       category: entertainment,
     ),
-    InterestItem(
-      id: 'theater',
-      name: 'Theater',
-      category: entertainment,
-    ),
-    InterestItem(
-      id: 'concerts',
-      name: 'Concerts',
-      category: entertainment,
-    ),
-    InterestItem(
-      id: 'live_music',
-      name: 'Live Music',
-      category: entertainment,
-    ),
-    InterestItem(
-      id: 'comedy',
-      name: 'Comedy Shows',
-      category: entertainment,
-    ),
-    InterestItem(
-      id: 'festivals',
-      name: 'Festivals',
-      category: entertainment,
-    ),
-    InterestItem(
-      id: 'museums',
-      name: 'Museums',
-      category: entertainment,
-    ),
+    InterestItem(id: 'theater', name: 'Theater', category: entertainment),
+    InterestItem(id: 'concerts', name: 'Concerts', category: entertainment),
+    InterestItem(id: 'live_music', name: 'Live Music', category: entertainment),
+    InterestItem(id: 'comedy', name: 'Comedy Shows', category: entertainment),
+    InterestItem(id: 'festivals', name: 'Festivals', category: entertainment),
+    InterestItem(id: 'museums', name: 'Museums', category: entertainment),
     InterestItem(
       id: 'theme_parks',
       name: 'Theme Parks',
@@ -246,16 +162,8 @@ abstract final class InterestsData {
       name: 'Artificial Intelligence',
       category: gamingTechnology,
     ),
-    InterestItem(
-      id: 'coding',
-      name: 'Coding',
-      category: gamingTechnology,
-    ),
-    InterestItem(
-      id: 'gadgets',
-      name: 'Gadgets',
-      category: gamingTechnology,
-    ),
+    InterestItem(id: 'coding', name: 'Coding', category: gamingTechnology),
+    InterestItem(id: 'gadgets', name: 'Gadgets', category: gamingTechnology),
     InterestItem(
       id: 'virtual_reality',
       name: 'Virtual Reality',
@@ -268,41 +176,17 @@ abstract final class InterestsData {
       name: 'Trying Restaurants',
       category: foodSocial,
     ),
-    InterestItem(
-      id: 'coffee',
-      name: 'Coffee',
-      category: foodSocial,
-    ),
-    InterestItem(
-      id: 'cooking',
-      name: 'Cooking',
-      category: foodSocial,
-    ),
-    InterestItem(
-      id: 'baking',
-      name: 'Baking',
-      category: foodSocial,
-    ),
+    InterestItem(id: 'coffee', name: 'Coffee', category: foodSocial),
+    InterestItem(id: 'cooking', name: 'Cooking', category: foodSocial),
+    InterestItem(id: 'baking', name: 'Baking', category: foodSocial),
     InterestItem(
       id: 'food_festivals',
       name: 'Food Festivals',
       category: foodSocial,
     ),
-    InterestItem(
-      id: 'trivia',
-      name: 'Trivia Nights',
-      category: foodSocial,
-    ),
-    InterestItem(
-      id: 'brunch',
-      name: 'Brunch',
-      category: foodSocial,
-    ),
-    InterestItem(
-      id: 'dinner_out',
-      name: 'Dinner Out',
-      category: foodSocial,
-    ),
+    InterestItem(id: 'trivia', name: 'Trivia Nights', category: foodSocial),
+    InterestItem(id: 'brunch', name: 'Brunch', category: foodSocial),
+    InterestItem(id: 'dinner_out', name: 'Dinner Out', category: foodSocial),
 
     // Creative & Hobbies
     InterestItem(
@@ -310,31 +194,11 @@ abstract final class InterestsData {
       name: 'Photography',
       category: creativeHobbies,
     ),
-    InterestItem(
-      id: 'art',
-      name: 'Art',
-      category: creativeHobbies,
-    ),
-    InterestItem(
-      id: 'drawing',
-      name: 'Drawing',
-      category: creativeHobbies,
-    ),
-    InterestItem(
-      id: 'painting',
-      name: 'Painting',
-      category: creativeHobbies,
-    ),
-    InterestItem(
-      id: 'writing',
-      name: 'Writing',
-      category: creativeHobbies,
-    ),
-    InterestItem(
-      id: 'crafts',
-      name: 'Crafts',
-      category: creativeHobbies,
-    ),
+    InterestItem(id: 'art', name: 'Art', category: creativeHobbies),
+    InterestItem(id: 'drawing', name: 'Drawing', category: creativeHobbies),
+    InterestItem(id: 'painting', name: 'Painting', category: creativeHobbies),
+    InterestItem(id: 'writing', name: 'Writing', category: creativeHobbies),
+    InterestItem(id: 'crafts', name: 'Crafts', category: creativeHobbies),
     InterestItem(
       id: 'woodworking',
       name: 'Woodworking',
@@ -352,26 +216,10 @@ abstract final class InterestsData {
     ),
 
     // Learning & Culture
-    InterestItem(
-      id: 'history',
-      name: 'History',
-      category: learningCulture,
-    ),
-    InterestItem(
-      id: 'science',
-      name: 'Science',
-      category: learningCulture,
-    ),
-    InterestItem(
-      id: 'languages',
-      name: 'Languages',
-      category: learningCulture,
-    ),
-    InterestItem(
-      id: 'books',
-      name: 'Books',
-      category: learningCulture,
-    ),
+    InterestItem(id: 'history', name: 'History', category: learningCulture),
+    InterestItem(id: 'science', name: 'Science', category: learningCulture),
+    InterestItem(id: 'languages', name: 'Languages', category: learningCulture),
+    InterestItem(id: 'books', name: 'Books', category: learningCulture),
     InterestItem(
       id: 'book_clubs',
       name: 'Book Clubs',
@@ -394,41 +242,17 @@ abstract final class InterestsData {
       name: 'Road Trips',
       category: outdoorsTravel,
     ),
-    InterestItem(
-      id: 'travel',
-      name: 'Travel',
-      category: outdoorsTravel,
-    ),
-    InterestItem(
-      id: 'beaches',
-      name: 'Beaches',
-      category: outdoorsTravel,
-    ),
-    InterestItem(
-      id: 'mountains',
-      name: 'Mountains',
-      category: outdoorsTravel,
-    ),
-    InterestItem(
-      id: 'parks',
-      name: 'Parks',
-      category: outdoorsTravel,
-    ),
+    InterestItem(id: 'travel', name: 'Travel', category: outdoorsTravel),
+    InterestItem(id: 'beaches', name: 'Beaches', category: outdoorsTravel),
+    InterestItem(id: 'mountains', name: 'Mountains', category: outdoorsTravel),
+    InterestItem(id: 'parks', name: 'Parks', category: outdoorsTravel),
     InterestItem(
       id: 'sightseeing',
       name: 'Sightseeing',
       category: outdoorsTravel,
     ),
-    InterestItem(
-      id: 'cruises',
-      name: 'Cruises',
-      category: outdoorsTravel,
-    ),
-    InterestItem(
-      id: 'nature',
-      name: 'Nature',
-      category: outdoorsTravel,
-    ),
+    InterestItem(id: 'cruises', name: 'Cruises', category: outdoorsTravel),
+    InterestItem(id: 'nature', name: 'Nature', category: outdoorsTravel),
 
     // Community & Lifestyle
     InterestItem(
@@ -441,11 +265,7 @@ abstract final class InterestsData {
       name: 'Community Events',
       category: communityLifestyle,
     ),
-    InterestItem(
-      id: 'pets',
-      name: 'Pets',
-      category: communityLifestyle,
-    ),
+    InterestItem(id: 'pets', name: 'Pets', category: communityLifestyle),
     InterestItem(
       id: 'gardening',
       name: 'Gardening',
@@ -456,11 +276,7 @@ abstract final class InterestsData {
       name: 'Home Improvement',
       category: communityLifestyle,
     ),
-    InterestItem(
-      id: 'cars',
-      name: 'Cars',
-      category: communityLifestyle,
-    ),
+    InterestItem(id: 'cars', name: 'Cars', category: communityLifestyle),
     InterestItem(
       id: 'motorcycles',
       name: 'Motorcycles',

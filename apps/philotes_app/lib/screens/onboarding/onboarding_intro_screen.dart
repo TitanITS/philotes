@@ -16,24 +16,15 @@ class PhilotesOnboardingIntroScreen extends StatelessWidget {
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              20,
-              24,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 620,
-              ),
+              constraints: const BoxConstraints(maxWidth: 620),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -183,9 +174,7 @@ class _OnboardingPrinciple extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: PhilotesColors.gold.withValues(alpha: 0.55),
-        ),
+        border: Border.all(color: PhilotesColors.gold.withValues(alpha: 0.55)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,21 +185,14 @@ class _OnboardingPrinciple extends StatelessWidget {
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: PhilotesColors.gold,
-                width: 2,
-              ),
+              border: Border.all(color: PhilotesColors.gold, width: 2),
             ),
             child: Container(
               decoration: const BoxDecoration(
                 color: PhilotesColors.navy,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 22,
-              ),
+              child: Icon(icon, color: Colors.white, size: 22),
             ),
           ),
 

@@ -5,7 +5,5 @@ abstract class PlanService {
 
   List<PhilotesPlan> plans();
 
-  PhilotesPlan? planById(
-    String planId,
-  );
+  PhilotesPlan? planById(String planId);
 }

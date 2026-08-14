@@ -8,8 +8,7 @@ class ProfilePhotoScreen extends StatefulWidget {
   const ProfilePhotoScreen({super.key});
 
   @override
-  State<ProfilePhotoScreen> createState() =>
-      _ProfilePhotoScreenState();
+  State<ProfilePhotoScreen> createState() => _ProfilePhotoScreenState();
 }
 
 class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
@@ -41,19 +40,15 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
       return;
     }
 
-    final profile =
-        OnboardingProfileData.instance;
+    final profile = OnboardingProfileData.instance;
 
-    profile.photoSelected =
-        _photoSelected;
+    profile.photoSelected = _photoSelected;
 
-    profile.photoSource =
-        _photoSource;
+    profile.photoSource = _photoSource;
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            const ReviewProfileScreen(),
+        builder: (context) => const ReviewProfileScreen(),
       ),
     );
   }
@@ -68,24 +63,15 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              20,
-              20,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 620,
-              ),
+              constraints: const BoxConstraints(maxWidth: 620),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -147,9 +133,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                       decoration: BoxDecoration(
                         color: Colors.orange.withValues(alpha: 0.10),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.orange.shade800,
-                        ),
+                        border: Border.all(color: Colors.orange.shade800),
                       ),
                       child: Row(
                         children: [
@@ -190,9 +174,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: PhilotesColors.navy.withValues(
-                              alpha: 0.10,
-                            ),
+                            color: PhilotesColors.navy.withValues(alpha: 0.10),
                             blurRadius: 16,
                             offset: const Offset(0, 5),
                           ),
@@ -200,8 +182,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                       ),
                       child: _photoSelected
                           ? const Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
                                   Icons.person,
@@ -260,9 +241,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      icon: const Icon(
-                        Icons.photo_camera_outlined,
-                      ),
+                      icon: const Icon(Icons.photo_camera_outlined),
                       label: const Text(
                         'Take a Photo',
                         style: TextStyle(
@@ -292,9 +271,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      icon: const Icon(
-                        Icons.photo_library_outlined,
-                      ),
+                      icon: const Icon(Icons.photo_library_outlined),
                       label: const Text(
                         'Choose From Device',
                         style: TextStyle(
@@ -319,12 +296,8 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                             style: TextButton.styleFrom(
                               foregroundColor: PhilotesColors.navy,
                             ),
-                            icon: const Icon(
-                              Icons.edit_outlined,
-                            ),
-                            label: const Text(
-                              'Change Photo',
-                            ),
+                            icon: const Icon(Icons.edit_outlined),
+                            label: const Text('Change Photo'),
                           ),
                         ),
 
@@ -335,12 +308,8 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                             style: TextButton.styleFrom(
                               foregroundColor: Colors.brown.shade700,
                             ),
-                            icon: const Icon(
-                              Icons.delete_outline,
-                            ),
-                            label: const Text(
-                              'Remove Photo',
-                            ),
+                            icon: const Icon(Icons.delete_outline),
+                            label: const Text('Remove Photo'),
                           ),
                         ),
                       ],
@@ -355,9 +324,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                       color: Colors.white.withValues(alpha: 0.55),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: PhilotesColors.gold.withValues(
-                          alpha: 0.6,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.6),
                       ),
                     ),
                     child: const Column(
@@ -421,14 +388,10 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: PhilotesColors.gold.withValues(
-                        alpha: 0.10,
-                      ),
+                      color: PhilotesColors.gold.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: PhilotesColors.gold.withValues(
-                          alpha: 0.65,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.65),
                       ),
                     ),
                     child: const Row(
@@ -462,9 +425,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: PhilotesColors.navy.withValues(
-                        alpha: 0.05,
-                      ),
+                      color: PhilotesColors.navy.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Row(
@@ -540,9 +501,7 @@ class _ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
 }
 
 class _PhotoRule extends StatelessWidget {
-  const _PhotoRule({
-    required this.text,
-  });
+  const _PhotoRule({required this.text});
 
   final String text;
 

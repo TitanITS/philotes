@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../data/philotes_activity_catalog.dart';
 import '../../models/onboarding_profile_data.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
+import '../../widgets/interests/philotes_interest_widgets.dart';
 
 class YouScreen extends StatelessWidget {
   const YouScreen({super.key});
@@ -972,14 +974,88 @@ class EditProfileHubScreen extends StatelessWidget {
   }
 }
 
-class ProfileInterestsScreen extends StatelessWidget {
+class ProfileInterestsScreen extends StatefulWidget {
   const ProfileInterestsScreen({super.key});
+
+  @override
+  State<ProfileInterestsScreen> createState() => _ProfileInterestsScreenState();
+}
+
+class _ProfileInterestsScreenState extends State<ProfileInterestsScreen> {
+  final TextEditingController _customInterestController =
+      TextEditingController();
 
   OnboardingProfileData get _profile => OnboardingProfileData.instance;
 
   @override
+  void dispose() {
+    _customInterestController.dispose();
+    super.dispose();
+  }
+
+  void _toggleInterest(String interest) {
+    setState(() {
+      if (_profile.selectedInterests.contains(interest)) {
+        _profile.selectedInterests = _profile.selectedInterests
+            .where((value) => value != interest)
+            .toList();
+        _profile.favoriteInterests = _profile.favoriteInterests
+            .where((value) => value != interest)
+            .toList();
+      } else {
+        _profile.selectedInterests = <String>[
+          ..._profile.selectedInterests,
+          interest,
+        ];
+      }
+    });
+  }
+
+  void _addCustomInterest() {
+    final interest = _customInterestController.text.trim();
+    if (interest.isEmpty) return;
+
+    final alreadySelected = _profile.selectedInterests.any(
+      (value) => value.toLowerCase() == interest.toLowerCase(),
+    );
+
+    if (!alreadySelected) {
+      setState(() {
+        _profile.selectedInterests = <String>[
+          ..._profile.selectedInterests,
+          interest,
+        ];
+      });
+    }
+
+    _customInterestController.clear();
+  }
+
+  void _openAllActivities() {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute<void>(
+            builder: (context) => AllActivitiesScreen(
+              selectedInterests: _profile.selectedInterests,
+              onToggleInterest: _toggleInterest,
+            ),
+          ),
+        )
+        .then((_) {
+          if (mounted) setState(() {});
+        });
+  }
+
+  int _suggestionCount(double width) {
+    if (width >= 900) return 16;
+    if (width >= 600) return 12;
+    return 8;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _YouSubpageScaffold(
+      key: const Key('profileInterestsScreen'),
       title: 'Interests',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -989,29 +1065,218 @@ class ProfileInterestsScreen extends StatelessWidget {
             values: _profile.favoriteInterests,
             emptyText: 'No favorite interests selected.',
           ),
-
           const SizedBox(height: 16),
-
           _ProfileValuesCard(
-            title: 'Other Interests',
-            values: _profile.selectedInterests
-                .where((value) => !_profile.favoriteInterests.contains(value))
-                .toList(),
-            emptyText: 'No additional interests selected.',
+            title: 'Your Interests',
+            values: _profile.selectedInterests,
+            emptyText: 'No interests selected yet.',
           ),
+          const SizedBox(height: 22),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final visible = PhilotesActivityCatalog.starterActivities
+                  .take(_suggestionCount(constraints.maxWidth))
+                  .toList();
 
-          const SizedBox(height: 18),
-
-          const _DevelopmentNotice(
-            text:
-                'The production edit controls '
-                'will reuse the existing onboarding '
-                'interest catalog rather than '
-                'creating a second interest system.',
+              return PhilotesInterestCard(
+                key: const Key('interestSuggestionsCard'),
+                title: 'Explore Some Ideas',
+                subtitle:
+                    'A few general ideas to get you started. Choose anything that sounds like you.',
+                icon: Icons.lightbulb_outline,
+                child: Wrap(
+                  key: const Key('interestSuggestions'),
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final interest in visible)
+                      PhilotesInterestChip(
+                        key: Key('interestSuggestion-$interest'),
+                        label: interest,
+                        selected: _profile.selectedInterests.contains(interest),
+                        onTap: () => _toggleInterest(interest),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            key: const Key('viewAllActivitiesButton'),
+            onPressed: _openAllActivities,
+            icon: const Icon(Icons.grid_view_outlined),
+            label: const Text('View All Activities'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: PhilotesColors.navy,
+              backgroundColor: Colors.white.withValues(alpha: 0.45),
+              side: const BorderSide(color: PhilotesColors.gold, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+          ),
+          const SizedBox(height: 22),
+          PhilotesInterestCard(
+            key: const Key('makeItYoursCard'),
+            title: 'Make It Yours',
+            subtitle:
+                'We have some general activities listed, but your interests do not have to be on our list. Type any activity or interest below and tap the plus button to add it.',
+            icon: Icons.add_circle_outline,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: TextField(
+                    key: const Key('customInterestField'),
+                    controller: _customInterestController,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _addCustomInterest(),
+                    decoration: philotesInterestInputDecoration(
+                      hintText: 'Add your own interest',
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                IconButton.filled(
+                  key: const Key('addCustomInterestButton'),
+                  onPressed: _addCustomInterest,
+                  tooltip: 'Add interest',
+                  icon: const Icon(Icons.add),
+                  style: IconButton.styleFrom(
+                    backgroundColor: PhilotesColors.navy,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(52, 52),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
+}
+
+class AllActivitiesScreen extends StatefulWidget {
+  const AllActivitiesScreen({
+    super.key,
+    required this.selectedInterests,
+    required this.onToggleInterest,
+  });
+
+  final List<String> selectedInterests;
+  final ValueChanged<String> onToggleInterest;
+
+  @override
+  State<AllActivitiesScreen> createState() => _AllActivitiesScreenState();
+}
+
+class _AllActivitiesScreenState extends State<AllActivitiesScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  bool _matches(String value) =>
+      _query.isEmpty || value.toLowerCase().contains(_query.toLowerCase());
+
+  @override
+  Widget build(BuildContext context) {
+    final categories = PhilotesActivityCatalog.categories.entries
+        .map(
+          (entry) => MapEntry(entry.key, entry.value.where(_matches).toList()),
+        )
+        .where((entry) => entry.value.isNotEmpty)
+        .toList();
+
+    return _YouSubpageScaffold(
+      key: const Key('allActivitiesScreen'),
+      title: 'All Activities',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PhilotesInterestCard(
+            title: 'Find an Activity',
+            icon: Icons.search,
+            child: TextField(
+              key: const Key('allActivitiesSearchField'),
+              controller: _searchController,
+              onChanged: (value) => setState(() => _query = value.trim()),
+              decoration: philotesInterestInputDecoration(
+                hintText: 'Search all activities',
+                prefixIcon: Icons.search,
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          if (categories.isEmpty)
+            const PhilotesInterestCard(
+              title: 'No Matches',
+              icon: Icons.search_off,
+              child: Text(
+                'No listed activities match your search. Return to Interests to add anything you want.',
+                style: TextStyle(color: PhilotesColors.silver, fontSize: 13),
+              ),
+            )
+          else
+            for (final category in categories) ...[
+              PhilotesInterestCard(
+                key: Key('activityCategory-${category.key}'),
+                title: category.key,
+                icon: _activityCategoryIcon(category.key),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final interest in category.value)
+                      PhilotesInterestChip(
+                        key: Key('allActivity-$interest'),
+                        label: interest,
+                        selected: widget.selectedInterests.contains(interest),
+                        onTap: () {
+                          widget.onToggleInterest(interest);
+                          setState(() {});
+                        },
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+        ],
+      ),
+    );
+  }
+}
+
+IconData _activityCategoryIcon(String category) {
+  switch (category) {
+    case 'Fitness & Wellness':
+      return Icons.self_improvement_outlined;
+    case 'Sports & Recreation':
+      return Icons.sports_outlined;
+    case 'Food & Social':
+      return Icons.restaurant_outlined;
+    case 'Arts & Culture':
+      return Icons.palette_outlined;
+    case 'Outdoors & Nature':
+      return Icons.park_outlined;
+    case 'Games & Entertainment':
+      return Icons.sports_esports_outlined;
+    case 'Learning & Hobbies':
+      return Icons.auto_stories_outlined;
+    case 'Community & Volunteering':
+      return Icons.groups_outlined;
+    case 'Travel & Exploration':
+      return Icons.travel_explore_outlined;
+    default:
+      return Icons.interests_outlined;
   }
 }
 
@@ -1927,7 +2192,7 @@ class AboutPhilotesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const InformationScreen(
       title: 'About Philotes',
-      description: 'PHILOTES â€” A Community for Friendship.',
+      description: 'PHILOTES — A Community for Friendship.',
       items: [
         'Brought to you by Titan',
         'Application information',

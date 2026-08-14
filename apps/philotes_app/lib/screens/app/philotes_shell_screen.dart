@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/development/development_member_fixture.dart';
@@ -14,12 +14,10 @@ class PhilotesShellScreen extends StatefulWidget {
   const PhilotesShellScreen({super.key});
 
   @override
-  State<PhilotesShellScreen> createState() =>
-      _PhilotesShellScreenState();
+  State<PhilotesShellScreen> createState() => _PhilotesShellScreenState();
 }
 
-class _PhilotesShellScreenState
-    extends State<PhilotesShellScreen> {
+class _PhilotesShellScreenState extends State<PhilotesShellScreen> {
   int _selectedIndex = 0;
 
   @override
@@ -27,8 +25,7 @@ class _PhilotesShellScreenState
     super.initState();
 
     if (kDebugMode) {
-      DevelopmentMemberFixture
-          .seedMissingProfileData();
+      DevelopmentMemberFixture.seedMissingProfileData();
     }
   }
 
@@ -77,77 +74,46 @@ class _PhilotesShellScreenState
           children: [
             const _PhilotesAppHeader(),
 
-            Expanded(
-              child:
-                  _buildCurrentDestination(),
-            ),
+            Expanded(child: _buildCurrentDestination()),
           ],
         ),
       ),
       bottomNavigationBar: NavigationBar(
-        key: const Key(
-          'philotesMainNavigation',
-        ),
+        key: const Key('philotesMainNavigation'),
         selectedIndex: _selectedIndex,
-        onDestinationSelected:
-            _selectDestination,
+        onDestinationSelected: _selectDestination,
         backgroundColor: Colors.white,
-        indicatorColor:
-            PhilotesColors.gold.withValues(
-          alpha: 0.24,
-        ),
-        labelBehavior:
-            NavigationDestinationLabelBehavior
-                .alwaysShow,
+        indicatorColor: PhilotesColors.gold.withValues(alpha: 0.24),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: const [
           NavigationDestination(
             key: Key('navHome'),
-            icon: Icon(
-              Icons.home_outlined,
-            ),
-            selectedIcon: Icon(
-              Icons.home,
-            ),
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
           NavigationDestination(
             key: Key('navDiscover'),
-            icon: Icon(
-              Icons.person_search_outlined,
-            ),
-            selectedIcon: Icon(
-              Icons.person_search,
-            ),
+            icon: Icon(Icons.person_search_outlined),
+            selectedIcon: Icon(Icons.person_search),
             label: 'Discover',
           ),
           NavigationDestination(
             key: Key('navPlans'),
-            icon: Icon(
-              Icons.calendar_month_outlined,
-            ),
-            selectedIcon: Icon(
-              Icons.calendar_month,
-            ),
+            icon: Icon(Icons.calendar_month_outlined),
+            selectedIcon: Icon(Icons.calendar_month),
             label: 'Plans',
           ),
           NavigationDestination(
             key: Key('navMessages'),
-            icon: Icon(
-              Icons.chat_bubble_outline,
-            ),
-            selectedIcon: Icon(
-              Icons.chat_bubble,
-            ),
+            icon: Icon(Icons.chat_bubble_outline),
+            selectedIcon: Icon(Icons.chat_bubble),
             label: 'Messages',
           ),
           NavigationDestination(
             key: Key('navYou'),
-            icon: Icon(
-              Icons.person_outline,
-            ),
-            selectedIcon: Icon(
-              Icons.person,
-            ),
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
             label: 'You',
           ),
         ],
@@ -156,28 +122,19 @@ class _PhilotesShellScreenState
   }
 }
 
-
-class _PhilotesAppHeader
-    extends StatelessWidget {
+class _PhilotesAppHeader extends StatelessWidget {
   const _PhilotesAppHeader();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        14,
-        20,
-        14,
-      ),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
       decoration: BoxDecoration(
         color: PhilotesColors.ivory,
         border: const Border(
           bottom: BorderSide(
             color: PhilotesColors.gold,
-            width:
-                PhilotesDesign
-                    .secondaryBorderWidth,
+            width: PhilotesDesign.secondaryBorderWidth,
           ),
         ),
       ),
@@ -189,10 +146,7 @@ class _PhilotesAppHeader
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: PhilotesColors.navy,
-              border: Border.all(
-                color: PhilotesColors.gold,
-                width: 1.7,
-              ),
+              border: Border.all(color: PhilotesColors.gold, width: 1.7),
             ),
             child: const Icon(
               Icons.groups_outlined,
@@ -205,17 +159,14 @@ class _PhilotesAppHeader
 
           const Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'PHILOTES',
                   style: TextStyle(
-                    color:
-                        PhilotesColors.navy,
+                    color: PhilotesColors.navy,
                     fontSize: 18,
-                    fontWeight:
-                        FontWeight.w900,
+                    fontWeight: FontWeight.w900,
                     letterSpacing: 1.8,
                   ),
                 ),
@@ -225,11 +176,9 @@ class _PhilotesAppHeader
                 Text(
                   'A Community for Friendship',
                   style: TextStyle(
-                    color:
-                        PhilotesColors.gold,
+                    color: PhilotesColors.gold,
                     fontSize: 11,
-                    fontWeight:
-                        FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -237,14 +186,10 @@ class _PhilotesAppHeader
           ),
 
           IconButton(
-            key: const Key(
-              'homeNotificationsButton',
-            ),
+            key: const Key('homeNotificationsButton'),
             tooltip: 'Notifications',
             onPressed: () {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
                     'Notifications will be '
@@ -264,4 +209,3 @@ class _PhilotesAppHeader
     );
   }
 }
-

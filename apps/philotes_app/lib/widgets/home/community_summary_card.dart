@@ -4,29 +4,20 @@ import '../../data/development/development_home_fixture.dart';
 import '../../theme/philotes_colors.dart';
 import 'home_section_card.dart';
 
-class CommunitySummaryCard
-    extends StatelessWidget {
-  const CommunitySummaryCard({
-    super.key,
-    this.onUnreadConversationsTap,
-  });
+class CommunitySummaryCard extends StatelessWidget {
+  const CommunitySummaryCard({super.key, this.onUnreadConversationsTap});
 
   final VoidCallback? onUnreadConversationsTap;
 
   @override
   Widget build(BuildContext context) {
     return HomeSectionCard(
-      key: const Key(
-        'communitySummaryCard',
-      ),
+      key: const Key('communitySummaryCard'),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _CommunityRow(
-            value:
-                DevelopmentHomeFixture
-                    .unreadConversations,
+            value: DevelopmentHomeFixture.unreadConversations,
             label: 'unread conversations',
             onTap: onUnreadConversationsTap,
             showChevron: true,
@@ -35,9 +26,7 @@ class CommunitySummaryCard
           const Divider(height: 26),
 
           _CommunityRow(
-            value:
-                DevelopmentHomeFixture
-                    .newConnections,
+            value: DevelopmentHomeFixture.newConnections,
             label: 'new connection',
           ),
         ],
@@ -45,7 +34,6 @@ class CommunitySummaryCard
     );
   }
 }
-
 
 class _CommunityRow extends StatelessWidget {
   const _CommunityRow({
@@ -70,10 +58,7 @@ class _CommunityRow extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: PhilotesColors.navy,
-            border: Border.all(
-              color: PhilotesColors.gold,
-              width: 1.5,
-            ),
+            border: Border.all(color: PhilotesColors.gold, width: 1.5),
           ),
           alignment: Alignment.center,
           child: Text(
@@ -100,11 +85,7 @@ class _CommunityRow extends StatelessWidget {
         ),
 
         if (showChevron)
-          const Icon(
-            Icons.chevron_right,
-            color: PhilotesColors.gold,
-            size: 20,
-          ),
+          const Icon(Icons.chevron_right, color: PhilotesColors.gold, size: 20),
       ],
     );
 
@@ -115,17 +96,11 @@ class _CommunityRow extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        key: const Key(
-          'openMessagesFromHomeButton',
-        ),
+        key: const Key('openMessagesFromHomeButton'),
         onTap: onTap,
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(
-            vertical: 3,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 3),
           child: content,
         ),
       ),

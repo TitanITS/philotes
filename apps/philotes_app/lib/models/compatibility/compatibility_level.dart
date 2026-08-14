@@ -1,11 +1,6 @@
-enum CompatibilityLevel {
-  strong,
-  moderate,
-  limited,
-}
+enum CompatibilityLevel { strong, moderate, limited }
 
-extension CompatibilityLevelLabel
-    on CompatibilityLevel {
+extension CompatibilityLevelLabel on CompatibilityLevel {
   String get label {
     switch (this) {
       case CompatibilityLevel.strong:

@@ -15,89 +15,62 @@ import '../../widgets/home/today_card.dart';
 class PhilotesHomeScreen extends StatelessWidget {
   const PhilotesHomeScreen({
     super.key,
-    this.compatibilityService =
-        const DevelopmentCompatibilityService(),
+    this.compatibilityService = const DevelopmentCompatibilityService(),
     this.onOpenMessages,
   });
 
-  final CompatibilityService
-  compatibilityService;
+  final CompatibilityService compatibilityService;
 
   final VoidCallback? onOpenMessages;
 
-  void _openMember(
-    BuildContext context,
-    SuggestedMember member,
-  ) {
+  void _openMember(BuildContext context, SuggestedMember member) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            MemberProfileScreen(
-          member: member,
-        ),
+        builder: (context) => MemberProfileScreen(member: member),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final profile =
-        OnboardingProfileData.instance;
+    final profile = OnboardingProfileData.instance;
 
-    final name =
-        profile.displayName.trim().isEmpty
-            ? 'Friend'
-            : profile.displayName.trim();
+    final name = profile.displayName.trim().isEmpty
+        ? 'Friend'
+        : profile.displayName.trim();
 
-    final members =
-        compatibilityService
-            .suggestedMembers(profile)
-            .take(2)
-            .toList();
+    final members = compatibilityService
+        .suggestedMembers(profile)
+        .take(2)
+        .toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isWide =
-            constraints.maxWidth >=
-            PhilotesDesign.wideBreakpoint;
+        final isWide = constraints.maxWidth >= PhilotesDesign.wideBreakpoint;
 
         return SingleChildScrollView(
-          key: const Key(
-            'philotesHomeScreen',
-          ),
+          key: const Key('philotesHomeScreen'),
           padding: EdgeInsets.fromLTRB(
-            isWide
-                ? PhilotesDesign.widePadding
-                : PhilotesDesign.mobilePadding,
+            isWide ? PhilotesDesign.widePadding : PhilotesDesign.mobilePadding,
             24,
-            isWide
-                ? PhilotesDesign.widePadding
-                : PhilotesDesign.mobilePadding,
+            isWide ? PhilotesDesign.widePadding : PhilotesDesign.mobilePadding,
             40,
           ),
           child: Center(
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(
-                maxWidth:
-                    PhilotesDesign
-                        .contentMaxWidth,
+              constraints: const BoxConstraints(
+                maxWidth: PhilotesDesign.contentMaxWidth,
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
                     'Welcome back, $name',
-                    key: const Key(
-                      'homeWelcomeName',
-                    ),
+                    key: const Key('homeWelcomeName'),
                     style: const TextStyle(
-                      color:
-                          PhilotesColors.navy,
+                      color: PhilotesColors.navy,
                       fontSize: 29,
-                      fontWeight:
-                          FontWeight.w800,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
 
@@ -106,8 +79,7 @@ class PhilotesHomeScreen extends StatelessWidget {
                   const Text(
                     "Here's what's happening today.",
                     style: TextStyle(
-                      color:
-                          PhilotesColors.silver,
+                      color: PhilotesColors.silver,
                       fontSize: 14,
                     ),
                   ),
@@ -117,29 +89,17 @@ class PhilotesHomeScreen extends StatelessWidget {
                   if (isWide)
                     _WideHomeLayout(
                       members: members,
-                      onOpenMessages:
-                          onOpenMessages,
-                      onOpenMember: (
-                        member,
-                      ) {
-                        _openMember(
-                          context,
-                          member,
-                        );
+                      onOpenMessages: onOpenMessages,
+                      onOpenMember: (member) {
+                        _openMember(context, member);
                       },
                     )
                   else
                     _MobileHomeLayout(
                       members: members,
-                      onOpenMessages:
-                          onOpenMessages,
-                      onOpenMember: (
-                        member,
-                      ) {
-                        _openMember(
-                          context,
-                          member,
-                        );
+                      onOpenMessages: onOpenMessages,
+                      onOpenMember: (member) {
+                        _openMember(context, member);
                       },
                     ),
 
@@ -147,20 +107,10 @@ class PhilotesHomeScreen extends StatelessWidget {
                     const SizedBox(height: 28),
 
                     Container(
-                      key: const Key(
-                        'developmentAccountNotice',
-                      ),
-                      padding:
-                          const EdgeInsets.all(
-                        14,
-                      ),
-                      decoration:
-                          PhilotesDesign
-                              .secondaryCardDecoration(
-                        backgroundColor:
-                            PhilotesColors
-                                .navy
-                                .withValues(
+                      key: const Key('developmentAccountNotice'),
+                      padding: const EdgeInsets.all(14),
+                      decoration: PhilotesDesign.secondaryCardDecoration(
+                        backgroundColor: PhilotesColors.navy.withValues(
                           alpha: 0.04,
                         ),
                       ),
@@ -173,9 +123,7 @@ class PhilotesHomeScreen extends StatelessWidget {
                         'compatibility engine have not '
                         'been connected yet.',
                         style: TextStyle(
-                          color:
-                              PhilotesColors
-                                  .silver,
+                          color: PhilotesColors.silver,
                           fontSize: 10,
                           height: 1.45,
                         ),
@@ -192,9 +140,7 @@ class PhilotesHomeScreen extends StatelessWidget {
   }
 }
 
-
-class _MobileHomeLayout
-    extends StatelessWidget {
+class _MobileHomeLayout extends StatelessWidget {
   const _MobileHomeLayout({
     required this.members,
     required this.onOpenMember,
@@ -202,57 +148,37 @@ class _MobileHomeLayout
   });
 
   final List<SuggestedMember> members;
-  final ValueChanged<SuggestedMember>
-  onOpenMember;
+  final ValueChanged<SuggestedMember> onOpenMember;
   final VoidCallback? onOpenMessages;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _SuggestedPeopleSection(
-          members: members,
-          onOpenMember: onOpenMember,
-        ),
+        _SuggestedPeopleSection(members: members, onOpenMember: onOpenMember),
 
-        const SizedBox(
-          height:
-              PhilotesDesign.sectionSpacing,
-        ),
+        const SizedBox(height: PhilotesDesign.sectionSpacing),
 
-        const _SectionHeading(
-          title: 'Today',
-        ),
+        const _SectionHeading(title: 'Today'),
 
         const SizedBox(height: 10),
 
         const TodayCard(),
 
-        const SizedBox(
-          height:
-              PhilotesDesign.sectionSpacing,
-        ),
+        const SizedBox(height: PhilotesDesign.sectionSpacing),
 
-        const _SectionHeading(
-          title: 'Your Community',
-        ),
+        const _SectionHeading(title: 'Your Community'),
 
         const SizedBox(height: 10),
 
-        CommunitySummaryCard(
-          onUnreadConversationsTap:
-              onOpenMessages,
-        ),
+        CommunitySummaryCard(onUnreadConversationsTap: onOpenMessages),
       ],
     );
   }
 }
 
-
-class _WideHomeLayout
-    extends StatelessWidget {
+class _WideHomeLayout extends StatelessWidget {
   const _WideHomeLayout({
     required this.members,
     required this.onOpenMember,
@@ -260,22 +186,19 @@ class _WideHomeLayout
   });
 
   final List<SuggestedMember> members;
-  final ValueChanged<SuggestedMember>
-  onOpenMember;
+  final ValueChanged<SuggestedMember> onOpenMember;
   final VoidCallback? onOpenMessages;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           flex: 7,
           child: _SuggestedPeopleSection(
             members: members,
-            onOpenMember:
-                onOpenMember,
+            onOpenMember: onOpenMember,
             wide: true,
           ),
         ),
@@ -285,34 +208,21 @@ class _WideHomeLayout
         Expanded(
           flex: 3,
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _SectionHeading(
-                title: 'Today',
-              ),
+              _SectionHeading(title: 'Today'),
 
               SizedBox(height: 10),
 
               TodayCard(),
 
-              SizedBox(
-                height:
-                    PhilotesDesign
-                        .sectionSpacing,
-              ),
+              SizedBox(height: PhilotesDesign.sectionSpacing),
 
-              _SectionHeading(
-                title:
-                    'Your Community',
-              ),
+              _SectionHeading(title: 'Your Community'),
 
               SizedBox(height: 10),
 
-              CommunitySummaryCard(
-                onUnreadConversationsTap:
-                    onOpenMessages,
-              ),
+              CommunitySummaryCard(onUnreadConversationsTap: onOpenMessages),
             ],
           ),
         ),
@@ -321,9 +231,7 @@ class _WideHomeLayout
   }
 }
 
-
-class _SuggestedPeopleSection
-    extends StatelessWidget {
+class _SuggestedPeopleSection extends StatelessWidget {
   const _SuggestedPeopleSection({
     required this.members,
     required this.onOpenMember,
@@ -331,89 +239,55 @@ class _SuggestedPeopleSection
   });
 
   final List<SuggestedMember> members;
-  final ValueChanged<SuggestedMember>
-  onOpenMember;
+  final ValueChanged<SuggestedMember> onOpenMember;
   final bool wide;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      key: const Key(
-        'peoplePreviewCard',
-      ),
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch,
+      key: const Key('peoplePreviewCard'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _SectionHeading(
-          title:
-              'People You May Enjoy Meeting',
-        ),
+        const _SectionHeading(title: 'People You May Enjoy Meeting'),
 
         const SizedBox(height: 5),
 
         const Text(
           'Based on your interests and '
           'friendship preferences.',
-          style: TextStyle(
-            color: PhilotesColors.silver,
-            fontSize: 12,
-          ),
+          style: TextStyle(color: PhilotesColors.silver, fontSize: 12),
         ),
 
         const SizedBox(height: 12),
 
         if (wide)
           Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (
-                var index = 0;
-                index < members.length;
-                index++
-              ) ...[
+              for (var index = 0; index < members.length; index++) ...[
                 Expanded(
-                  child:
-                      SuggestedMemberCard(
-                    member:
-                        members[index],
+                  child: SuggestedMemberCard(
+                    member: members[index],
                     onOpenProfile: () {
-                      onOpenMember(
-                        members[index],
-                      );
+                      onOpenMember(members[index]);
                     },
                   ),
                 ),
-                if (index <
-                    members.length - 1)
-                  const SizedBox(
-                    width: 14,
-                  ),
+                if (index < members.length - 1) const SizedBox(width: 14),
               ],
             ],
           )
         else
           Column(
             children: [
-              for (
-                var index = 0;
-                index < members.length;
-                index++
-              ) ...[
+              for (var index = 0; index < members.length; index++) ...[
                 SuggestedMemberCard(
-                  member:
-                      members[index],
+                  member: members[index],
                   onOpenProfile: () {
-                    onOpenMember(
-                      members[index],
-                    );
+                    onOpenMember(members[index]);
                   },
                 ),
-                if (index <
-                    members.length - 1)
-                  const SizedBox(
-                    height: 14,
-                  ),
+                if (index < members.length - 1) const SizedBox(height: 14),
               ],
             ],
           ),
@@ -423,13 +297,9 @@ class _SuggestedPeopleSection
         Align(
           alignment: Alignment.center,
           child: TextButton(
-            key: const Key(
-              'viewMorePeopleButton',
-            ),
+            key: const Key('viewMorePeopleButton'),
             onPressed: () {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
                     'The full Discover '
@@ -439,9 +309,7 @@ class _SuggestedPeopleSection
                 ),
               );
             },
-            child: const Text(
-              'View More People',
-            ),
+            child: const Text('View More People'),
           ),
         ),
       ],
@@ -449,12 +317,8 @@ class _SuggestedPeopleSection
   }
 }
 
-
-class _SectionHeading
-    extends StatelessWidget {
-  const _SectionHeading({
-    required this.title,
-  });
+class _SectionHeading extends StatelessWidget {
+  const _SectionHeading({required this.title});
 
   final String title;
 
@@ -467,21 +331,13 @@ class _SectionHeading
           height: 22,
           decoration: BoxDecoration(
             color: PhilotesColors.gold,
-            borderRadius:
-                BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(4),
           ),
         ),
 
         const SizedBox(width: 9),
 
-        Expanded(
-          child: Text(
-            title,
-            style:
-                PhilotesDesign
-                    .sectionHeading,
-          ),
-        ),
+        Expanded(child: Text(title, style: PhilotesDesign.sectionHeading)),
       ],
     );
   }

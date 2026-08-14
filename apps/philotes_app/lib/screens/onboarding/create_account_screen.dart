@@ -21,14 +21,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   bool get _hasMinimumLength => _passwordController.text.length >= 12;
 
-  bool get _hasUppercase =>
-      RegExp(r'[A-Z]').hasMatch(_passwordController.text);
+  bool get _hasUppercase => RegExp(r'[A-Z]').hasMatch(_passwordController.text);
 
-  bool get _hasLowercase =>
-      RegExp(r'[a-z]').hasMatch(_passwordController.text);
+  bool get _hasLowercase => RegExp(r'[a-z]').hasMatch(_passwordController.text);
 
-  bool get _hasNumber =>
-      RegExp(r'[0-9]').hasMatch(_passwordController.text);
+  bool get _hasNumber => RegExp(r'[0-9]').hasMatch(_passwordController.text);
 
   bool get _hasSymbol =>
       RegExp(r'[^A-Za-z0-9]').hasMatch(_passwordController.text);
@@ -47,9 +44,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       return false;
     }
 
-    return RegExp(
-      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-    ).hasMatch(email);
+    return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
   }
 
   bool get _passwordsMatch =>
@@ -57,9 +52,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       _passwordController.text == _confirmPasswordController.text;
 
   bool get _formIsValid =>
-      _emailIsValid &&
-      _passwordMeetsRequirements &&
-      _passwordsMatch;
+      _emailIsValid && _passwordMeetsRequirements && _passwordsMatch;
 
   void _refreshValidation(String value) {
     setState(() {});
@@ -74,9 +67,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) => VerifyEmailScreen(
-          email: email,
-        ),
+        builder: (context) => VerifyEmailScreen(email: email),
       ),
     );
   }
@@ -99,24 +90,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              20,
-              24,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 620,
-              ),
+              constraints: const BoxConstraints(maxWidth: 620),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -173,16 +155,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     key: const Key('emailField'),
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [
-                      AutofillHints.email,
-                    ],
+                    autofillHints: const [AutofillHints.email],
                     textInputAction: TextInputAction.next,
                     onChanged: _refreshValidation,
                     decoration: InputDecoration(
                       hintText: 'name@example.com',
-                      prefixIcon: const Icon(
-                        Icons.email_outlined,
-                      ),
+                      prefixIcon: const Icon(Icons.email_outlined),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.65),
                       border: OutlineInputBorder(
@@ -225,20 +203,17 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     key: const Key('passwordField'),
                     controller: _passwordController,
                     obscureText: !_showPassword,
-                    autofillHints: const [
-                      AutofillHints.newPassword,
-                    ],
+                    autofillHints: const [AutofillHints.newPassword],
                     textInputAction: TextInputAction.next,
                     onChanged: _refreshValidation,
                     decoration: InputDecoration(
                       hintText: 'Create a secure password',
-                      prefixIcon: const Icon(
-                        Icons.lock_outline,
-                      ),
+                      prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         key: const Key('passwordVisibilityButton'),
-                        tooltip:
-                            _showPassword ? 'Hide password' : 'Show password',
+                        tooltip: _showPassword
+                            ? 'Hide password'
+                            : 'Show password',
                         onPressed: () {
                           setState(() {
                             _showPassword = !_showPassword;
@@ -341,9 +316,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     key: const Key('confirmPasswordField'),
                     controller: _confirmPasswordController,
                     obscureText: !_showConfirmPassword,
-                    autofillHints: const [
-                      AutofillHints.newPassword,
-                    ],
+                    autofillHints: const [AutofillHints.newPassword],
                     textInputAction: TextInputAction.done,
                     onChanged: _refreshValidation,
                     onSubmitted: (_) {
@@ -353,9 +326,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     },
                     decoration: InputDecoration(
                       hintText: 'Enter your password again',
-                      prefixIcon: const Icon(
-                        Icons.lock_reset_outlined,
-                      ),
+                      prefixIcon: const Icon(Icons.lock_reset_outlined),
                       suffixIcon: IconButton(
                         key: const Key('confirmPasswordVisibilityButton'),
                         tooltip: _showConfirmPassword
@@ -363,8 +334,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             : 'Show password',
                         onPressed: () {
                           setState(() {
-                            _showConfirmPassword =
-                                !_showConfirmPassword;
+                            _showConfirmPassword = !_showConfirmPassword;
                           });
                         },
                         icon: Icon(
@@ -431,10 +401,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       style: FilledButton.styleFrom(
                         backgroundColor: PhilotesColors.navy,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor:
-                            PhilotesColors.navy.withValues(alpha: 0.35),
-                        disabledForegroundColor:
-                            Colors.white.withValues(alpha: 0.75),
+                        disabledBackgroundColor: PhilotesColors.navy.withValues(
+                          alpha: 0.35,
+                        ),
+                        disabledForegroundColor: Colors.white.withValues(
+                          alpha: 0.75,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -484,10 +456,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 }
 
 class _PasswordRequirement extends StatelessWidget {
-  const _PasswordRequirement({
-    required this.label,
-    required this.complete,
-  });
+  const _PasswordRequirement({required this.label, required this.complete});
 
   final String label;
   final bool complete;
@@ -499,12 +468,8 @@ class _PasswordRequirement extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            complete
-                ? Icons.check_circle
-                : Icons.radio_button_unchecked,
-            color: complete
-                ? PhilotesColors.gold
-                : PhilotesColors.silver,
+            complete ? Icons.check_circle : Icons.radio_button_unchecked,
+            color: complete ? PhilotesColors.gold : PhilotesColors.silver,
             size: 18,
           ),
           const SizedBox(width: 8),
@@ -512,12 +477,9 @@ class _PasswordRequirement extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: complete
-                    ? PhilotesColors.navy
-                    : PhilotesColors.silver,
+                color: complete ? PhilotesColors.navy : PhilotesColors.silver,
                 fontSize: 13,
-                fontWeight:
-                    complete ? FontWeight.w600 : FontWeight.w400,
+                fontWeight: complete ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
           ),

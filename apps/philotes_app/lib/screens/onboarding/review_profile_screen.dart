@@ -7,10 +7,7 @@ import '../../theme/philotes_colors.dart';
 class ReviewProfileScreen extends StatelessWidget {
   const ReviewProfileScreen({super.key});
 
-  void _showEditMessage(
-    BuildContext context,
-    String section,
-  ) {
+  void _showEditMessage(BuildContext context, String section) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -20,13 +17,10 @@ class ReviewProfileScreen extends StatelessWidget {
     );
   }
 
-  void _completeProfile(
-    BuildContext context,
-  ) {
+  void _completeProfile(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            const WelcomeToPhilotesScreen(),
+        builder: (context) => const WelcomeToPhilotesScreen(),
       ),
     );
   }
@@ -35,25 +29,17 @@ class ReviewProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final profile = OnboardingProfileData.instance;
 
-    final displayName =
-        profile.displayName.trim().isEmpty
-            ? 'Your Display Name'
-            : profile.displayName.trim();
+    final displayName = profile.displayName.trim().isEmpty
+        ? 'Your Display Name'
+        : profile.displayName.trim();
 
-    final introduction =
-        profile.introduction.trim().isEmpty
-            ? 'No introduction added yet.'
-            : profile.introduction.trim();
+    final introduction = profile.introduction.trim().isEmpty
+        ? 'No introduction added yet.'
+        : profile.introduction.trim();
 
-    final otherInterests =
-        profile.selectedInterests
-            .where(
-              (interest) =>
-                  !profile.favoriteInterests.contains(
-                    interest,
-                  ),
-            )
-            .toList();
+    final otherInterests = profile.selectedInterests
+        .where((interest) => !profile.favoriteInterests.contains(interest))
+        .toList();
 
     return Scaffold(
       backgroundColor: PhilotesColors.ivory,
@@ -63,27 +49,17 @@ class ReviewProfileScreen extends StatelessWidget {
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              20,
-              20,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 700,
-              ),
+              constraints: const BoxConstraints(maxWidth: 700),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
                     'Review Your Profile',
@@ -103,8 +79,7 @@ class ReviewProfileScreen extends StatelessWidget {
                       height: 2,
                       decoration: BoxDecoration(
                         color: PhilotesColors.gold,
-                        borderRadius:
-                            BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
@@ -129,9 +104,7 @@ class ReviewProfileScreen extends StatelessWidget {
                   //
                   Center(
                     child: Container(
-                      key: const Key(
-                        'reviewProfilePhoto',
-                      ),
+                      key: const Key('reviewProfilePhoto'),
                       width: 210,
                       height: 210,
                       decoration: BoxDecoration(
@@ -143,14 +116,9 @@ class ReviewProfileScreen extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color:
-                                PhilotesColors.navy
-                                    .withValues(
-                              alpha: 0.12,
-                            ),
+                            color: PhilotesColors.navy.withValues(alpha: 0.12),
                             blurRadius: 18,
-                            offset:
-                                const Offset(0, 6),
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
@@ -166,9 +134,7 @@ class ReviewProfileScreen extends StatelessWidget {
 
                   Text(
                     displayName,
-                    key: const Key(
-                      'reviewDisplayName',
-                    ),
+                    key: const Key('reviewDisplayName'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: PhilotesColors.navy,
@@ -180,8 +146,7 @@ class ReviewProfileScreen extends StatelessWidget {
                   const SizedBox(height: 6),
 
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(
                         Icons.location_on_outlined,
@@ -192,18 +157,12 @@ class ReviewProfileScreen extends StatelessWidget {
                       Flexible(
                         child: Text(
                           profile.generalAreaLabel,
-                          key: const Key(
-                            'reviewGeneralArea',
-                          ),
-                          textAlign:
-                              TextAlign.center,
+                          key: const Key('reviewGeneralArea'),
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
-                            color:
-                                PhilotesColors
-                                    .silver,
+                            color: PhilotesColors.silver,
                             fontSize: 13,
-                            fontWeight:
-                                FontWeight.w600,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -214,36 +173,23 @@ class ReviewProfileScreen extends StatelessWidget {
 
                   Center(
                     child: TextButton.icon(
-                      key: const Key(
-                        'editPhotoButton',
-                      ),
+                      key: const Key('editPhotoButton'),
                       onPressed: () {
-                        _showEditMessage(
-                          context,
-                          'Profile photo',
-                        );
+                        _showEditMessage(context, 'Profile photo');
                       },
                       style: TextButton.styleFrom(
-                        foregroundColor:
-                            PhilotesColors.navy,
+                        foregroundColor: PhilotesColors.navy,
                       ),
-                      icon: const Icon(
-                        Icons.edit_outlined,
-                        size: 18,
-                      ),
-                      label: const Text(
-                        'Edit Photo',
-                      ),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: const Text('Edit Photo'),
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
                   const _SectionHeading(
-                    title:
-                        'WHAT OTHER MEMBERS WILL SEE',
-                    icon:
-                        Icons.visibility_outlined,
+                    title: 'WHAT OTHER MEMBERS WILL SEE',
+                    icon: Icons.visibility_outlined,
                   ),
 
                   const SizedBox(height: 12),
@@ -253,19 +199,13 @@ class ReviewProfileScreen extends StatelessWidget {
                   //
                   _ReviewCard(
                     title: 'About Me',
-                    editKey:
-                        'editIntroductionButton',
+                    editKey: 'editIntroductionButton',
                     onEdit: () {
-                      _showEditMessage(
-                        context,
-                        'About Me',
-                      );
+                      _showEditMessage(context, 'About Me');
                     },
                     child: Text(
                       introduction,
-                      key: const Key(
-                        'reviewIntroduction',
-                      ),
+                      key: const Key('reviewIntroduction'),
                       style: const TextStyle(
                         color: PhilotesColors.navy,
                         fontSize: 14,
@@ -281,68 +221,43 @@ class ReviewProfileScreen extends StatelessWidget {
                   //
                   _ReviewCard(
                     title: 'My Favorites',
-                    editKey:
-                        'editInterestsButton',
+                    editKey: 'editInterestsButton',
                     onEdit: () {
-                      _showEditMessage(
-                        context,
-                        'Interests',
-                      );
+                      _showEditMessage(context, 'Interests');
                     },
-                    child:
-                        profile.favoriteInterests.isEmpty
-                            ? const Text(
-                                'No favorite interests selected.',
-                                style: TextStyle(
-                                  color:
-                                      PhilotesColors
-                                          .silver,
-                                  fontSize: 13,
+                    child: profile.favoriteInterests.isEmpty
+                        ? const Text(
+                            'No favorite interests selected.',
+                            style: TextStyle(
+                              color: PhilotesColors.silver,
+                              fontSize: 13,
+                            ),
+                          )
+                        : Wrap(
+                            key: const Key('favoriteInterestsList'),
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final interest in profile.favoriteInterests)
+                                Chip(
+                                  label: Text(interest),
+                                  backgroundColor: PhilotesColors.navy,
+                                  side: const BorderSide(
+                                    color: PhilotesColors.gold,
+                                  ),
+                                  avatar: const Icon(
+                                    Icons.star,
+                                    color: PhilotesColors.gold,
+                                    size: 17,
+                                  ),
+                                  labelStyle: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              )
-                            : Wrap(
-                                key: const Key(
-                                  'favoriteInterestsList',
-                                ),
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  for (final interest
-                                      in profile
-                                          .favoriteInterests)
-                                    Chip(
-                                      label: Text(
-                                        interest,
-                                      ),
-                                      backgroundColor:
-                                          PhilotesColors
-                                              .navy,
-                                      side:
-                                          const BorderSide(
-                                        color:
-                                            PhilotesColors
-                                                .gold,
-                                      ),
-                                      avatar:
-                                          const Icon(
-                                        Icons.star,
-                                        color:
-                                            PhilotesColors
-                                                .gold,
-                                        size: 17,
-                                      ),
-                                      labelStyle:
-                                          const TextStyle(
-                                        color:
-                                            Colors.white,
-                                        fontSize: 12,
-                                        fontWeight:
-                                            FontWeight
-                                                .w600,
-                                      ),
-                                    ),
-                                ],
-                              ),
+                            ],
+                          ),
                   ),
 
                   //
@@ -353,55 +268,35 @@ class ReviewProfileScreen extends StatelessWidget {
 
                     _ReviewCard(
                       title: 'More of My Interests',
-                      editKey:
-                          'editMoreInterestsButton',
+                      editKey: 'editMoreInterestsButton',
                       onEdit: () {
-                        _showEditMessage(
-                          context,
-                          'Interests',
-                        );
+                        _showEditMessage(context, 'Interests');
                       },
                       child: Wrap(
-                        key: const Key(
-                          'otherInterestsList',
-                        ),
+                        key: const Key('otherInterestsList'),
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          for (final interest
-                              in otherInterests)
+                          for (final interest in otherInterests)
                             Chip(
-                              label: Text(
-                                interest,
-                              ),
-                              backgroundColor:
-                                  Colors.white
-                                      .withValues(
+                              label: Text(interest),
+                              backgroundColor: Colors.white.withValues(
                                 alpha: 0.80,
                               ),
                               side: BorderSide(
-                                color:
-                                    PhilotesColors
-                                        .gold
-                                        .withValues(
+                                color: PhilotesColors.gold.withValues(
                                   alpha: 0.75,
                                 ),
                               ),
                               avatar: const Icon(
                                 Icons.interests_outlined,
-                                color:
-                                    PhilotesColors
-                                        .gold,
+                                color: PhilotesColors.gold,
                                 size: 16,
                               ),
-                              labelStyle:
-                                  const TextStyle(
-                                color:
-                                    PhilotesColors
-                                        .navy,
+                              labelStyle: const TextStyle(
+                                color: PhilotesColors.navy,
                                 fontSize: 12,
-                                fontWeight:
-                                    FontWeight.w600,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                         ],
@@ -413,41 +308,30 @@ class ReviewProfileScreen extends StatelessWidget {
                   // OPTIONAL PUBLIC PROFILE DETAILS
                   //
                   if (profile.pronouns != null &&
-                      profile.pronouns!
-                          .trim()
-                          .isNotEmpty) ...[
+                      profile.pronouns!.trim().isNotEmpty) ...[
                     const SizedBox(height: 14),
 
                     _ReviewCard(
                       title: 'Profile Details',
-                      editKey:
-                          'editProfileDetailsButton',
+                      editKey: 'editProfileDetailsButton',
                       onEdit: () {
-                        _showEditMessage(
-                          context,
-                          'Profile details',
-                        );
+                        _showEditMessage(context, 'Profile details');
                       },
                       child: Row(
                         children: [
                           const Text(
                             'Pronouns: ',
                             style: TextStyle(
-                              color:
-                                  PhilotesColors
-                                      .silver,
+                              color: PhilotesColors.silver,
                               fontSize: 13,
                             ),
                           ),
                           Text(
                             profile.pronouns!,
                             style: const TextStyle(
-                              color:
-                                  PhilotesColors
-                                      .navy,
+                              color: PhilotesColors.navy,
                               fontSize: 13,
-                              fontWeight:
-                                  FontWeight.w700,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -461,8 +345,7 @@ class ReviewProfileScreen extends StatelessWidget {
                   // FRIENDSHIP PREFERENCES
                   //
                   const _SectionHeading(
-                    title:
-                        'YOUR FRIENDSHIP PREFERENCES',
+                    title: 'YOUR FRIENDSHIP PREFERENCES',
                     icon: Icons.tune_outlined,
                   ),
 
@@ -483,123 +366,73 @@ class ReviewProfileScreen extends StatelessWidget {
 
                   _ReviewCard(
                     title: 'Discovery Preferences',
-                    editKey:
-                        'editPreferencesButton',
+                    editKey: 'editPreferencesButton',
                     onEdit: () {
-                      _showEditMessage(
-                        context,
-                        'Friendship preferences',
-                      );
+                      _showEditMessage(context, 'Friendship preferences');
                     },
                     child: Column(
                       children: [
                         _PreferenceRow(
-                          label:
-                              'Preferred friend age range',
-                          value:
-                              profile
-                                  .friendAgeRangeLabel,
+                          label: 'Preferred friend age range',
+                          value: profile.friendAgeRangeLabel,
                         ),
 
-                        const Divider(
-                          height: 22,
-                        ),
+                        const Divider(height: 22),
 
                         _PreferenceRow(
-                          label:
-                              'Meeting distance',
-                          value:
-                              profile
-                                  .meetingDistanceLabel,
+                          label: 'Meeting distance',
+                          value: profile.meetingDistanceLabel,
                         ),
 
-                        const Divider(
-                          height: 22,
-                        ),
+                        const Divider(height: 22),
 
                         _PreferenceRow(
-                          label:
-                              'Online friendships',
-                          value:
-                              profile.onlineFriendships
-                                  ? 'Yes'
-                                  : 'No',
+                          label: 'Online friendships',
+                          value: profile.onlineFriendships ? 'Yes' : 'No',
                         ),
 
-                        if (profile
-                            .friendshipStyles
-                            .isNotEmpty) ...[
-                          const Divider(
-                            height: 22,
-                          ),
+                        if (profile.friendshipStyles.isNotEmpty) ...[
+                          const Divider(height: 22),
 
                           _PreferenceRow(
-                            label:
-                                'Friendship styles',
-                            value:
-                                profile
-                                    .friendshipStyles
-                                    .join(', '),
+                            label: 'Friendship styles',
+                            value: profile.friendshipStyles.join(', '),
                           ),
                         ],
 
-                        if (profile.socialFrequency !=
-                            null) ...[
-                          const Divider(
-                            height: 22,
-                          ),
+                        if (profile.socialFrequency != null) ...[
+                          const Divider(height: 22),
 
                           _PreferenceRow(
-                            label:
-                                'Social pace',
-                            value:
-                                profile
-                                    .socialFrequency!,
+                            label: 'Social pace',
+                            value: profile.socialFrequency!,
                           ),
                         ],
 
-                        if (profile.planningStyle !=
-                            null) ...[
-                          const Divider(
-                            height: 22,
-                          ),
+                        if (profile.planningStyle != null) ...[
+                          const Divider(height: 22),
 
                           _PreferenceRow(
-                            label:
-                                'Planning style',
-                            value:
-                                profile
-                                    .planningStyle!,
+                            label: 'Planning style',
+                            value: profile.planningStyle!,
                           ),
                         ],
 
-                        if (profile.interestStyle !=
-                            null) ...[
-                          const Divider(
-                            height: 22,
-                          ),
+                        if (profile.interestStyle != null) ...[
+                          const Divider(height: 22),
 
                           _PreferenceRow(
-                            label:
-                                'Shared interests',
-                            value:
-                                profile
-                                    .interestStyle!,
+                            label: 'Shared interests',
+                            value: profile.interestStyle!,
                           ),
                         ],
 
-                        if (profile.newActivityComfort !=
-                            null) ...[
-                          const Divider(
-                            height: 22,
-                          ),
+                        if (profile.newActivityComfort != null) ...[
+                          const Divider(height: 22),
 
                           _PreferenceRow(
-                            label:
-                                'Trying new activities',
-                            value:
-                                profile
-                                    .newActivityComfort!,
+                            label: 'Trying new activities',
+                            value: profile.newActivityComfort!,
                           ),
                         ],
                       ],
@@ -619,65 +452,35 @@ class ReviewProfileScreen extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   Container(
-                    key: const Key(
-                      'reviewPrivacyCard',
-                    ),
-                    padding:
-                        const EdgeInsets.all(18),
+                    key: const Key('reviewPrivacyCard'),
+                    padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color:
-                          PhilotesColors.gold
-                              .withValues(
-                        alpha: 0.10,
-                      ),
-                      borderRadius:
-                          BorderRadius.circular(
-                        16,
-                      ),
+                      color: PhilotesColors.gold.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color:
-                            PhilotesColors.gold
-                                .withValues(
-                          alpha: 0.70,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.70),
                       ),
                     ),
                     child: const Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Other members will not see:',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.navy,
+                            color: PhilotesColors.navy,
                             fontSize: 15,
-                            fontWeight:
-                                FontWeight.w800,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
 
                         SizedBox(height: 14),
 
+                        _PrivacyRow(text: 'Your email address'),
+                        _PrivacyRow(text: 'Your full last name'),
+                        _PrivacyRow(text: 'Your exact date of birth'),
+                        _PrivacyRow(text: 'Your ZIP code or exact location'),
                         _PrivacyRow(
-                          text:
-                              'Your email address',
-                        ),
-                        _PrivacyRow(
-                          text:
-                              'Your full last name',
-                        ),
-                        _PrivacyRow(
-                          text:
-                              'Your exact date of birth',
-                        ),
-                        _PrivacyRow(
-                          text:
-                              'Your ZIP code or exact location',
-                        ),
-                        _PrivacyRow(
-                          text:
-                              'Your password or account credentials',
+                          text: 'Your password or account credentials',
                         ),
                         _PrivacyRow(
                           text:
@@ -717,35 +520,23 @@ class ReviewProfileScreen extends StatelessWidget {
                   SizedBox(
                     height: 58,
                     child: FilledButton.icon(
-                      key: const Key(
-                        'completeProfileButton',
-                      ),
+                      key: const Key('completeProfileButton'),
                       onPressed: () {
                         _completeProfile(context);
                       },
-                      style:
-                          FilledButton.styleFrom(
-                        backgroundColor:
-                            PhilotesColors.navy,
-                        foregroundColor:
-                            Colors.white,
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                            14,
-                          ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: PhilotesColors.navy,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      icon: const Icon(
-                        Icons.check_circle_outline,
-                      ),
+                      icon: const Icon(Icons.check_circle_outline),
                       label: const Text(
                         'Complete My Profile',
                         style: TextStyle(
                           fontSize: 17,
-                          fontWeight:
-                              FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -772,12 +563,8 @@ class ReviewProfileScreen extends StatelessWidget {
   }
 }
 
-
 class _SectionHeading extends StatelessWidget {
-  const _SectionHeading({
-    required this.title,
-    required this.icon,
-  });
+  const _SectionHeading({required this.title, required this.icon});
 
   final String title;
   final IconData icon;
@@ -786,11 +573,7 @@ class _SectionHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: PhilotesColors.gold,
-          size: 22,
-        ),
+        Icon(icon, color: PhilotesColors.gold, size: 22),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -807,7 +590,6 @@ class _SectionHeading extends StatelessWidget {
     );
   }
 }
-
 
 class _ReviewCard extends StatelessWidget {
   const _ReviewCard({
@@ -827,18 +609,12 @@ class _ReviewCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:
-            Colors.white.withValues(alpha: 0.58),
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: PhilotesColors.gold
-              .withValues(alpha: 0.55),
-        ),
+        color: Colors.white.withValues(alpha: 0.58),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: PhilotesColors.gold.withValues(alpha: 0.55)),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -846,11 +622,9 @@ class _ReviewCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: const TextStyle(
-                    color:
-                        PhilotesColors.navy,
+                    color: PhilotesColors.navy,
                     fontSize: 17,
-                    fontWeight:
-                        FontWeight.w700,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -858,20 +632,11 @@ class _ReviewCard extends StatelessWidget {
                 key: Key(editKey),
                 onPressed: onEdit,
                 style: TextButton.styleFrom(
-                  foregroundColor:
-                      PhilotesColors.navy,
-                  padding:
-                      const EdgeInsets.symmetric(
-                    horizontal: 8,
-                  ),
+                  foregroundColor: PhilotesColors.navy,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
-                icon: const Icon(
-                  Icons.edit_outlined,
-                  size: 16,
-                ),
-                label: const Text(
-                  'Edit',
-                ),
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: const Text('Edit'),
               ),
             ],
           ),
@@ -885,12 +650,8 @@ class _ReviewCard extends StatelessWidget {
   }
 }
 
-
 class _PreferenceRow extends StatelessWidget {
-  const _PreferenceRow({
-    required this.label,
-    required this.value,
-  });
+  const _PreferenceRow({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -898,18 +659,13 @@ class _PreferenceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           flex: 4,
           child: Text(
             label,
-            style: const TextStyle(
-              color:
-                  PhilotesColors.silver,
-              fontSize: 12,
-            ),
+            style: const TextStyle(color: PhilotesColors.silver, fontSize: 12),
           ),
         ),
 
@@ -923,8 +679,7 @@ class _PreferenceRow extends StatelessWidget {
             style: const TextStyle(
               color: PhilotesColors.navy,
               fontSize: 12,
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
               height: 1.4,
             ),
           ),
@@ -934,28 +689,19 @@ class _PreferenceRow extends StatelessWidget {
   }
 }
 
-
 class _PrivacyRow extends StatelessWidget {
-  const _PrivacyRow({
-    required this.text,
-  });
+  const _PrivacyRow({required this.text});
 
   final String text;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.only(bottom: 9),
+      padding: const EdgeInsets.only(bottom: 9),
       child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.lock_outline,
-            color: PhilotesColors.gold,
-            size: 17,
-          ),
+          const Icon(Icons.lock_outline, color: PhilotesColors.gold, size: 17),
 
           const SizedBox(width: 8),
 
@@ -963,8 +709,7 @@ class _PrivacyRow extends StatelessWidget {
             child: Text(
               text,
               style: const TextStyle(
-                color:
-                    PhilotesColors.navy,
+                color: PhilotesColors.navy,
                 fontSize: 12,
                 height: 1.4,
               ),

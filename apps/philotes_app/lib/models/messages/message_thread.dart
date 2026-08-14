@@ -1,7 +1,4 @@
-enum MessageThreadType {
-  direct,
-  group,
-}
+enum MessageThreadType { direct, group }
 
 class MessageParticipant {
   const MessageParticipant({
@@ -51,11 +48,9 @@ class MessageThread {
   DateTime latestActivity;
   int unreadCount;
 
-  bool get isDirect =>
-      type == MessageThreadType.direct;
+  bool get isDirect => type == MessageThreadType.direct;
 
-  bool get isGroup =>
-      type == MessageThreadType.group;
+  bool get isGroup => type == MessageThreadType.group;
 
   String get latestPreview {
     if (messages.isEmpty) {

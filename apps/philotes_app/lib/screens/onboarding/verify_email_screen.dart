@@ -5,22 +5,14 @@ import '../../theme/philotes_colors.dart';
 import 'basic_profile_screen.dart';
 
 class VerifyEmailScreen extends StatelessWidget {
-  const VerifyEmailScreen({
-    super.key,
-    required this.email,
-  });
+  const VerifyEmailScreen({super.key, required this.email});
 
   final String email;
 
-  void _showTemporaryMessage(
-    BuildContext context,
-    String message,
-  ) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+  void _showTemporaryMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -33,24 +25,15 @@ class VerifyEmailScreen extends StatelessWidget {
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              28,
-              24,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 620,
-              ),
+              constraints: const BoxConstraints(maxWidth: 620),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -127,8 +110,7 @@ class VerifyEmailScreen extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color:
-                            PhilotesColors.gold.withValues(alpha: 0.65),
+                        color: PhilotesColors.gold.withValues(alpha: 0.65),
                       ),
                     ),
                     child: Text(
@@ -153,15 +135,10 @@ class VerifyEmailScreen extends StatelessWidget {
                     style: TextButton.styleFrom(
                       foregroundColor: PhilotesColors.navy,
                     ),
-                    icon: const Icon(
-                      Icons.edit_outlined,
-                      size: 18,
-                    ),
+                    icon: const Icon(Icons.edit_outlined, size: 18),
                     label: const Text(
                       'Wrong email address? Go back and correct it',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
 
@@ -173,8 +150,7 @@ class VerifyEmailScreen extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.55),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color:
-                            PhilotesColors.gold.withValues(alpha: 0.65),
+                        color: PhilotesColors.gold.withValues(alpha: 0.65),
                       ),
                     ),
                     child: const Column(
@@ -234,9 +210,7 @@ class VerifyEmailScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      icon: const Icon(
-                        Icons.refresh_outlined,
-                      ),
+                      icon: const Icon(Icons.refresh_outlined),
                       label: const Text(
                         'Resend Verification Email',
                         style: TextStyle(
@@ -253,8 +227,7 @@ class VerifyEmailScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color:
-                            PhilotesColors.navy.withValues(alpha: 0.06),
+                        color: PhilotesColors.navy.withValues(alpha: 0.06),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: PhilotesColors.navy,
@@ -302,9 +275,7 @@ class VerifyEmailScreen extends StatelessWidget {
                           const SizedBox(height: 14),
 
                           FilledButton.icon(
-                            key: const Key(
-                              'developmentBasicProfileButton',
-                            ),
+                            key: const Key('developmentBasicProfileButton'),
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<void>(
@@ -320,15 +291,11 @@ class VerifyEmailScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            icon: const Icon(
-                              Icons.arrow_forward_outlined,
-                            ),
+                            icon: const Icon(Icons.arrow_forward_outlined),
                             label: const Text(
                               'Continue to Basic Profile (Development)',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                           ),
                         ],

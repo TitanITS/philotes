@@ -4,12 +4,10 @@ import '../../models/compatibility/suggested_member.dart';
 import '../../models/onboarding_profile_data.dart';
 import 'compatibility_service.dart';
 
-class DevelopmentCompatibilityService
-    extends CompatibilityService {
+class DevelopmentCompatibilityService extends CompatibilityService {
   const DevelopmentCompatibilityService();
 
-  static const List<SuggestedMember>
-  _developmentMembers = <SuggestedMember>[
+  static const List<SuggestedMember> _developmentMembers = <SuggestedMember>[
     SuggestedMember(
       id: 'dev-jordan',
       displayName: 'Jordan',
@@ -67,10 +65,7 @@ class DevelopmentCompatibilityService
       compatibility: CompatibilityResult(
         score: 76,
         level: CompatibilityLevel.moderate,
-        sharedFavoriteInterests: <String>[
-          'Bowling',
-          'Live Music',
-        ],
+        sharedFavoriteInterests: <String>['Bowling', 'Live Music'],
         sharedInterests: <String>[
           'Road Trips',
           'Movies',
@@ -107,14 +102,8 @@ class DevelopmentCompatibilityService
       compatibility: CompatibilityResult(
         score: 58,
         level: CompatibilityLevel.limited,
-        sharedFavoriteInterests: <String>[
-          'Movies',
-        ],
-        sharedInterests: <String>[
-          'Technology',
-          'Museums',
-          'Dining Out',
-        ],
+        sharedFavoriteInterests: <String>['Movies'],
+        sharedInterests: <String>['Technology', 'Museums', 'Dining Out'],
         reasons: <String>[
           '1 shared Like the Most interest',
           '3 additional shared interests',
@@ -124,19 +113,13 @@ class DevelopmentCompatibilityService
         friendshipStyleAlignment: 'Moderate',
         planningStyleAlignment: 'Moderate',
         newActivityAlignment: 'Moderate',
-        suggestedActivities: <String>[
-          'Movies',
-          'Museums',
-          'Dining Out',
-        ],
+        suggestedActivities: <String>['Movies', 'Museums', 'Dining Out'],
       ),
     ),
   ];
 
   @override
-  List<SuggestedMember> suggestedMembers(
-    OnboardingProfileData currentMember,
-  ) {
+  List<SuggestedMember> suggestedMembers(OnboardingProfileData currentMember) {
     // Development-only compatibility results.
     //
     // No production scoring formula is implied by

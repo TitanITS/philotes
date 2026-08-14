@@ -10,164 +10,81 @@ void main() {
     OnboardingProfileData.instance.reset();
   });
 
-  testWidgets(
-    'Developer quick entry is debug guarded',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: PhilotesWelcomeScreen(),
-        ),
-      );
+  testWidgets('Developer quick entry is debug guarded', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: PhilotesWelcomeScreen()));
 
-      if (kDebugMode) {
-        expect(
-          find.byKey(
-            const Key(
-              'developerQuickEntrySection',
-            ),
-          ),
-          findsOneWidget,
-        );
-
-        expect(
-          find.byKey(
-            const Key(
-              'developerTestAccountButton',
-            ),
-          ),
-          findsOneWidget,
-        );
-      }
-    },
-  );
-
-  testWidgets(
-    'Normal welcome actions remain available',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: PhilotesWelcomeScreen(),
-        ),
-      );
-
+    if (kDebugMode) {
       expect(
-        find.byKey(
-          const Key(
-            'joinCommunityButton',
-          ),
-        ),
+        find.byKey(const Key('developerQuickEntrySection')),
         findsOneWidget,
       );
 
       expect(
-        find.byKey(
-          const Key(
-            'signInButton',
-          ),
-        ),
+        find.byKey(const Key('developerTestAccountButton')),
         findsOneWidget,
       );
-    },
-  );
+    }
+  });
 
-  testWidgets(
-    'Developer account bypasses onboarding',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: PhilotesWelcomeScreen(),
-        ),
-      );
+  testWidgets('Normal welcome actions remain available', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: PhilotesWelcomeScreen()));
 
-      if (!kDebugMode) {
-        return;
-      }
+    expect(find.byKey(const Key('joinCommunityButton')), findsOneWidget);
 
-      final button = find.byKey(
-        const Key(
-          'developerTestAccountButton',
-        ),
-      );
+    expect(find.byKey(const Key('signInButton')), findsOneWidget);
+  });
 
-      await tester.ensureVisible(button);
-      await tester.tap(button);
-      await tester.pumpAndSettle();
+  testWidgets('Developer account bypasses onboarding', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: PhilotesWelcomeScreen()));
 
-      expect(
-        find.byKey(
-          const Key(
-            'philotesHomeScreen',
-          ),
-        ),
-        findsOneWidget,
-      );
+    if (!kDebugMode) {
+      return;
+    }
 
-      expect(
-        find.byKey(
-          const Key(
-            'philotesMainNavigation',
-          ),
-        ),
-        findsOneWidget,
-      );
-    },
-  );
+    final button = find.byKey(const Key('developerTestAccountButton'));
 
-  testWidgets(
-    'Developer account seeds fixture profile',
-    (WidgetTester tester) async {
-      final profile =
-          OnboardingProfileData.instance;
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
 
-      expect(
-        profile.displayName,
-        isEmpty,
-      );
+    expect(find.byKey(const Key('philotesHomeScreen')), findsOneWidget);
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: PhilotesWelcomeScreen(),
-        ),
-      );
+    expect(find.byKey(const Key('philotesMainNavigation')), findsOneWidget);
+  });
 
-      if (!kDebugMode) {
-        return;
-      }
+  testWidgets('Developer account seeds fixture profile', (
+    WidgetTester tester,
+  ) async {
+    final profile = OnboardingProfileData.instance;
 
-      final button = find.byKey(
-        const Key(
-          'developerTestAccountButton',
-        ),
-      );
+    expect(profile.displayName, isEmpty);
 
-      await tester.ensureVisible(button);
-      await tester.tap(button);
-      await tester.pumpAndSettle();
+    await tester.pumpWidget(const MaterialApp(home: PhilotesWelcomeScreen()));
 
-      expect(
-        profile.displayName,
-        'Alex',
-      );
+    if (!kDebugMode) {
+      return;
+    }
 
-      expect(
-        profile.selectedInterests,
-        isNotEmpty,
-      );
+    final button = find.byKey(const Key('developerTestAccountButton'));
 
-      expect(
-        profile.favoriteInterests,
-        isNotEmpty,
-      );
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
 
-      expect(
-        profile.socialFrequency,
-        "Whenever we're both available",
-      );
+    expect(profile.displayName, 'Alex');
 
-      expect(
-        profile.photoSelected,
-        isTrue,
-      );
-    },
-  );
+    expect(profile.selectedInterests, isNotEmpty);
+
+    expect(profile.favoriteInterests, isNotEmpty);
+
+    expect(profile.socialFrequency, "Whenever we're both available");
+
+    expect(profile.photoSelected, isTrue);
+  });
 }

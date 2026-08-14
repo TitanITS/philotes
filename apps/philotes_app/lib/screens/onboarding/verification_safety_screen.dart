@@ -12,8 +12,7 @@ class VerificationSafetyScreen extends StatefulWidget {
       _VerificationSafetyScreenState();
 }
 
-class _VerificationSafetyScreenState
-    extends State<VerificationSafetyScreen> {
+class _VerificationSafetyScreenState extends State<VerificationSafetyScreen> {
   bool _meetingSafetyExpanded = false;
   bool _safetyAcknowledged = false;
   bool _showValidation = false;
@@ -28,10 +27,7 @@ class _VerificationSafetyScreenState
     }
 
     Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) =>
-            const ProfilePhotoScreen(),
-      ),
+      MaterialPageRoute<void>(builder: (context) => const ProfilePhotoScreen()),
     );
   }
 
@@ -45,24 +41,15 @@ class _VerificationSafetyScreenState
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              20,
-              20,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 700,
-              ),
+              constraints: const BoxConstraints(maxWidth: 700),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -293,24 +280,20 @@ class _VerificationSafetyScreenState
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                       side: BorderSide(
-                        color: PhilotesColors.gold.withValues(
-                          alpha: 0.6,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.6),
                       ),
                     ),
                     child: InkWell(
                       key: const Key('meetingSafetyToggle'),
                       onTap: () {
                         setState(() {
-                          _meetingSafetyExpanded =
-                              !_meetingSafetyExpanded;
+                          _meetingSafetyExpanded = !_meetingSafetyExpanded;
                         });
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(18),
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.stretch,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Row(
                               children: [
@@ -352,8 +335,7 @@ class _VerificationSafetyScreenState
                                         'Practical tips for meeting '
                                         'someone new.',
                                         style: TextStyle(
-                                          color:
-                                              PhilotesColors.silver,
+                                          color: PhilotesColors.silver,
                                           fontSize: 12,
                                         ),
                                       ),
@@ -372,9 +354,7 @@ class _VerificationSafetyScreenState
 
                             if (_meetingSafetyExpanded) ...[
                               const SizedBox(height: 18),
-                              const Divider(
-                                color: PhilotesColors.gold,
-                              ),
+                              const Divider(color: PhilotesColors.gold),
                               const SizedBox(height: 12),
                               const _SafetyTip(
                                 text:
@@ -416,34 +396,24 @@ class _VerificationSafetyScreenState
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                       side: BorderSide(
-                        color: _showValidation &&
-                                !_safetyAcknowledged
+                        color: _showValidation && !_safetyAcknowledged
                             ? Colors.orange.shade800
-                            : PhilotesColors.gold.withValues(
-                                alpha: 0.75,
-                              ),
-                        width: _showValidation &&
-                                !_safetyAcknowledged
-                            ? 2
-                            : 1,
+                            : PhilotesColors.gold.withValues(alpha: 0.75),
+                        width: _showValidation && !_safetyAcknowledged ? 2 : 1,
                       ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: CheckboxListTile(
-                        key: const Key(
-                          'safetyAcknowledgementCheckbox',
-                        ),
+                        key: const Key('safetyAcknowledgementCheckbox'),
                         contentPadding: EdgeInsets.zero,
                         value: _safetyAcknowledged,
                         activeColor: PhilotesColors.navy,
                         checkColor: Colors.white,
-                        controlAffinity:
-                            ListTileControlAffinity.leading,
+                        controlAffinity: ListTileControlAffinity.leading,
                         onChanged: (value) {
                           setState(() {
-                            _safetyAcknowledged =
-                                value ?? false;
+                            _safetyAcknowledged = value ?? false;
 
                             if (_safetyAcknowledged) {
                               _showValidation = false;
@@ -466,8 +436,7 @@ class _VerificationSafetyScreenState
                     ),
                   ),
 
-                  if (_showValidation &&
-                      !_safetyAcknowledged) ...[
+                  if (_showValidation && !_safetyAcknowledged) ...[
                     const SizedBox(height: 8),
                     const Text(
                       'Please acknowledge the safety statement '
@@ -486,9 +455,7 @@ class _VerificationSafetyScreenState
                   SizedBox(
                     height: 56,
                     child: FilledButton(
-                      key: const Key(
-                        'verificationSafetyContinueButton',
-                      ),
+                      key: const Key('verificationSafetyContinueButton'),
                       onPressed: _continue,
                       style: FilledButton.styleFrom(
                         backgroundColor: PhilotesColors.navy,
@@ -541,10 +508,7 @@ class _ScamWarning extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.amber.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: warningColor,
-          width: 2,
-        ),
+        border: Border.all(color: warningColor, width: 2),
         boxShadow: [
           BoxShadow(
             color: warningColor.withValues(alpha: 0.10),
@@ -558,11 +522,7 @@ class _ScamWarning extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.shield_outlined,
-                color: warningColor,
-                size: 30,
-              ),
+              Icon(Icons.shield_outlined, color: warningColor, size: 30),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -630,9 +590,7 @@ class _SafetySection extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.55),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: PhilotesColors.gold.withValues(alpha: 0.6),
-        ),
+        border: Border.all(color: PhilotesColors.gold.withValues(alpha: 0.6)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -645,16 +603,9 @@ class _SafetySection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: PhilotesColors.navy,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: PhilotesColors.gold,
-                    width: 1.7,
-                  ),
+                  border: Border.all(color: PhilotesColors.gold, width: 1.7),
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                child: Icon(icon, color: Colors.white, size: 22),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -695,11 +646,7 @@ class _SafetyToolRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: PhilotesColors.gold,
-          size: 22,
-        ),
+        Icon(icon, color: PhilotesColors.gold, size: 22),
         const SizedBox(width: 10),
         Expanded(
           child: RichText(
@@ -717,9 +664,7 @@ class _SafetyToolRow extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                TextSpan(
-                  text: description,
-                ),
+                TextSpan(text: description),
               ],
             ),
           ),
@@ -730,9 +675,7 @@ class _SafetyToolRow extends StatelessWidget {
 }
 
 class _SafetyTip extends StatelessWidget {
-  const _SafetyTip({
-    required this.text,
-  });
+  const _SafetyTip({required this.text});
 
   final String text;
 

@@ -1,8 +1,7 @@
 class OnboardingProfileData {
   OnboardingProfileData._();
 
-  static final OnboardingProfileData instance =
-      OnboardingProfileData._();
+  static final OnboardingProfileData instance = OnboardingProfileData._();
 
   String firstName = '';
   String lastName = '';
@@ -44,9 +43,7 @@ class OnboardingProfileData {
   String? photoSource;
 
   String get generalAreaLabel {
-    if (locationSource == 'zip' &&
-        zipCode != null &&
-        zipCode!.isNotEmpty) {
+    if (locationSource == 'zip' && zipCode != null && zipCode!.isNotEmpty) {
       return 'ZIP $zipCode area';
     }
 
@@ -75,10 +72,9 @@ class OnboardingProfileData {
   }
 
   String get friendAgeRangeLabel {
-    final maximumLabel =
-        maximumFriendAge >= 80
-            ? '80+'
-            : maximumFriendAge.toString();
+    final maximumLabel = maximumFriendAge >= 80
+        ? '80+'
+        : maximumFriendAge.toString();
 
     return '$minimumFriendAge - $maximumLabel';
   }

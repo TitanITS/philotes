@@ -9,47 +9,31 @@ import '../../services/compatibility/development_compatibility_service.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
-enum _DiscoverCompatibilityFilter {
-  all,
-  strong,
-  moderateOrBetter,
-}
+enum _DiscoverCompatibilityFilter { all, strong, moderateOrBetter }
 
-enum _DiscoverDistanceMode {
-  recommended,
-  strict,
-  expanded,
-}
+enum _DiscoverDistanceMode { recommended, strict, expanded }
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({
     super.key,
-    this.compatibilityService =
-        const DevelopmentCompatibilityService(),
+    this.compatibilityService = const DevelopmentCompatibilityService(),
   });
 
-  final CompatibilityService
-  compatibilityService;
+  final CompatibilityService compatibilityService;
 
   @override
-  State<DiscoverScreen> createState() =>
-      _DiscoverScreenState();
+  State<DiscoverScreen> createState() => _DiscoverScreenState();
 }
 
-class _DiscoverScreenState
-    extends State<DiscoverScreen> {
-  _DiscoverCompatibilityFilter
-      _compatibilityFilter =
+class _DiscoverScreenState extends State<DiscoverScreen> {
+  _DiscoverCompatibilityFilter _compatibilityFilter =
       _DiscoverCompatibilityFilter.all;
 
-  _DiscoverDistanceMode
-      _distanceMode =
-      _DiscoverDistanceMode.recommended;
+  _DiscoverDistanceMode _distanceMode = _DiscoverDistanceMode.recommended;
 
   String _interestFilter = 'All interests';
 
-  OnboardingProfileData get _profile =>
-      OnboardingProfileData.instance;
+  OnboardingProfileData get _profile => OnboardingProfileData.instance;
 
   int? get _preferredDistance {
     final value = _profile.meetingDistance;
@@ -65,55 +49,37 @@ class _DiscoverScreenState
     final values = <String>{
       ..._profile.favoriteInterests,
       ..._profile.selectedInterests,
-    }.toList()
-      ..sort();
+    }.toList()..sort();
 
-    return <String>[
-      'All interests',
-      ...values,
-    ];
+    return <String>['All interests', ...values];
   }
 
-  bool _matchesCompatibility(
-    SuggestedMember member,
-  ) {
+  bool _matchesCompatibility(SuggestedMember member) {
     switch (_compatibilityFilter) {
       case _DiscoverCompatibilityFilter.all:
         return true;
 
       case _DiscoverCompatibilityFilter.strong:
-        return member.compatibility.level ==
-            CompatibilityLevel.strong;
+        return member.compatibility.level == CompatibilityLevel.strong;
 
-      case _DiscoverCompatibilityFilter
-            .moderateOrBetter:
-        return member.compatibility.level !=
-            CompatibilityLevel.limited;
+      case _DiscoverCompatibilityFilter.moderateOrBetter:
+        return member.compatibility.level != CompatibilityLevel.limited;
     }
   }
 
-  bool _matchesInterest(
-    SuggestedMember member,
-  ) {
+  bool _matchesInterest(SuggestedMember member) {
     if (_interestFilter == 'All interests') {
       return true;
     }
 
-    return member
-            .compatibility
-            .sharedFavoriteInterests
-            .contains(_interestFilter) ||
-        member
-            .compatibility
-            .sharedInterests
-            .contains(_interestFilter);
+    return member.compatibility.sharedFavoriteInterests.contains(
+          _interestFilter,
+        ) ||
+        member.compatibility.sharedInterests.contains(_interestFilter);
   }
 
-  bool _matchesDistance(
-    SuggestedMember member,
-  ) {
-    final preferred =
-        _preferredDistance;
+  bool _matchesDistance(SuggestedMember member) {
+    final preferred = _preferredDistance;
 
     if (preferred == null) {
       return true;
@@ -121,8 +87,7 @@ class _DiscoverScreenState
 
     switch (_distanceMode) {
       case _DiscoverDistanceMode.strict:
-        return member.distanceMiles <=
-            preferred;
+        return member.distanceMiles <= preferred;
 
       case _DiscoverDistanceMode.recommended:
         //
@@ -137,11 +102,9 @@ class _DiscoverScreenState
           return true;
         }
 
-        final extraDistance =
-            member.distanceMiles - preferred;
+        final extraDistance = member.distanceMiles - preferred;
 
-        return member.compatibility.level ==
-                CompatibilityLevel.strong &&
+        return member.compatibility.level == CompatibilityLevel.strong &&
             extraDistance <= 15;
 
       case _DiscoverDistanceMode.expanded:
@@ -149,104 +112,72 @@ class _DiscoverScreenState
     }
   }
 
-  List<SuggestedMember>
-      _visibleMembers() {
-    final members = widget
-        .compatibilityService
+  List<SuggestedMember> _visibleMembers() {
+    final members = widget.compatibilityService
         .suggestedMembers(_profile)
         .where(_matchesCompatibility)
         .where(_matchesInterest)
         .where(_matchesDistance)
         .toList();
 
-    members.sort(
-      (
-        SuggestedMember a,
-        SuggestedMember b,
-      ) {
-        //
-        // Discover ranking priority:
-        //
-        // 1. Compatibility score
-        // 2. Shared Like-the-Most interests
-        // 3. Other shared interests
-        // 4. Distance
-        //
-        final scoreCompare =
-            b.compatibility.score.compareTo(
-          a.compatibility.score,
-        );
+    members.sort((SuggestedMember a, SuggestedMember b) {
+      //
+      // Discover ranking priority:
+      //
+      // 1. Compatibility score
+      // 2. Shared Like-the-Most interests
+      // 3. Other shared interests
+      // 4. Distance
+      //
+      final scoreCompare = b.compatibility.score.compareTo(
+        a.compatibility.score,
+      );
 
-        if (scoreCompare != 0) {
-          return scoreCompare;
-        }
+      if (scoreCompare != 0) {
+        return scoreCompare;
+      }
 
-        final favoritesCompare =
-            b.compatibility
-                .sharedFavoriteInterests
-                .length
-                .compareTo(
-                  a.compatibility
-                      .sharedFavoriteInterests
-                      .length,
-                );
+      final favoritesCompare = b.compatibility.sharedFavoriteInterests.length
+          .compareTo(a.compatibility.sharedFavoriteInterests.length);
 
-        if (favoritesCompare != 0) {
-          return favoritesCompare;
-        }
+      if (favoritesCompare != 0) {
+        return favoritesCompare;
+      }
 
-        final interestsCompare =
-            b.compatibility
-                .sharedInterests
-                .length
-                .compareTo(
-                  a.compatibility
-                      .sharedInterests
-                      .length,
-                );
+      final interestsCompare = b.compatibility.sharedInterests.length.compareTo(
+        a.compatibility.sharedInterests.length,
+      );
 
-        if (interestsCompare != 0) {
-          return interestsCompare;
-        }
+      if (interestsCompare != 0) {
+        return interestsCompare;
+      }
 
-        return a.distanceMiles.compareTo(
-          b.distanceMiles,
-        );
-      },
-    );
+      return a.distanceMiles.compareTo(b.distanceMiles);
+    });
 
     return members;
   }
 
   void _resetFilters() {
     setState(() {
-      _compatibilityFilter =
-          _DiscoverCompatibilityFilter.all;
+      _compatibilityFilter = _DiscoverCompatibilityFilter.all;
 
-      _distanceMode =
-          _DiscoverDistanceMode.recommended;
+      _distanceMode = _DiscoverDistanceMode.recommended;
 
-      _interestFilter =
-          'All interests';
+      _interestFilter = 'All interests';
     });
   }
 
-  void _openMember(
-    SuggestedMember member,
-  ) {
+  void _openMember(SuggestedMember member) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            MemberProfileScreen(
-          member: member,
-        ),
+        builder: (context) => MemberProfileScreen(member: member),
       ),
     );
   }
 
   String _preferredDistanceLabel() {
-    final preferred =
-        _preferredDistance;
+    final preferred = _preferredDistance;
 
     if (preferred == null) {
       return 'No numeric distance preference';
@@ -257,52 +188,34 @@ class _DiscoverScreenState
 
   @override
   Widget build(BuildContext context) {
-    final members =
-        _visibleMembers();
+    final members = _visibleMembers();
 
     return LayoutBuilder(
-      builder: (
-        BuildContext context,
-        BoxConstraints constraints,
-      ) {
-        final wide =
-            constraints.maxWidth >=
-            PhilotesDesign.wideBreakpoint;
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final wide = constraints.maxWidth >= PhilotesDesign.wideBreakpoint;
 
         return SingleChildScrollView(
-          key: const Key(
-            'discoverScreen',
-          ),
+          key: const Key('discoverScreen'),
           padding: EdgeInsets.fromLTRB(
-            wide
-                ? PhilotesDesign.widePadding
-                : PhilotesDesign.mobilePadding,
+            wide ? PhilotesDesign.widePadding : PhilotesDesign.mobilePadding,
             24,
-            wide
-                ? PhilotesDesign.widePadding
-                : PhilotesDesign.mobilePadding,
+            wide ? PhilotesDesign.widePadding : PhilotesDesign.mobilePadding,
             40,
           ),
           child: Center(
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(
-                maxWidth:
-                    PhilotesDesign
-                        .contentMaxWidth,
+              constraints: const BoxConstraints(
+                maxWidth: PhilotesDesign.contentMaxWidth,
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
                     'Discover',
                     style: TextStyle(
-                      color:
-                          PhilotesColors.navy,
+                      color: PhilotesColors.navy,
                       fontSize: 30,
-                      fontWeight:
-                          FontWeight.w800,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
 
@@ -312,8 +225,7 @@ class _DiscoverScreenState
                     'Find people you may enjoy '
                     'getting to know.',
                     style: TextStyle(
-                      color:
-                          PhilotesColors.silver,
+                      color: PhilotesColors.silver,
                       fontSize: 14,
                     ),
                   ),
@@ -321,35 +233,24 @@ class _DiscoverScreenState
                   const SizedBox(height: 26),
 
                   _RefineDiscoveryCard(
-                    compatibilityFilter:
-                        _compatibilityFilter,
-                    distanceMode:
-                        _distanceMode,
-                    interestFilter:
-                        _interestFilter,
-                    availableInterests:
-                        _availableInterests,
-                    preferredDistanceLabel:
-                        _preferredDistanceLabel(),
-                    onCompatibilityChanged:
-                        (value) {
+                    compatibilityFilter: _compatibilityFilter,
+                    distanceMode: _distanceMode,
+                    interestFilter: _interestFilter,
+                    availableInterests: _availableInterests,
+                    preferredDistanceLabel: _preferredDistanceLabel(),
+                    onCompatibilityChanged: (value) {
                       setState(() {
-                        _compatibilityFilter =
-                            value;
+                        _compatibilityFilter = value;
                       });
                     },
-                    onDistanceChanged:
-                        (value) {
+                    onDistanceChanged: (value) {
                       setState(() {
-                        _distanceMode =
-                            value;
+                        _distanceMode = value;
                       });
                     },
-                    onInterestChanged:
-                        (value) {
+                    onInterestChanged: (value) {
                       setState(() {
-                        _interestFilter =
-                            value;
+                        _interestFilter = value;
                       });
                     },
                     onReset: _resetFilters,
@@ -362,14 +263,9 @@ class _DiscoverScreenState
                       Container(
                         width: 4,
                         height: 22,
-                        decoration:
-                            BoxDecoration(
-                          color:
-                              PhilotesColors
-                                  .gold,
-                          borderRadius:
-                              BorderRadius
-                                  .circular(4),
+                        decoration: BoxDecoration(
+                          color: PhilotesColors.gold,
+                          borderRadius: BorderRadius.circular(4),
                         ),
                       ),
 
@@ -379,29 +275,20 @@ class _DiscoverScreenState
                         child: Text(
                           'People To Discover',
                           style: TextStyle(
-                            color:
-                                PhilotesColors
-                                    .navy,
+                            color: PhilotesColors.navy,
                             fontSize: 18,
-                            fontWeight:
-                                FontWeight
-                                    .w800,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
 
                       Text(
                         '${members.length}',
-                        key: const Key(
-                          'discoverResultCount',
-                        ),
+                        key: const Key('discoverResultCount'),
                         style: const TextStyle(
-                          color:
-                              PhilotesColors
-                                  .silver,
+                          color: PhilotesColors.silver,
                           fontSize: 12,
-                          fontWeight:
-                              FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -415,10 +302,8 @@ class _DiscoverScreenState
                     _MemberGrid(
                       members: members,
                       wide: wide,
-                      preferredDistance:
-                          _preferredDistance,
-                      onOpenMember:
-                          _openMember,
+                      preferredDistance: _preferredDistance,
+                      onOpenMember: _openMember,
                     ),
                 ],
               ),
@@ -430,9 +315,7 @@ class _DiscoverScreenState
   }
 }
 
-
-class _RefineDiscoveryCard
-    extends StatelessWidget {
+class _RefineDiscoveryCard extends StatelessWidget {
   const _RefineDiscoveryCard({
     required this.compatibilityFilter,
     required this.distanceMode,
@@ -445,34 +328,25 @@ class _RefineDiscoveryCard
     required this.onReset,
   });
 
-  final _DiscoverCompatibilityFilter
-      compatibilityFilter;
+  final _DiscoverCompatibilityFilter compatibilityFilter;
 
-  final _DiscoverDistanceMode
-      distanceMode;
+  final _DiscoverDistanceMode distanceMode;
 
   final String interestFilter;
 
-  final List<String>
-      availableInterests;
+  final List<String> availableInterests;
 
   final String preferredDistanceLabel;
 
-  final ValueChanged<
-      _DiscoverCompatibilityFilter>
-  onCompatibilityChanged;
+  final ValueChanged<_DiscoverCompatibilityFilter> onCompatibilityChanged;
 
-  final ValueChanged<_DiscoverDistanceMode>
-  onDistanceChanged;
+  final ValueChanged<_DiscoverDistanceMode> onDistanceChanged;
 
-  final ValueChanged<String>
-  onInterestChanged;
+  final ValueChanged<String> onInterestChanged;
 
   final VoidCallback onReset;
 
-  String _compatibilityLabel(
-    _DiscoverCompatibilityFilter value,
-  ) {
+  String _compatibilityLabel(_DiscoverCompatibilityFilter value) {
     switch (value) {
       case _DiscoverCompatibilityFilter.all:
         return 'All';
@@ -480,15 +354,12 @@ class _RefineDiscoveryCard
       case _DiscoverCompatibilityFilter.strong:
         return 'Strong only';
 
-      case _DiscoverCompatibilityFilter
-            .moderateOrBetter:
+      case _DiscoverCompatibilityFilter.moderateOrBetter:
         return 'Moderate or better';
     }
   }
 
-  String _distanceLabel(
-    _DiscoverDistanceMode value,
-  ) {
+  String _distanceLabel(_DiscoverDistanceMode value) {
     switch (value) {
       case _DiscoverDistanceMode.recommended:
         return 'Recommended';
@@ -504,25 +375,18 @@ class _RefineDiscoveryCard
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: const Key(
-        'refineDiscoveryCard',
-      ),
+      key: const Key('refineDiscoveryCard'),
       padding: const EdgeInsets.all(18),
-      decoration:
-          PhilotesDesign
-              .primaryCardDecoration(),
+      decoration: PhilotesDesign.primaryCardDecoration(),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
             'REFINE DISCOVERY',
             style: TextStyle(
-              color:
-                  PhilotesColors.navy,
+              color: PhilotesColors.navy,
               fontSize: 12,
-              fontWeight:
-                  FontWeight.w900,
+              fontWeight: FontWeight.w900,
               letterSpacing: 1,
             ),
           ),
@@ -532,11 +396,7 @@ class _RefineDiscoveryCard
           const Text(
             'Temporary filters for this '
             'Discover session.',
-            style: TextStyle(
-              color:
-                  PhilotesColors.silver,
-              fontSize: 11,
-            ),
+            style: TextStyle(color: PhilotesColors.silver, fontSize: 11),
           ),
 
           const SizedBox(height: 18),
@@ -544,45 +404,28 @@ class _RefineDiscoveryCard
           const Text(
             'Compatibility',
             style: TextStyle(
-              color:
-                  PhilotesColors.navy,
+              color: PhilotesColors.navy,
               fontSize: 12,
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
           const SizedBox(height: 6),
 
-          DropdownButtonFormField<
-              _DiscoverCompatibilityFilter>(
-            key: const Key(
-              'discoverCompatibilityFilter',
-            ),
-            initialValue:
-                compatibilityFilter,
-            decoration:
-                _filterDecoration(),
+          DropdownButtonFormField<_DiscoverCompatibilityFilter>(
+            key: const Key('discoverCompatibilityFilter'),
+            initialValue: compatibilityFilter,
+            decoration: _filterDecoration(),
             items: [
-              for (
-                final value
-                    in _DiscoverCompatibilityFilter
-                        .values
-              )
+              for (final value in _DiscoverCompatibilityFilter.values)
                 DropdownMenuItem(
                   value: value,
-                  child: Text(
-                    _compatibilityLabel(
-                      value,
-                    ),
-                  ),
+                  child: Text(_compatibilityLabel(value)),
                 ),
             ],
             onChanged: (value) {
               if (value != null) {
-                onCompatibilityChanged(
-                  value,
-                );
+                onCompatibilityChanged(value);
               }
             },
           ),
@@ -592,44 +435,28 @@ class _RefineDiscoveryCard
           const Text(
             'Shared Interests',
             style: TextStyle(
-              color:
-                  PhilotesColors.navy,
+              color: PhilotesColors.navy,
               fontSize: 12,
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
           const SizedBox(height: 6),
 
           DropdownButtonFormField<String>(
-            key: const Key(
-              'discoverInterestFilter',
-            ),
-            initialValue:
-                interestFilter,
-            decoration:
-                _filterDecoration(),
+            key: const Key('discoverInterestFilter'),
+            initialValue: interestFilter,
+            decoration: _filterDecoration(),
             items: [
-              for (
-                final interest
-                    in availableInterests
-              )
+              for (final interest in availableInterests)
                 DropdownMenuItem(
                   value: interest,
-                  child: Text(
-                    interest,
-                    overflow:
-                        TextOverflow
-                            .ellipsis,
-                  ),
+                  child: Text(interest, overflow: TextOverflow.ellipsis),
                 ),
             ],
             onChanged: (value) {
               if (value != null) {
-                onInterestChanged(
-                  value,
-                );
+                onInterestChanged(value);
               }
             },
           ),
@@ -642,11 +469,9 @@ class _RefineDiscoveryCard
                 child: Text(
                   'Distance',
                   style: TextStyle(
-                    color:
-                        PhilotesColors.navy,
+                    color: PhilotesColors.navy,
                     fontSize: 12,
-                    fontWeight:
-                        FontWeight.w700,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -655,8 +480,7 @@ class _RefineDiscoveryCard
                 'Usual preference: '
                 '$preferredDistanceLabel',
                 style: const TextStyle(
-                  color:
-                      PhilotesColors.silver,
+                  color: PhilotesColors.silver,
                   fontSize: 10,
                 ),
               ),
@@ -665,35 +489,20 @@ class _RefineDiscoveryCard
 
           const SizedBox(height: 6),
 
-          DropdownButtonFormField<
-              _DiscoverDistanceMode>(
-            key: const Key(
-              'discoverDistanceFilter',
-            ),
-            initialValue:
-                distanceMode,
-            decoration:
-                _filterDecoration(),
+          DropdownButtonFormField<_DiscoverDistanceMode>(
+            key: const Key('discoverDistanceFilter'),
+            initialValue: distanceMode,
+            decoration: _filterDecoration(),
             items: [
-              for (
-                final value
-                    in _DiscoverDistanceMode
-                        .values
-              )
+              for (final value in _DiscoverDistanceMode.values)
                 DropdownMenuItem(
                   value: value,
-                  child: Text(
-                    _distanceLabel(
-                      value,
-                    ),
-                  ),
+                  child: Text(_distanceLabel(value)),
                 ),
             ],
             onChanged: (value) {
               if (value != null) {
-                onDistanceChanged(
-                  value,
-                );
+                onDistanceChanged(value);
               }
             },
           ),
@@ -706,8 +515,7 @@ class _RefineDiscoveryCard
             'an exceptional compatibility result '
             'to appear slightly farther away.',
             style: TextStyle(
-              color:
-                  PhilotesColors.silver,
+              color: PhilotesColors.silver,
               fontSize: 10,
               height: 1.45,
             ),
@@ -718,25 +526,17 @@ class _RefineDiscoveryCard
           Row(
             children: [
               TextButton(
-                key: const Key(
-                  'resetDiscoverFiltersButton',
-                ),
+                key: const Key('resetDiscoverFiltersButton'),
                 onPressed: onReset,
-                child: const Text(
-                  'Reset Filters',
-                ),
+                child: const Text('Reset Filters'),
               ),
 
               const Spacer(),
 
               TextButton(
-                key: const Key(
-                  'editPermanentPreferencesButton',
-                ),
+                key: const Key('editPermanentPreferencesButton'),
                 onPressed: () {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(
                         'Permanent discovery '
@@ -747,9 +547,7 @@ class _RefineDiscoveryCard
                     ),
                   );
                 },
-                child: const Text(
-                  'Edit permanent preferences',
-                ),
+                child: const Text('Edit permanent preferences'),
               ),
             ],
           ),
@@ -762,37 +560,21 @@ class _RefineDiscoveryCard
     return InputDecoration(
       filled: true,
       fillColor: Colors.white,
-      contentPadding:
-          const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 12,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       enabledBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(
-          color:
-              PhilotesColors.gold
-                  .withValues(
-            alpha: 0.80,
-          ),
+          color: PhilotesColors.gold.withValues(alpha: 0.80),
           width: 1.3,
         ),
       ),
-      focusedBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color:
-              PhilotesColors.gold,
-          width: 1.8,
-        ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: PhilotesColors.gold, width: 1.8),
       ),
     );
   }
 }
-
 
 class _MemberGrid extends StatelessWidget {
   const _MemberGrid({
@@ -806,52 +588,33 @@ class _MemberGrid extends StatelessWidget {
   final bool wide;
   final int? preferredDistance;
 
-  final ValueChanged<SuggestedMember>
-  onOpenMember;
+  final ValueChanged<SuggestedMember> onOpenMember;
 
   @override
   Widget build(BuildContext context) {
     if (!wide) {
       return Column(
         children: [
-          for (
-            var index = 0;
-            index < members.length;
-            index++
-          ) ...[
+          for (var index = 0; index < members.length; index++) ...[
             _DiscoverMemberCard(
               member: members[index],
-              preferredDistance:
-                  preferredDistance,
+              preferredDistance: preferredDistance,
               onOpenProfile: () {
-                onOpenMember(
-                  members[index],
-                );
+                onOpenMember(members[index]);
               },
             ),
 
-            if (
-              index <
-              members.length - 1
-            )
-              const SizedBox(
-                height: 14,
-              ),
+            if (index < members.length - 1) const SizedBox(height: 14),
           ],
         ],
       );
     }
 
     return LayoutBuilder(
-      builder: (
-        BuildContext context,
-        BoxConstraints constraints,
-      ) {
+      builder: (BuildContext context, BoxConstraints constraints) {
         const gap = 16.0;
 
-        final cardWidth =
-            (constraints.maxWidth - gap) /
-            2;
+        final cardWidth = (constraints.maxWidth - gap) / 2;
 
         return Wrap(
           spacing: gap,
@@ -860,15 +623,11 @@ class _MemberGrid extends StatelessWidget {
             for (final member in members)
               SizedBox(
                 width: cardWidth,
-                child:
-                    _DiscoverMemberCard(
+                child: _DiscoverMemberCard(
                   member: member,
-                  preferredDistance:
-                      preferredDistance,
+                  preferredDistance: preferredDistance,
                   onOpenProfile: () {
-                    onOpenMember(
-                      member,
-                    );
+                    onOpenMember(member);
                   },
                 ),
               ),
@@ -879,9 +638,7 @@ class _MemberGrid extends StatelessWidget {
   }
 }
 
-
-class _DiscoverMemberCard
-    extends StatelessWidget {
+class _DiscoverMemberCard extends StatelessWidget {
   const _DiscoverMemberCard({
     required this.member,
     required this.preferredDistance,
@@ -893,9 +650,7 @@ class _DiscoverMemberCard
   final VoidCallback onOpenProfile;
 
   Color get _levelColor {
-    switch (
-      member.compatibility.level
-    ) {
+    switch (member.compatibility.level) {
       case CompatibilityLevel.strong:
         return PhilotesColors.gold;
 
@@ -912,8 +667,7 @@ class _DiscoverMemberCard
       return false;
     }
 
-    return member.distanceMiles >
-        preferredDistance!;
+    return member.distanceMiles > preferredDistance!;
   }
 
   @override
@@ -921,33 +675,21 @@ class _DiscoverMemberCard
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        key: Key(
-          'discoverMember-${member.id}',
-        ),
+        key: Key('discoverMember-${member.id}'),
         onTap: onOpenProfile,
-        borderRadius:
-            BorderRadius.circular(
-          PhilotesDesign.cardRadius,
-        ),
+        borderRadius: BorderRadius.circular(PhilotesDesign.cardRadius),
         child: Ink(
-          padding: const EdgeInsets.all(
-            18,
-          ),
-          decoration:
-              PhilotesDesign
-                  .primaryCardDecoration(),
+          padding: const EdgeInsets.all(18),
+          decoration: PhilotesDesign.primaryCardDecoration(),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
                 'COMPATIBILITY',
                 style: TextStyle(
-                  color:
-                      PhilotesColors.navy,
+                  color: PhilotesColors.navy,
                   fontSize: 10,
-                  fontWeight:
-                      FontWeight.w800,
+                  fontWeight: FontWeight.w800,
                   letterSpacing: 1.1,
                 ),
               ),
@@ -955,15 +697,11 @@ class _DiscoverMemberCard
               const SizedBox(height: 3),
 
               Text(
-                member
-                    .compatibility
-                    .level
-                    .label,
+                member.compatibility.level.label,
                 style: TextStyle(
                   color: _levelColor,
                   fontSize: 17,
-                  fontWeight:
-                      FontWeight.w800,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
 
@@ -973,27 +711,18 @@ class _DiscoverMemberCard
                 child: Container(
                   width: 96,
                   height: 96,
-                  decoration:
-                      BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color:
-                        PhilotesColors.navy,
-                    border: Border.all(
-                      color:
-                          PhilotesColors.gold,
-                      width: 2.2,
-                    ),
+                    color: PhilotesColors.navy,
+                    border: Border.all(color: PhilotesColors.gold, width: 2.2),
                   ),
-                  alignment:
-                      Alignment.center,
+                  alignment: Alignment.center,
                   child: Text(
                     member.initials,
-                    style:
-                        const TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 29,
-                      fontWeight:
-                          FontWeight.w800,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -1003,14 +732,11 @@ class _DiscoverMemberCard
 
               Text(
                 member.displayName,
-                textAlign:
-                    TextAlign.center,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color:
-                      PhilotesColors.navy,
+                  color: PhilotesColors.navy,
                   fontSize: 20,
-                  fontWeight:
-                      FontWeight.w800,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
 
@@ -1020,11 +746,9 @@ class _DiscoverMemberCard
                 '${member.compatibility.sharedFavoriteInterests.length} '
                 'favorite interests in common',
                 style: const TextStyle(
-                  color:
-                      PhilotesColors.navy,
+                  color: PhilotesColors.navy,
                   fontSize: 12,
-                  fontWeight:
-                      FontWeight.w700,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
 
@@ -1034,8 +758,7 @@ class _DiscoverMemberCard
                 '${member.compatibility.sharedInterests.length} '
                 'other shared interests',
                 style: const TextStyle(
-                  color:
-                      PhilotesColors.silver,
+                  color: PhilotesColors.silver,
                   fontSize: 11,
                 ),
               ),
@@ -1045,10 +768,8 @@ class _DiscoverMemberCard
               Row(
                 children: [
                   const Icon(
-                    Icons
-                        .location_on_outlined,
-                    color:
-                        PhilotesColors.navy,
+                    Icons.location_on_outlined,
+                    color: PhilotesColors.navy,
                     size: 16,
                   ),
 
@@ -1057,13 +778,10 @@ class _DiscoverMemberCard
                   Text(
                     '${member.distanceMiles} '
                     'miles away',
-                    style:
-                        const TextStyle(
-                      color:
-                          PhilotesColors.navy,
+                    style: const TextStyle(
+                      color: PhilotesColors.navy,
                       fontSize: 11,
-                      fontWeight:
-                          FontWeight.w600,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -1076,15 +794,11 @@ class _DiscoverMemberCard
                   'Slightly outside your '
                   '${preferredDistance!}-mile '
                   'preference',
-                  key: Key(
-                    'outsideDistance-${member.id}',
-                  ),
+                  key: Key('outsideDistance-${member.id}'),
                   style: const TextStyle(
-                    color:
-                        PhilotesColors.bronze,
+                    color: PhilotesColors.bronze,
                     fontSize: 10,
-                    fontWeight:
-                        FontWeight.w700,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -1092,16 +806,13 @@ class _DiscoverMemberCard
               const SizedBox(height: 18),
 
               Align(
-                alignment:
-                    Alignment.centerRight,
+                alignment: Alignment.centerRight,
                 child: Text(
                   'View Profile  ›',
                   style: const TextStyle(
-                    color:
-                        PhilotesColors.navy,
+                    color: PhilotesColors.navy,
                     fontSize: 12,
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
@@ -1113,35 +824,25 @@ class _DiscoverMemberCard
   }
 }
 
-
-class _NoResultsCard
-    extends StatelessWidget {
+class _NoResultsCard extends StatelessWidget {
   const _NoResultsCard();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: const Key(
-        'discoverNoResults',
-      ),
-      padding:
-          const EdgeInsets.all(22),
-      decoration:
-          PhilotesDesign
-              .secondaryCardDecoration(),
+      key: const Key('discoverNoResults'),
+      padding: const EdgeInsets.all(22),
+      decoration: PhilotesDesign.secondaryCardDecoration(),
       child: const Column(
         children: [
           Text(
             'No people match these '
             'temporary filters.',
-            textAlign:
-                TextAlign.center,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color:
-                  PhilotesColors.navy,
+              color: PhilotesColors.navy,
               fontSize: 15,
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
@@ -1152,11 +853,9 @@ class _NoResultsCard
             'Discover filters. Your '
             'permanent preferences have '
             'not been changed.',
-            textAlign:
-                TextAlign.center,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color:
-                  PhilotesColors.silver,
+              color: PhilotesColors.silver,
               fontSize: 11,
               height: 1.45,
             ),

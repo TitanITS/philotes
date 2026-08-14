@@ -8,28 +8,21 @@ class BasicProfileScreen extends StatefulWidget {
   const BasicProfileScreen({super.key});
 
   @override
-  State<BasicProfileScreen> createState() =>
-      _BasicProfileScreenState();
+  State<BasicProfileScreen> createState() => _BasicProfileScreenState();
 }
 
 class _BasicProfileScreenState extends State<BasicProfileScreen> {
-  final TextEditingController _firstNameController =
-      TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
 
-  final TextEditingController _lastNameController =
-      TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
 
-  final TextEditingController _displayNameController =
-      TextEditingController();
+  final TextEditingController _displayNameController = TextEditingController();
 
-  final TextEditingController _otherSexController =
-      TextEditingController();
+  final TextEditingController _otherSexController = TextEditingController();
 
-  final TextEditingController _pronounsController =
-      TextEditingController();
+  final TextEditingController _pronounsController = TextEditingController();
 
-  final TextEditingController _introductionController =
-      TextEditingController();
+  final TextEditingController _introductionController = TextEditingController();
 
   DateTime? _dateOfBirth;
 
@@ -38,23 +31,16 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
   bool _showPronouns = false;
   bool _showValidation = false;
 
-  bool get _firstNameValid =>
-      _firstNameController.text.trim().isNotEmpty;
+  bool get _firstNameValid => _firstNameController.text.trim().isNotEmpty;
 
-  bool get _lastNameValid =>
-      _lastNameController.text.trim().isNotEmpty;
+  bool get _lastNameValid => _lastNameController.text.trim().isNotEmpty;
 
-  bool get _displayNameValid =>
-      _displayNameController.text.trim().isNotEmpty;
+  bool get _displayNameValid => _displayNameController.text.trim().isNotEmpty;
 
-  bool get _ageValid =>
-      _dateOfBirth != null && _isAtLeast18(_dateOfBirth!);
+  bool get _ageValid => _dateOfBirth != null && _isAtLeast18(_dateOfBirth!);
 
   bool get _requiredFieldsValid =>
-      _firstNameValid &&
-      _lastNameValid &&
-      _displayNameValid &&
-      _ageValid;
+      _firstNameValid && _lastNameValid && _displayNameValid && _ageValid;
 
   bool _isAtLeast18(DateTime birthDate) {
     final today = DateTime.now();
@@ -63,8 +49,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
 
     final birthdayHasOccurred =
         today.month > birthDate.month ||
-        (today.month == birthDate.month &&
-            today.day >= birthDate.day);
+        (today.month == birthDate.month && today.day >= birthDate.day);
 
     if (!birthdayHasOccurred) {
       age--;
@@ -91,11 +76,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
   Future<void> _selectDateOfBirth() async {
     final today = DateTime.now();
 
-    final eighteenYearsAgo = DateTime(
-      today.year - 18,
-      today.month,
-      today.day,
-    );
+    final eighteenYearsAgo = DateTime(today.year - 18, today.month, today.day);
 
     final selectedDate = await showDatePicker(
       context: context,
@@ -125,36 +106,28 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
 
     final profile = OnboardingProfileData.instance;
 
-    profile.firstName =
-        _firstNameController.text.trim();
+    profile.firstName = _firstNameController.text.trim();
 
-    profile.lastName =
-        _lastNameController.text.trim();
+    profile.lastName = _lastNameController.text.trim();
 
-    profile.displayName =
-        _displayNameController.text.trim();
+    profile.displayName = _displayNameController.text.trim();
 
     profile.dateOfBirth = _dateOfBirth;
 
     profile.sex = _sex;
 
-    profile.otherSexDescription =
-        _otherSexController.text.trim().isEmpty
-            ? null
-            : _otherSexController.text.trim();
+    profile.otherSexDescription = _otherSexController.text.trim().isEmpty
+        ? null
+        : _otherSexController.text.trim();
 
-    profile.pronouns =
-        _pronounsController.text.trim().isEmpty
-            ? null
-            : _pronounsController.text.trim();
+    profile.pronouns = _pronounsController.text.trim().isEmpty
+        ? null
+        : _pronounsController.text.trim();
 
-    profile.introduction =
-        _introductionController.text.trim();
+    profile.introduction = _introductionController.text.trim();
 
-  Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => const InterestsScreen(),
-      ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (context) => const InterestsScreen()),
     );
   }
 
@@ -179,24 +152,15 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              24,
-              20,
-              24,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 620,
-              ),
+              constraints: const BoxConstraints(maxWidth: 620),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -245,16 +209,11 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                       decoration: BoxDecoration(
                         color: Colors.red.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.red,
-                        ),
+                        border: Border.all(color: Colors.red),
                       ),
                       child: const Row(
                         children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                          ),
+                          Icon(Icons.error_outline, color: Colors.red),
                           SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -274,10 +233,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
 
                   const SizedBox(height: 28),
 
-                  _FieldLabel(
-                    label: 'First Name',
-                    required: true,
-                  ),
+                  _FieldLabel(label: 'First Name', required: true),
 
                   const SizedBox(height: 8),
 
@@ -286,15 +242,12 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                     controller: _firstNameController,
                     textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.words,
-                    autofillHints: const [
-                      AutofillHints.givenName,
-                    ],
+                    autofillHints: const [AutofillHints.givenName],
                     onChanged: _refresh,
                     decoration: _fieldDecoration(
                       hintText: 'Your first name',
                       icon: Icons.person_outline,
-                      errorText:
-                          _showValidation && !_firstNameValid
+                      errorText: _showValidation && !_firstNameValid
                           ? 'First name is required.'
                           : null,
                     ),
@@ -302,10 +255,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
 
                   const SizedBox(height: 22),
 
-                  _FieldLabel(
-                    label: 'Last Name',
-                    required: true,
-                  ),
+                  _FieldLabel(label: 'Last Name', required: true),
 
                   const SizedBox(height: 8),
 
@@ -314,15 +264,12 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                     controller: _lastNameController,
                     textInputAction: TextInputAction.next,
                     textCapitalization: TextCapitalization.words,
-                    autofillHints: const [
-                      AutofillHints.familyName,
-                    ],
+                    autofillHints: const [AutofillHints.familyName],
                     onChanged: _refresh,
                     decoration: _fieldDecoration(
                       hintText: 'Your last name',
                       icon: Icons.badge_outlined,
-                      errorText:
-                          _showValidation && !_lastNameValid
+                      errorText: _showValidation && !_lastNameValid
                           ? 'Last name is required.'
                           : null,
                     ),
@@ -338,10 +285,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
 
                   const SizedBox(height: 22),
 
-                  _FieldLabel(
-                    label: 'Display Name',
-                    required: true,
-                  ),
+                  _FieldLabel(label: 'Display Name', required: true),
 
                   const SizedBox(height: 8),
 
@@ -353,8 +297,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                     decoration: _fieldDecoration(
                       hintText: 'How members will know you',
                       icon: Icons.account_circle_outlined,
-                      errorText:
-                          _showValidation && !_displayNameValid
+                      errorText: _showValidation && !_displayNameValid
                           ? 'Display name is required.'
                           : null,
                     ),
@@ -370,10 +313,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
 
                   const SizedBox(height: 22),
 
-                  _FieldLabel(
-                    label: 'Date of Birth',
-                    required: true,
-                  ),
+                  _FieldLabel(label: 'Date of Birth', required: true),
 
                   const SizedBox(height: 8),
 
@@ -387,14 +327,10 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                       ),
                       foregroundColor: PhilotesColors.navy,
                       side: BorderSide(
-                        color:
-                            _showValidation && !_ageValid
+                        color: _showValidation && !_ageValid
                             ? Colors.red
                             : PhilotesColors.gold,
-                        width:
-                            _showValidation && !_ageValid
-                            ? 2
-                            : 1.2,
+                        width: _showValidation && !_ageValid ? 2 : 1.2,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -402,9 +338,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.calendar_month_outlined,
-                        ),
+                        const Icon(Icons.calendar_month_outlined),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -419,9 +353,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                             ),
                           ),
                         ),
-                        const Icon(
-                          Icons.arrow_drop_down,
-                        ),
+                        const Icon(Icons.arrow_drop_down),
                       ],
                     ),
                   ),
@@ -471,10 +403,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
 
                   const SizedBox(height: 20),
 
-                  const _FieldLabel(
-                    label: 'Sex',
-                    required: false,
-                  ),
+                  const _FieldLabel(label: 'Sex', required: false),
 
                   const SizedBox(height: 8),
 
@@ -486,18 +415,9 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                       icon: Icons.person_search_outlined,
                     ),
                     items: const [
-                      DropdownMenuItem(
-                        value: 'Male',
-                        child: Text('Male'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Female',
-                        child: Text('Female'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Other',
-                        child: Text('Other'),
-                      ),
+                      DropdownMenuItem(value: 'Male', child: Text('Male')),
+                      DropdownMenuItem(value: 'Female', child: Text('Female')),
+                      DropdownMenuItem(value: 'Other', child: Text('Other')),
                       DropdownMenuItem(
                         value: 'Prefer not to say',
                         child: Text('Prefer not to say'),
@@ -522,17 +442,14 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                       controller: _otherSexController,
                       textInputAction: TextInputAction.next,
                       decoration: _fieldDecoration(
-                        hintText:
-                            'How would you like to describe yourself?',
+                        hintText: 'How would you like to describe yourself?',
                         icon: Icons.edit_outlined,
                       ),
                     ),
 
                     const SizedBox(height: 6),
 
-                    const _SupportingNote(
-                      text: 'Optional.',
-                    ),
+                    const _SupportingNote(text: 'Optional.'),
                   ],
 
                   const SizedBox(height: 20),
@@ -550,22 +467,15 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                         style: TextButton.styleFrom(
                           foregroundColor: PhilotesColors.navy,
                         ),
-                        icon: const Icon(
-                          Icons.add_circle_outline,
-                        ),
+                        icon: const Icon(Icons.add_circle_outline),
                         label: const Text(
                           'Add pronouns',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
                     )
                   else ...[
-                    const _FieldLabel(
-                      label: 'Pronouns',
-                      required: false,
-                    ),
+                    const _FieldLabel(label: 'Pronouns', required: false),
 
                     const SizedBox(height: 8),
 
@@ -584,9 +494,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                               _pronounsController.clear();
                             });
                           },
-                          icon: const Icon(
-                            Icons.close,
-                          ),
+                          icon: const Icon(Icons.close),
                         ),
                       ),
                     ),
@@ -595,8 +503,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
                   const SizedBox(height: 22),
 
                   const _FieldLabel(
-                    label:
-                        'What should new friends know about you?',
+                    label: 'What should new friends know about you?',
                     required: false,
                   ),
 
@@ -677,9 +584,7 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
       alignLabelWithHint: alignLabelWithHint,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.65),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
@@ -688,34 +593,22 @@ class _BasicProfileScreenState extends State<BasicProfileScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: PhilotesColors.gold,
-          width: 2,
-        ),
+        borderSide: const BorderSide(color: PhilotesColors.gold, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: Colors.red,
-          width: 1.5,
-        ),
+        borderSide: const BorderSide(color: Colors.red, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: Colors.red,
-          width: 2,
-        ),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
       ),
     );
   }
 }
 
 class _FieldLabel extends StatelessWidget {
-  const _FieldLabel({
-    required this.label,
-    required this.required,
-  });
+  const _FieldLabel({required this.label, required this.required});
 
   final String label;
   final bool required;
@@ -751,9 +644,7 @@ class _FieldLabel extends StatelessWidget {
 }
 
 class _PrivacyNote extends StatelessWidget {
-  const _PrivacyNote({
-    required this.text,
-  });
+  const _PrivacyNote({required this.text});
 
   final String text;
 
@@ -762,11 +653,7 @@ class _PrivacyNote extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(
-          Icons.lock_outline,
-          color: PhilotesColors.gold,
-          size: 16,
-        ),
+        const Icon(Icons.lock_outline, color: PhilotesColors.gold, size: 16),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
@@ -784,9 +671,7 @@ class _PrivacyNote extends StatelessWidget {
 }
 
 class _SupportingNote extends StatelessWidget {
-  const _SupportingNote({
-    required this.text,
-  });
+  const _SupportingNote({required this.text});
 
   final String text;
 

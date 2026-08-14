@@ -1,26 +1,22 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../data/development/development_home_fixture.dart';
 import '../../theme/philotes_colors.dart';
 import 'home_section_card.dart';
 
 class TodayCard extends StatelessWidget {
-  const TodayCard({
-    super.key,
-  });
+  const TodayCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return HomeSectionCard(
       key: const Key('todayCard'),
-      child:
-          DevelopmentHomeFixture.hasPlanToday
-              ? const _TodayPlan()
-              : const _TodaySuggestion(),
+      child: DevelopmentHomeFixture.hasPlanToday
+          ? const _TodayPlan()
+          : const _TodaySuggestion(),
     );
   }
 }
-
 
 class _TodayPlan extends StatelessWidget {
   const _TodayPlan();
@@ -28,8 +24,7 @@ class _TodayPlan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           DevelopmentHomeFixture.todayPlanTitle,
@@ -57,8 +52,7 @@ class _TodayPlan extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
                     'The full Plans experience '
@@ -67,9 +61,7 @@ class _TodayPlan extends StatelessWidget {
                 ),
               );
             },
-            child: const Text(
-              'View Plan',
-            ),
+            child: const Text('View Plan'),
           ),
         ),
       ],
@@ -77,15 +69,13 @@ class _TodayPlan extends StatelessWidget {
   }
 }
 
-
 class _TodaySuggestion extends StatelessWidget {
   const _TodaySuggestion();
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Your day is open.',
@@ -123,12 +113,9 @@ class _TodaySuggestion extends StatelessWidget {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
-            key: const Key(
-              'exploreOutingIdeaButton',
-            ),
+            key: const Key('exploreOutingIdeaButton'),
             onPressed: () {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
                     'Outing ideas and local places '
@@ -138,13 +125,10 @@ class _TodaySuggestion extends StatelessWidget {
                 ),
               );
             },
-            child: const Text(
-              'Explore an Idea',
-            ),
+            child: const Text('Explore an Idea'),
           ),
         ),
       ],
     );
   }
 }
-

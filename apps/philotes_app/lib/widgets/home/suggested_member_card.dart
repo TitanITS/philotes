@@ -31,20 +31,14 @@ class SuggestedMemberCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        key: Key(
-          'suggestedMember-${member.id}',
-        ),
+        key: Key('suggestedMember-${member.id}'),
         onTap: onOpenProfile,
-        borderRadius: BorderRadius.circular(
-          PhilotesDesign.cardRadius,
-        ),
+        borderRadius: BorderRadius.circular(PhilotesDesign.cardRadius),
         child: Ink(
-          decoration:
-              PhilotesDesign.primaryCardDecoration(),
+          decoration: PhilotesDesign.primaryCardDecoration(),
           padding: const EdgeInsets.all(18),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
                 'COMPATIBILITY',
@@ -60,9 +54,7 @@ class SuggestedMemberCard extends StatelessWidget {
 
               Text(
                 member.compatibility.level.label,
-                key: Key(
-                  'compatibilityLabel-${member.id}',
-                ),
+                key: Key('compatibilityLabel-${member.id}'),
                 style: TextStyle(
                   color: _compatibilityColor,
                   fontSize: 17,
@@ -79,10 +71,7 @@ class SuggestedMemberCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: PhilotesColors.navy,
-                    border: Border.all(
-                      color: PhilotesColors.gold,
-                      width: 2.2,
-                    ),
+                    border: Border.all(color: PhilotesColors.gold, width: 2.2),
                   ),
                   alignment: Alignment.center,
                   child: Text(

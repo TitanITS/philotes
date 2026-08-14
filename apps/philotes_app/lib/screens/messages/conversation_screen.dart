@@ -8,8 +8,7 @@ import '../../services/messages/message_service.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
-class ConversationScreen
-    extends StatefulWidget {
+class ConversationScreen extends StatefulWidget {
   const ConversationScreen({
     super.key,
     required this.thread,
@@ -20,34 +19,23 @@ class ConversationScreen
   final MessageService messageService;
 
   @override
-  State<ConversationScreen> createState() =>
-      _ConversationScreenState();
+  State<ConversationScreen> createState() => _ConversationScreenState();
 }
 
-class _ConversationScreenState
-    extends State<ConversationScreen> {
-  final TextEditingController
-      _composerController =
-      TextEditingController();
+class _ConversationScreenState extends State<ConversationScreen> {
+  final TextEditingController _composerController = TextEditingController();
 
-  late List<PhilotesMessage>
-      _messages;
+  late List<PhilotesMessage> _messages;
 
-  OnboardingProfileData get _profile =>
-      OnboardingProfileData.instance;
+  OnboardingProfileData get _profile => OnboardingProfileData.instance;
 
   @override
   void initState() {
     super.initState();
 
-    _messages =
-        List<PhilotesMessage>.from(
-      widget.thread.messages,
-    );
+    _messages = List<PhilotesMessage>.from(widget.thread.messages);
 
-    widget.messageService.markThreadRead(
-      widget.thread.id,
-    );
+    widget.messageService.markThreadRead(widget.thread.id);
 
     widget.thread.unreadCount = 0;
   }
@@ -63,10 +51,7 @@ class _ConversationScreenState
       return null;
     }
 
-    for (
-      final participant
-          in widget.thread.participants
-    ) {
+    for (final participant in widget.thread.participants) {
       if (!participant.isCurrentUser) {
         return participant;
       }
@@ -76,60 +61,37 @@ class _ConversationScreenState
   }
 
   SuggestedMember? get _otherFriend {
-    final participant =
-        _otherParticipant;
+    final participant = _otherParticipant;
 
     if (participant == null) {
       return null;
     }
 
-    return widget.messageService
-        .friendById(
-      participant.id,
-      _profile,
-    );
+    return widget.messageService.friendById(participant.id, _profile);
   }
 
-  String _timeLabel(
-    DateTime value,
-  ) {
-    final minute =
-        value.minute
-            .toString()
-            .padLeft(2, '0');
+  String _timeLabel(DateTime value) {
+    final minute = value.minute.toString().padLeft(2, '0');
 
-    final hour =
-        value.hour == 0
-            ? 12
-            : value.hour > 12
-                ? value.hour - 12
-                : value.hour;
+    final hour = value.hour == 0
+        ? 12
+        : value.hour > 12
+        ? value.hour - 12
+        : value.hour;
 
-    final period =
-        value.hour >= 12
-            ? 'PM'
-            : 'AM';
+    final period = value.hour >= 12 ? 'PM' : 'AM';
 
     return '$hour:$minute $period';
   }
 
-  String _senderName(
-    String senderId,
-  ) {
+  String _senderName(String senderId) {
     if (senderId == 'self') {
       return 'You';
     }
 
-    for (
-      final participant
-          in widget.thread.participants
-    ) {
-      if (
-        participant.id ==
-        senderId
-      ) {
-        return participant
-            .displayName;
+    for (final participant in widget.thread.participants) {
+      if (participant.id == senderId) {
+        return participant.displayName;
       }
     }
 
@@ -137,9 +99,7 @@ class _ConversationScreenState
   }
 
   void _sendMessage() {
-    final value =
-        _composerController.text
-            .trim();
+    final value = _composerController.text.trim();
 
     if (value.isEmpty) {
       return;
@@ -150,16 +110,14 @@ class _ConversationScreenState
     setState(() {
       _messages.add(
         PhilotesMessage(
-          id:
-              'local-${now.microsecondsSinceEpoch}',
+          id: 'local-${now.microsecondsSinceEpoch}',
           senderId: 'self',
           text: value,
           sentAt: now,
         ),
       );
 
-      widget.thread.latestActivity =
-          now;
+      widget.thread.latestActivity = now;
     });
 
     _composerController.clear();
@@ -167,43 +125,26 @@ class _ConversationScreenState
 
   void _toggleReadState() {
     setState(() {
-      if (
-        widget.thread.unreadCount >
-        0
-      ) {
-        widget.messageService
-            .markThreadRead(
-          widget.thread.id,
-        );
+      if (widget.thread.unreadCount > 0) {
+        widget.messageService.markThreadRead(widget.thread.id);
 
-        widget.thread.unreadCount =
-            0;
+        widget.thread.unreadCount = 0;
       } else {
-        widget.messageService
-            .markThreadUnread(
-          widget.thread.id,
-        );
+        widget.messageService.markThreadUnread(widget.thread.id);
 
-        widget.thread.unreadCount =
-            1;
+        widget.thread.unreadCount = 1;
       }
     });
   }
 
-  void _showNotice(
-    String message,
-  ) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+  void _showNotice(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _openFriendProfile() {
-    final friend =
-        _otherFriend;
+    final friend = _otherFriend;
 
     if (friend == null) {
       return;
@@ -211,14 +152,11 @@ class _ConversationScreenState
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            MemberProfileScreen(
+        builder: (context) => MemberProfileScreen(
           member: friend,
-          mode:
-              MemberProfileMode.friend,
+          mode: MemberProfileMode.friend,
           onMessage: () {
-            Navigator.of(context)
-                .pop();
+            Navigator.of(context).pop();
           },
         ),
       ),
@@ -226,64 +164,43 @@ class _ConversationScreenState
   }
 
   void _showParticipants() {
-    final names =
-        widget.thread.participants
-            .map(
-              (participant) =>
-                  participant
-                          .isCurrentUser
-                      ? 'You'
-                      : participant
-                          .displayName,
-            )
-            .join(', ');
+    final names = widget.thread.participants
+        .map(
+          (participant) =>
+              participant.isCurrentUser ? 'You' : participant.displayName,
+        )
+        .join(', ');
 
-    _showNotice(
-      'Participants: $names',
-    );
+    _showNotice('Participants: $names');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: const Key(
-        'conversationScreen',
-      ),
-      backgroundColor:
-          PhilotesColors.ivory,
+      key: const Key('conversationScreen'),
+      backgroundColor: PhilotesColors.ivory,
       appBar: AppBar(
-        backgroundColor:
-            PhilotesColors.ivory,
-        foregroundColor:
-            PhilotesColors.navy,
+        backgroundColor: PhilotesColors.ivory,
+        foregroundColor: PhilotesColors.navy,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          key: const Key(
-            'backToMessagesButton',
-          ),
-          tooltip:
-              'Back to Messages',
+          key: const Key('backToMessagesButton'),
+          tooltip: 'Back to Messages',
           onPressed: () {
             Navigator.of(context).pop();
           },
-          icon: const Icon(
-            Icons.arrow_back,
-          ),
+          icon: const Icon(Icons.arrow_back),
         ),
         title: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               widget.thread.title,
-              style:
-                  const TextStyle(
-                color:
-                    PhilotesColors.navy,
+              style: const TextStyle(
+                color: PhilotesColors.navy,
                 fontSize: 16,
-                fontWeight:
-                    FontWeight.w800,
+                fontWeight: FontWeight.w800,
               ),
             ),
 
@@ -291,11 +208,8 @@ class _ConversationScreenState
               Text(
                 '${widget.thread.participants.length} '
                 'participants',
-                style:
-                    const TextStyle(
-                  color:
-                      PhilotesColors
-                          .silver,
+                style: const TextStyle(
+                  color: PhilotesColors.silver,
                   fontSize: 10,
                 ),
               ),
@@ -303,14 +217,8 @@ class _ConversationScreenState
         ),
         actions: [
           PopupMenuButton<String>(
-            key: const Key(
-              'conversationOptionsMenu',
-            ),
-            icon: const Icon(
-              Icons.more_vert,
-              color:
-                  PhilotesColors.navy,
-            ),
+            key: const Key('conversationOptionsMenu'),
+            icon: const Icon(Icons.more_vert, color: PhilotesColors.navy),
             onSelected: (value) {
               switch (value) {
                 case 'toggle-read':
@@ -361,89 +269,55 @@ class _ConversationScreenState
               }
             },
             itemBuilder: (context) {
-              final toggleItem =
-                  PopupMenuItem<String>(
+              final toggleItem = PopupMenuItem<String>(
                 value: 'toggle-read',
                 child: Text(
-                  widget.thread
-                              .unreadCount >
-                          0
-                      ? 'Mark Read'
-                      : 'Mark Unread',
+                  widget.thread.unreadCount > 0 ? 'Mark Read' : 'Mark Unread',
                 ),
               );
 
-              if (
-                widget.thread.isDirect
-              ) {
+              if (widget.thread.isDirect) {
                 return [
                   toggleItem,
-                  const PopupMenuItem<
-                      String>(
-                    value:
-                        'view-profile',
-                    child: Text(
-                      'View Profile',
-                    ),
+                  const PopupMenuItem<String>(
+                    value: 'view-profile',
+                    child: Text('View Profile'),
                   ),
-                  const PopupMenuItem<
-                      String>(
+                  const PopupMenuItem<String>(
                     value: 'block',
-                    child: Text(
-                      'Block',
-                    ),
+                    child: Text('Block'),
                   ),
-                  const PopupMenuItem<
-                      String>(
+                  const PopupMenuItem<String>(
                     value: 'report',
-                    child: Text(
-                      'Report',
-                    ),
+                    child: Text('Report'),
                   ),
                 ];
               }
 
               return [
                 toggleItem,
-                const PopupMenuItem<
-                    String>(
-                  value:
-                      'participants',
-                  child: Text(
-                    'View Participants',
-                  ),
+                const PopupMenuItem<String>(
+                  value: 'participants',
+                  child: Text('View Participants'),
                 ),
-                const PopupMenuItem<
-                    String>(
-                  value:
-                      'group-info',
-                  child: Text(
-                    'Group Information',
-                  ),
+                const PopupMenuItem<String>(
+                  value: 'group-info',
+                  child: Text('Group Information'),
                 ),
-                const PopupMenuItem<
-                    String>(
-                  value:
-                      'leave-group',
-                  child: Text(
-                    'Leave Group',
-                  ),
+                const PopupMenuItem<String>(
+                  value: 'leave-group',
+                  child: Text('Leave Group'),
                 ),
               ];
             },
           ),
         ],
-        bottom:
-            const PreferredSize(
-          preferredSize:
-              Size.fromHeight(1.2),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.2),
           child: Divider(
             height: 1.2,
-            thickness:
-                PhilotesDesign
-                    .secondaryBorderWidth,
-            color:
-                PhilotesColors.gold,
+            thickness: PhilotesDesign.secondaryBorderWidth,
+            color: PhilotesColors.gold,
           ),
         ),
       ),
@@ -451,116 +325,56 @@ class _ConversationScreenState
         children: [
           Expanded(
             child: ListView.builder(
-              key: const Key(
-                'conversationMessageList',
-              ),
-              padding:
-                  const EdgeInsets
-                      .fromLTRB(
-                18,
-                22,
-                18,
-                22,
-              ),
-              itemCount:
-                  _messages.length,
-              itemBuilder: (
-                BuildContext context,
-                int index,
-              ) {
-                final message =
-                    _messages[index];
+              key: const Key('conversationMessageList'),
+              padding: const EdgeInsets.fromLTRB(18, 22, 18, 22),
+              itemCount: _messages.length,
+              itemBuilder: (BuildContext context, int index) {
+                final message = _messages[index];
 
                 return _MessageBubble(
-                  mine:
-                      message.senderId ==
-                      'self',
-                  senderName:
-                      _senderName(
-                    message.senderId,
-                  ),
-                  text:
-                      message.text,
-                  time:
-                      _timeLabel(
-                    message.sentAt,
-                  ),
+                  mine: message.senderId == 'self',
+                  senderName: _senderName(message.senderId),
+                  text: message.text,
+                  time: _timeLabel(message.sentAt),
                 );
               },
             ),
           ),
 
           Container(
-            decoration:
-                const BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
               border: Border(
-                top: BorderSide(
-                  color:
-                      PhilotesColors.gold,
-                  width: 1.2,
-                ),
+                top: BorderSide(color: PhilotesColors.gold, width: 1.2),
               ),
             ),
-            padding:
-                const EdgeInsets
-                    .fromLTRB(
-              14,
-              12,
-              14,
-              14,
-            ),
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
             child: SafeArea(
               top: false,
               child: Row(
-                crossAxisAlignment:
-                    CrossAxisAlignment
-                        .end,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
                     child: TextField(
-                      key: const Key(
-                        'messageComposerField',
-                      ),
-                      controller:
-                          _composerController,
+                      key: const Key('messageComposerField'),
+                      controller: _composerController,
                       minLines: 1,
                       maxLines: 5,
-                      decoration:
-                          InputDecoration(
-                        hintText:
-                            'Type a message...',
+                      decoration: InputDecoration(
+                        hintText: 'Type a message...',
                         filled: true,
-                        fillColor:
-                            PhilotesColors
-                                .ivory,
-                        enabledBorder:
-                            OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius
-                                  .circular(
-                            16,
-                          ),
-                          borderSide:
-                              const BorderSide(
-                            color:
-                                PhilotesColors
-                                    .gold,
+                        fillColor: PhilotesColors.ivory,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(
+                            color: PhilotesColors.gold,
                             width: 1.2,
                           ),
                         ),
-                        focusedBorder:
-                            OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius
-                                  .circular(
-                            16,
-                          ),
-                          borderSide:
-                              const BorderSide(
-                            color:
-                                PhilotesColors
-                                    .navy,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(
+                            color: PhilotesColors.navy,
                             width: 1.6,
                           ),
                         ),
@@ -568,39 +382,19 @@ class _ConversationScreenState
                     ),
                   ),
 
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
 
                   FilledButton(
-                    key: const Key(
-                      'sendMessageButton',
+                    key: const Key('sendMessageButton'),
+                    onPressed: _sendMessage,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: PhilotesColors.navy,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(72, 50),
                     ),
-                    onPressed:
-                        _sendMessage,
-                    style:
-                        FilledButton
-                            .styleFrom(
-                      backgroundColor:
-                          PhilotesColors
-                              .navy,
-                      foregroundColor:
-                          Colors.white,
-                      minimumSize:
-                          const Size(
-                        72,
-                        50,
-                      ),
-                    ),
-                    child:
-                        const Text(
+                    child: const Text(
                       'Send',
-                      style:
-                          TextStyle(
-                        fontWeight:
-                            FontWeight
-                                .w700,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ],
@@ -613,9 +407,7 @@ class _ConversationScreenState
   }
 }
 
-
-class _MessageBubble
-    extends StatelessWidget {
+class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
     required this.mine,
     required this.senderName,
@@ -631,92 +423,45 @@ class _MessageBubble
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment:
-          mine
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
+      alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints:
-            const BoxConstraints(
-          maxWidth: 520,
-        ),
-        margin:
-            const EdgeInsets.only(
-          bottom: 14,
-        ),
-        padding:
-            const EdgeInsets
-                .fromLTRB(
-          14,
-          10,
-          14,
-          9,
-        ),
-        decoration:
-            BoxDecoration(
-          color:
-              mine
-                  ? PhilotesColors.navy
-                  : Colors.white,
-          borderRadius:
-              BorderRadius.circular(
-            16,
-          ),
-          border: Border.all(
-            color:
-                PhilotesColors.gold,
-            width: 1.2,
-          ),
+        constraints: const BoxConstraints(maxWidth: 520),
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 9),
+        decoration: BoxDecoration(
+          color: mine ? PhilotesColors.navy : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: PhilotesColors.gold, width: 1.2),
         ),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment
-                  .start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               senderName,
               style: TextStyle(
-                color:
-                    mine
-                        ? PhilotesColors
-                            .gold
-                        : PhilotesColors
-                            .navy,
+                color: mine ? PhilotesColors.gold : PhilotesColors.navy,
                 fontSize: 10,
-                fontWeight:
-                    FontWeight.w800,
+                fontWeight: FontWeight.w800,
               ),
             ),
 
-            const SizedBox(
-              height: 4,
-            ),
+            const SizedBox(height: 4),
 
             Text(
               text,
               style: TextStyle(
-                color:
-                    mine
-                        ? Colors.white
-                        : PhilotesColors
-                            .navy,
+                color: mine ? Colors.white : PhilotesColors.navy,
                 fontSize: 13,
                 height: 1.4,
               ),
             ),
 
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5),
 
             Text(
               time,
               style: TextStyle(
-                color:
-                    mine
-                        ? Colors.white70
-                        : PhilotesColors
-                            .silver,
+                color: mine ? Colors.white70 : PhilotesColors.silver,
                 fontSize: 9,
               ),
             ),

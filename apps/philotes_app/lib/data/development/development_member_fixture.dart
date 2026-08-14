@@ -51,29 +51,23 @@ class DevelopmentMemberFixture {
       ];
     }
 
-    if (profile.minimumFriendAge == 18 &&
-        profile.maximumFriendAge == 80) {
+    if (profile.minimumFriendAge == 18 && profile.maximumFriendAge == 80) {
       profile.minimumFriendAge = 30;
       profile.maximumFriendAge = 55;
     }
 
-    profile.socialFrequency ??=
-        "Whenever we're both available";
+    profile.socialFrequency ??= "Whenever we're both available";
 
-    profile.planningStyle ??=
-        'A little of both';
+    profile.planningStyle ??= 'A little of both';
 
     profile.interestStyle ??=
         'A balance of shared interests and new experiences';
 
-    profile.newActivityComfort ??=
-        'Maybe';
+    profile.newActivityComfort ??= 'Maybe';
 
-    profile.locationSource ??=
-        'device';
+    profile.locationSource ??= 'device';
 
-    profile.meetingDistance ??=
-        '25';
+    profile.meetingDistance ??= '25';
 
     if (!profile.photoSelected) {
       profile.photoSelected = true;

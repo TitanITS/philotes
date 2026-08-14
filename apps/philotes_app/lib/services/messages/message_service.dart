@@ -5,24 +5,16 @@ import '../../models/onboarding_profile_data.dart';
 abstract class MessageService {
   const MessageService();
 
-  List<MessageThread> threads(
-    OnboardingProfileData currentMember,
-  );
+  List<MessageThread> threads(OnboardingProfileData currentMember);
 
-  List<SuggestedMember> messageableFriends(
-    OnboardingProfileData currentMember,
-  );
+  List<SuggestedMember> messageableFriends(OnboardingProfileData currentMember);
 
   SuggestedMember? friendById(
     String memberId,
     OnboardingProfileData currentMember,
   );
 
-  void markThreadRead(
-    String threadId,
-  );
+  void markThreadRead(String threadId);
 
-  void markThreadUnread(
-    String threadId,
-  );
+  void markThreadUnread(String threadId);
 }

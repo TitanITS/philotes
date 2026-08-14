@@ -5,17 +5,13 @@ import '../../models/compatibility/suggested_member.dart';
 import '../../theme/philotes_colors.dart';
 import '../../theme/philotes_design.dart';
 
-enum MemberProfileMode {
-  discovery,
-  friend,
-}
+enum MemberProfileMode { discovery, friend }
 
 class MemberProfileScreen extends StatelessWidget {
   const MemberProfileScreen({
     super.key,
     required this.member,
-    this.mode =
-        MemberProfileMode.discovery,
+    this.mode = MemberProfileMode.discovery,
     this.onMessage,
   });
 
@@ -46,18 +42,12 @@ class MemberProfileScreen extends StatelessWidget {
         elevation: 0,
         title: Text(
           member.displayName,
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w700),
         ),
         actions: [
           PopupMenuButton<String>(
-            key: const Key(
-              'memberProfileOptionsMenu',
-            ),
-            icon: const Icon(
-              Icons.more_vert,
-            ),
+            key: const Key('memberProfileOptionsMenu'),
+            icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               String message;
 
@@ -91,49 +81,29 @@ class MemberProfileScreen extends StatelessWidget {
                       'moderation and safety.';
               }
 
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(
-                SnackBar(
-                  content: Text(message),
-                ),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(message)));
             },
             itemBuilder: (context) {
-              if (
-                mode ==
-                MemberProfileMode.friend
-              ) {
+              if (mode == MemberProfileMode.friend) {
                 return const [
                   PopupMenuItem<String>(
                     value: 'unfriend',
                     child: Text('Unfriend'),
                   ),
-                  PopupMenuItem<String>(
-                    value: 'block',
-                    child: Text('Block'),
-                  ),
-                  PopupMenuItem<String>(
-                    value: 'report',
-                    child: Text('Report'),
-                  ),
+                  PopupMenuItem<String>(value: 'block', child: Text('Block')),
+                  PopupMenuItem<String>(value: 'report', child: Text('Report')),
                 ];
               }
 
               return const [
                 PopupMenuItem<String>(
                   value: 'hide',
-                  child: Text(
-                    "Don't Suggest Again",
-                  ),
+                  child: Text("Don't Suggest Again"),
                 ),
-                PopupMenuItem<String>(
-                  value: 'block',
-                  child: Text('Block'),
-                ),
-                PopupMenuItem<String>(
-                  value: 'report',
-                  child: Text('Report'),
-                ),
+                PopupMenuItem<String>(value: 'block', child: Text('Block')),
+                PopupMenuItem<String>(value: 'report', child: Text('Report')),
               ];
             },
           ),
@@ -141,23 +111,13 @@ class MemberProfileScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          key: const Key(
-            'memberProfileScreen',
-          ),
-          padding: const EdgeInsets.fromLTRB(
-            20,
-            20,
-            20,
-            36,
-          ),
+          key: const Key('memberProfileScreen'),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 760,
-              ),
+              constraints: const BoxConstraints(maxWidth: 760),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Center(
                     child: Container(
@@ -177,8 +137,7 @@ class MemberProfileScreen extends StatelessWidget {
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 44,
-                          fontWeight:
-                              FontWeight.w800,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
@@ -201,30 +160,23 @@ class MemberProfileScreen extends StatelessWidget {
                   Text(
                     member.introduction,
                     textAlign: TextAlign.center,
-                    style:
-                        PhilotesDesign.supportingText,
+                    style: PhilotesDesign.supportingText,
                   ),
 
                   const SizedBox(height: 24),
 
                   Container(
-                    key: const Key(
-                      'compatibilityScoreCard',
-                    ),
+                    key: const Key('compatibilityScoreCard'),
                     padding: const EdgeInsets.all(18),
-                    decoration:
-                        PhilotesDesign
-                            .primaryCardDecoration(),
+                    decoration: PhilotesDesign.primaryCardDecoration(),
                     child: Column(
                       children: [
                         const Text(
                           'COMPATIBILITY',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.navy,
+                            color: PhilotesColors.navy,
                             fontSize: 11,
-                            fontWeight:
-                                FontWeight.w800,
+                            fontWeight: FontWeight.w800,
                             letterSpacing: 1.1,
                           ),
                         ),
@@ -233,15 +185,11 @@ class MemberProfileScreen extends StatelessWidget {
 
                         Text(
                           '${result.score}%',
-                          key: const Key(
-                            'compatibilityPercentage',
-                          ),
+                          key: const Key('compatibilityPercentage'),
                           style: const TextStyle(
-                            color:
-                                PhilotesColors.navy,
+                            color: PhilotesColors.navy,
                             fontSize: 34,
-                            fontWeight:
-                                FontWeight.w900,
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
 
@@ -252,8 +200,7 @@ class MemberProfileScreen extends StatelessWidget {
                           style: TextStyle(
                             color: _levelColor,
                             fontSize: 17,
-                            fontWeight:
-                                FontWeight.w800,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
 
@@ -266,8 +213,7 @@ class MemberProfileScreen extends StatelessWidget {
                           'scoring engine will be built later.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color:
-                                PhilotesColors.silver,
+                            color: PhilotesColors.silver,
                             fontSize: 10,
                             height: 1.4,
                           ),
@@ -276,49 +222,31 @@ class MemberProfileScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign.sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _DetailSection(
                     title: 'Why You May Connect',
                     child: Column(
                       children: [
-                        for (final reason
-                            in result.reasons)
+                        for (final reason in result.reasons)
                           Padding(
-                            padding:
-                                const EdgeInsets.only(
-                              bottom: 9,
-                            ),
+                            padding: const EdgeInsets.only(bottom: 9),
                             child: Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment
-                                      .start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
                                   '•',
                                   style: TextStyle(
-                                    color:
-                                        PhilotesColors
-                                            .gold,
-                                    fontWeight:
-                                        FontWeight
-                                            .w900,
+                                    color: PhilotesColors.gold,
+                                    fontWeight: FontWeight.w900,
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 9,
-                                ),
+                                const SizedBox(width: 9),
                                 Expanded(
                                   child: Text(
                                     reason,
-                                    style:
-                                        const TextStyle(
-                                      color:
-                                          PhilotesColors
-                                              .navy,
+                                    style: const TextStyle(
+                                      color: PhilotesColors.navy,
                                       fontSize: 13,
                                       height: 1.4,
                                     ),
@@ -331,131 +259,85 @@ class MemberProfileScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign.sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _InterestSection(
                     title: 'Shared Favorites',
-                    values:
-                        result
-                            .sharedFavoriteInterests,
+                    values: result.sharedFavoriteInterests,
                     emphasized: true,
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign.sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _InterestSection(
                     title: 'Other Shared Interests',
-                    values:
-                        result.sharedInterests,
+                    values: result.sharedInterests,
                     emphasized: false,
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign.sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _DetailSection(
-                    title:
-                        'Friendship Compatibility',
+                    title: 'Friendship Compatibility',
                     child: Column(
                       children: [
                         _AlignmentRow(
                           label: 'Social Pace',
-                          value:
-                              result
-                                  .socialPaceAlignment,
+                          value: result.socialPaceAlignment,
                         ),
                         const Divider(height: 24),
                         _AlignmentRow(
-                          label:
-                              'Friendship Style',
-                          value:
-                              result
-                                  .friendshipStyleAlignment,
+                          label: 'Friendship Style',
+                          value: result.friendshipStyleAlignment,
                         ),
                         const Divider(height: 24),
                         _AlignmentRow(
-                          label:
-                              'Planning Style',
-                          value:
-                              result
-                                  .planningStyleAlignment,
+                          label: 'Planning Style',
+                          value: result.planningStyleAlignment,
                         ),
                         const Divider(height: 24),
                         _AlignmentRow(
-                          label:
-                              'Trying New Activities',
-                          value:
-                              result
-                                  .newActivityAlignment,
+                          label: 'Trying New Activities',
+                          value: result.newActivityAlignment,
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign.sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _InterestSection(
-                    title:
-                        'Things You May Enjoy Together',
-                    values:
-                        result.suggestedActivities,
+                    title: 'Things You May Enjoy Together',
+                    values: result.suggestedActivities,
                     emphasized: true,
                   ),
 
                   const SizedBox(height: 30),
 
-                  if (
-                    mode ==
-                    MemberProfileMode.friend
-                  )
+                  if (mode == MemberProfileMode.friend)
                     SizedBox(
                       height: 56,
                       child: FilledButton.icon(
-                        key: const Key(
-                          'messageFriendFromProfileButton',
-                        ),
+                        key: const Key('messageFriendFromProfileButton'),
                         onPressed: onMessage,
-                        style:
-                            FilledButton.styleFrom(
-                          backgroundColor:
-                              PhilotesColors.navy,
-                          foregroundColor:
-                              Colors.white,
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              14,
-                            ),
-                            side:
-                                const BorderSide(
-                              color:
-                                  PhilotesColors.gold,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: PhilotesColors.navy,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: const BorderSide(
+                              color: PhilotesColors.gold,
                               width: 1.5,
                             ),
                           ),
                         ),
-                        icon: const Icon(
-                          Icons.chat_bubble_outline,
-                        ),
+                        icon: const Icon(Icons.chat_bubble_outline),
                         label: Text(
                           'Message '
                           '${member.displayName}',
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight:
-                                FontWeight.w700,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -464,13 +346,9 @@ class MemberProfileScreen extends StatelessWidget {
                     SizedBox(
                       height: 56,
                       child: FilledButton(
-                        key: const Key(
-                          'showInterestButton',
-                        ),
+                        key: const Key('showInterestButton'),
                         onPressed: () {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
                                 'Showing interest in '
@@ -482,22 +360,13 @@ class MemberProfileScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        style:
-                            FilledButton.styleFrom(
-                          backgroundColor:
-                              PhilotesColors.navy,
-                          foregroundColor:
-                              Colors.white,
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              14,
-                            ),
-                            side:
-                                const BorderSide(
-                              color:
-                                  PhilotesColors.gold,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: PhilotesColors.navy,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: const BorderSide(
+                              color: PhilotesColors.gold,
                               width: 1.5,
                             ),
                           ),
@@ -506,8 +375,7 @@ class MemberProfileScreen extends StatelessWidget {
                           'Show Interest',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight:
-                                FontWeight.w700,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -522,12 +390,8 @@ class MemberProfileScreen extends StatelessWidget {
   }
 }
 
-
 class _DetailSection extends StatelessWidget {
-  const _DetailSection({
-    required this.title,
-    required this.child,
-  });
+  const _DetailSection({required this.title, required this.child});
 
   final String title;
   final Widget child;
@@ -535,29 +399,21 @@ class _DetailSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          title,
-          style:
-              PhilotesDesign.sectionHeading,
-        ),
+        Text(title, style: PhilotesDesign.sectionHeading),
 
         const SizedBox(height: 10),
 
         Container(
           padding: const EdgeInsets.all(18),
-          decoration:
-              PhilotesDesign
-                  .secondaryCardDecoration(),
+          decoration: PhilotesDesign.secondaryCardDecoration(),
           child: child,
         ),
       ],
     );
   }
 }
-
 
 class _InterestSection extends StatelessWidget {
   const _InterestSection({
@@ -573,14 +429,9 @@ class _InterestSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          title,
-          style:
-              PhilotesDesign.sectionHeading,
-        ),
+        Text(title, style: PhilotesDesign.sectionHeading),
 
         const SizedBox(height: 10),
 
@@ -590,35 +441,24 @@ class _InterestSection extends StatelessWidget {
           children: [
             for (final value in values)
               Container(
-                padding:
-                    const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 13,
                   vertical: 9,
                 ),
                 decoration: BoxDecoration(
-                  color:
-                      emphasized
-                          ? PhilotesColors.navy
-                          : Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(24),
+                  color: emphasized ? PhilotesColors.navy : Colors.white,
+                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color:
-                        PhilotesColors.gold,
-                    width:
-                        emphasized ? 1.4 : 1.1,
+                    color: PhilotesColors.gold,
+                    width: emphasized ? 1.4 : 1.1,
                   ),
                 ),
                 child: Text(
                   value,
                   style: TextStyle(
-                    color:
-                        emphasized
-                            ? Colors.white
-                            : PhilotesColors.navy,
+                    color: emphasized ? Colors.white : PhilotesColors.navy,
                     fontSize: 12,
-                    fontWeight:
-                        FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -629,12 +469,8 @@ class _InterestSection extends StatelessWidget {
   }
 }
 
-
 class _AlignmentRow extends StatelessWidget {
-  const _AlignmentRow({
-    required this.label,
-    required this.value,
-  });
+  const _AlignmentRow({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -646,10 +482,7 @@ class _AlignmentRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
-              color: PhilotesColors.navy,
-              fontSize: 13,
-            ),
+            style: const TextStyle(color: PhilotesColors.navy, fontSize: 13),
           ),
         ),
         Text(

@@ -16,8 +16,7 @@ class HomeSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: padding,
-      decoration:
-          PhilotesDesign.primaryCardDecoration(),
+      decoration: PhilotesDesign.primaryCardDecoration(),
       child: child,
     );
   }

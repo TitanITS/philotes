@@ -13,10 +13,8 @@ class LocationDiscoveryScreen extends StatefulWidget {
       _LocationDiscoveryScreenState();
 }
 
-class _LocationDiscoveryScreenState
-    extends State<LocationDiscoveryScreen> {
-  final TextEditingController _zipController =
-      TextEditingController();
+class _LocationDiscoveryScreenState extends State<LocationDiscoveryScreen> {
+  final TextEditingController _zipController = TextEditingController();
 
   String? _locationSource;
   String? _meetingDistance;
@@ -26,19 +24,14 @@ class _LocationDiscoveryScreenState
   bool _onlineFriendships = false;
   bool _showValidation = false;
 
-  bool get _locationSelected =>
-      _locationSource != null;
+  bool get _locationSelected => _locationSource != null;
 
-  bool get _distanceSelected =>
-      _meetingDistance != null;
+  bool get _distanceSelected => _meetingDistance != null;
 
-  bool get _canContinue =>
-      _locationSelected && _distanceSelected;
+  bool get _canContinue => _locationSelected && _distanceSelected;
 
   bool get _zipIsValid =>
-      RegExp(r'^\d{5}$').hasMatch(
-        _zipController.text.trim(),
-      );
+      RegExp(r'^\d{5}$').hasMatch(_zipController.text.trim());
 
   void _useCurrentLocation() {
     setState(() {
@@ -100,27 +93,21 @@ class _LocationDiscoveryScreenState
       return;
     }
 
-    final profile =
-        OnboardingProfileData.instance;
+    final profile = OnboardingProfileData.instance;
 
-    profile.locationSource =
-        _locationSource;
+    profile.locationSource = _locationSource;
 
-    profile.zipCode =
-        _locationSource == 'zip'
-            ? _zipController.text.trim()
-            : null;
+    profile.zipCode = _locationSource == 'zip'
+        ? _zipController.text.trim()
+        : null;
 
-    profile.meetingDistance =
-        _meetingDistance;
+    profile.meetingDistance = _meetingDistance;
 
-    profile.onlineFriendships =
-        _onlineFriendships;
+    profile.onlineFriendships = _onlineFriendships;
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            const VerificationSafetyScreen(),
+        builder: (context) => const VerificationSafetyScreen(),
       ),
     );
   }
@@ -141,27 +128,17 @@ class _LocationDiscoveryScreenState
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              20,
-              20,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 680,
-              ),
+              constraints: const BoxConstraints(maxWidth: 680),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
                     'Location & Discovery',
@@ -181,8 +158,7 @@ class _LocationDiscoveryScreenState
                       height: 2,
                       decoration: BoxDecoration(
                         color: PhilotesColors.gold,
-                        borderRadius:
-                            BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
@@ -219,20 +195,13 @@ class _LocationDiscoveryScreenState
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color:
-                            Colors.red.withValues(alpha: 0.08),
-                        borderRadius:
-                            BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.red,
-                        ),
+                        color: Colors.red.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red),
                       ),
                       child: const Row(
                         children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                          ),
+                          Icon(Icons.error_outline, color: Colors.red),
                           SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -241,8 +210,7 @@ class _LocationDiscoveryScreenState
                               style: TextStyle(
                                 color: Colors.red,
                                 fontSize: 13,
-                                fontWeight:
-                                    FontWeight.w600,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -260,19 +228,13 @@ class _LocationDiscoveryScreenState
                         'Choose one way for Philotes to determine '
                         'where to look for nearby friends.',
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _LocationChoiceButton(
-                          key: const Key(
-                            'useCurrentLocationButton',
-                          ),
-                          selected:
-                              _locationSource == 'device',
-                          icon:
-                              Icons.my_location_outlined,
-                          title:
-                              'Use My Current Location',
+                          key: const Key('useCurrentLocationButton'),
+                          selected: _locationSource == 'device',
+                          icon: Icons.my_location_outlined,
+                          title: 'Use My Current Location',
                           subtitle:
                               'Use your device location to determine '
                               'your general area.',
@@ -284,30 +246,21 @@ class _LocationDiscoveryScreenState
                         const Row(
                           children: [
                             Expanded(
-                              child: Divider(
-                                color: PhilotesColors.gold,
-                              ),
+                              child: Divider(color: PhilotesColors.gold),
                             ),
                             Padding(
-                              padding:
-                                  EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 12),
                               child: Text(
                                 'OR',
                                 style: TextStyle(
-                                  color:
-                                      PhilotesColors.silver,
+                                  color: PhilotesColors.silver,
                                   fontSize: 11,
-                                  fontWeight:
-                                      FontWeight.w700,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
                             Expanded(
-                              child: Divider(
-                                color: PhilotesColors.gold,
-                              ),
+                              child: Divider(color: PhilotesColors.gold),
                             ),
                           ],
                         ),
@@ -315,15 +268,10 @@ class _LocationDiscoveryScreenState
                         const SizedBox(height: 14),
 
                         _LocationChoiceButton(
-                          key: const Key(
-                            'enterZipCodeButton',
-                          ),
-                          selected:
-                              _locationSource == 'zip',
-                          icon:
-                              Icons.pin_drop_outlined,
-                          title:
-                              'Enter ZIP Code Instead',
+                          key: const Key('enterZipCodeButton'),
+                          selected: _locationSource == 'zip',
+                          icon: Icons.pin_drop_outlined,
+                          title: 'Enter ZIP Code Instead',
                           subtitle:
                               'Use a general ZIP-code area without '
                               'using your device location.',
@@ -334,91 +282,53 @@ class _LocationDiscoveryScreenState
                           const SizedBox(height: 16),
 
                           Row(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                 child: TextField(
-                                  key: const Key(
-                                    'zipCodeField',
-                                  ),
-                                  controller:
-                                      _zipController,
-                                  keyboardType:
-                                      TextInputType.number,
+                                  key: const Key('zipCodeField'),
+                                  controller: _zipController,
+                                  keyboardType: TextInputType.number,
                                   maxLength: 5,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter
-                                        .digitsOnly,
-                                    LengthLimitingTextInputFormatter(
-                                      5,
-                                    ),
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(5),
                                   ],
                                   onChanged: (_) {
                                     if (_zipIsConfirmed) {
                                       setState(() {
-                                        _zipIsConfirmed =
-                                            false;
-                                        _locationSource =
-                                            null;
+                                        _zipIsConfirmed = false;
+                                        _locationSource = null;
                                       });
                                     }
                                   },
-                                  decoration:
-                                      InputDecoration(
-                                    hintText:
-                                        '5-digit ZIP code',
+                                  decoration: InputDecoration(
+                                    hintText: '5-digit ZIP code',
                                     counterText: '',
                                     filled: true,
-                                    fillColor:
-                                        Colors.white
-                                            .withValues(
+                                    fillColor: Colors.white.withValues(
                                       alpha: 0.65,
                                     ),
                                     errorText:
-                                        _zipController
-                                                    .text
-                                                    .isNotEmpty &&
-                                                !_zipIsValid
-                                            ? 'Enter a valid 5-digit ZIP code.'
-                                            : null,
-                                    border:
-                                        OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                        12,
-                                      ),
+                                        _zipController.text.isNotEmpty &&
+                                            !_zipIsValid
+                                        ? 'Enter a valid 5-digit ZIP code.'
+                                        : null,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    enabledBorder:
-                                        OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                        12,
-                                      ),
-                                      borderSide:
-                                          BorderSide(
-                                        color:
-                                            PhilotesColors
-                                                .gold
-                                                .withValues(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: PhilotesColors.gold.withValues(
                                           alpha: 0.65,
                                         ),
                                       ),
                                     ),
-                                    focusedBorder:
-                                        OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                        12,
-                                      ),
-                                      borderSide:
-                                          const BorderSide(
-                                        color:
-                                            PhilotesColors
-                                                .gold,
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: const BorderSide(
+                                        color: PhilotesColors.gold,
                                         width: 2,
                                       ),
                                     ),
@@ -430,33 +340,17 @@ class _LocationDiscoveryScreenState
 
                               SizedBox(
                                 height: 56,
-                                child:
-                                    FilledButton(
-                                  key: const Key(
-                                    'confirmZipCodeButton',
-                                  ),
-                                  onPressed:
-                                      _confirmZipCode,
-                                  style:
-                                      FilledButton
-                                          .styleFrom(
-                                    backgroundColor:
-                                        PhilotesColors
-                                            .navy,
-                                    foregroundColor:
-                                        Colors.white,
-                                    shape:
-                                        RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius
-                                              .circular(
-                                        12,
-                                      ),
+                                child: FilledButton(
+                                  key: const Key('confirmZipCodeButton'),
+                                  onPressed: _confirmZipCode,
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: PhilotesColors.navy,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: const Text(
-                                    'Use ZIP',
-                                  ),
+                                  child: const Text('Use ZIP'),
                                 ),
                               ),
                             ],
@@ -467,50 +361,31 @@ class _LocationDiscoveryScreenState
                           const SizedBox(height: 16),
 
                           Container(
-                            key: const Key(
-                              'selectedLocationSummary',
-                            ),
-                            padding:
-                                const EdgeInsets.all(13),
-                            decoration:
-                                BoxDecoration(
-                              color:
-                                  PhilotesColors.gold
-                                      .withValues(
+                            key: const Key('selectedLocationSummary'),
+                            padding: const EdgeInsets.all(13),
+                            decoration: BoxDecoration(
+                              color: PhilotesColors.gold.withValues(
                                 alpha: 0.10,
                               ),
-                              borderRadius:
-                                  BorderRadius.circular(
-                                12,
-                              ),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
                               children: [
                                 const Icon(
-                                  Icons
-                                      .check_circle_outline,
-                                  color:
-                                      PhilotesColors.gold,
+                                  Icons.check_circle_outline,
+                                  color: PhilotesColors.gold,
                                   size: 21,
                                 ),
-                                const SizedBox(
-                                  width: 9,
-                                ),
+                                const SizedBox(width: 9),
                                 Expanded(
                                   child: Text(
-                                    _locationSource ==
-                                            'device'
+                                    _locationSource == 'device'
                                         ? 'Current device area selected'
                                         : 'ZIP ${_zipController.text.trim()} area selected',
-                                    style:
-                                        const TextStyle(
-                                      color:
-                                          PhilotesColors
-                                              .navy,
+                                    style: const TextStyle(
+                                      color: PhilotesColors.navy,
                                       fontSize: 13,
-                                      fontWeight:
-                                          FontWeight
-                                              .w600,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
@@ -533,16 +408,10 @@ class _LocationDiscoveryScreenState
                     child: Column(
                       children: [
                         _DistanceChoice(
-                          key: const Key(
-                            'distance10',
-                          ),
-                          selected:
-                              _meetingDistance ==
-                                  '10',
-                          title:
-                              'Very close to me',
-                          subtitle:
-                              'Within about 10 miles',
+                          key: const Key('distance10'),
+                          selected: _meetingDistance == '10',
+                          title: 'Very close to me',
+                          subtitle: 'Within about 10 miles',
                           onTap: () {
                             _selectDistance('10');
                           },
@@ -551,15 +420,10 @@ class _LocationDiscoveryScreenState
                         const SizedBox(height: 9),
 
                         _DistanceChoice(
-                          key: const Key(
-                            'distance25',
-                          ),
-                          selected:
-                              _meetingDistance ==
-                                  '25',
+                          key: const Key('distance25'),
+                          selected: _meetingDistance == '25',
                           title: 'Nearby',
-                          subtitle:
-                              'Within about 25 miles',
+                          subtitle: 'Within about 25 miles',
                           onTap: () {
                             _selectDistance('25');
                           },
@@ -568,16 +432,10 @@ class _LocationDiscoveryScreenState
                         const SizedBox(height: 9),
 
                         _DistanceChoice(
-                          key: const Key(
-                            'distance50',
-                          ),
-                          selected:
-                              _meetingDistance ==
-                                  '50',
-                          title:
-                              'A little farther away',
-                          subtitle:
-                              'Within about 50 miles',
+                          key: const Key('distance50'),
+                          selected: _meetingDistance == '50',
+                          title: 'A little farther away',
+                          subtitle: 'Within about 50 miles',
                           onTap: () {
                             _selectDistance('50');
                           },
@@ -586,40 +444,24 @@ class _LocationDiscoveryScreenState
                         const SizedBox(height: 9),
 
                         _DistanceChoice(
-                          key: const Key(
-                            'distanceFarther',
-                          ),
-                          selected:
-                              _meetingDistance ==
-                                  'farther',
-                          title:
-                              'I\'m willing to travel farther',
-                          subtitle:
-                              'More than 50 miles',
+                          key: const Key('distanceFarther'),
+                          selected: _meetingDistance == 'farther',
+                          title: 'I\'m willing to travel farther',
+                          subtitle: 'More than 50 miles',
                           onTap: () {
-                            _selectDistance(
-                              'farther',
-                            );
+                            _selectDistance('farther');
                           },
                         ),
 
                         const SizedBox(height: 9),
 
                         _DistanceChoice(
-                          key: const Key(
-                            'distanceFlexible',
-                          ),
-                          selected:
-                              _meetingDistance ==
-                                  'flexible',
-                          title:
-                              'Distance isn\'t very important to me',
-                          subtitle:
-                              'Keep my discovery range flexible',
+                          key: const Key('distanceFlexible'),
+                          selected: _meetingDistance == 'flexible',
+                          title: 'Distance isn\'t very important to me',
+                          subtitle: 'Keep my discovery range flexible',
                           onTap: () {
-                            _selectDistance(
-                              'flexible',
-                            );
+                            _selectDistance('flexible');
                           },
                         ),
                       ],
@@ -629,64 +471,44 @@ class _LocationDiscoveryScreenState
                   const SizedBox(height: 18),
 
                   Material(
-                    color: Colors.white.withValues(
-                      alpha: 0.55,
-                    ),
+                    color: Colors.white.withValues(alpha: 0.55),
                     clipBehavior: Clip.antiAlias,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                       side: BorderSide(
-                        color: PhilotesColors.gold
-                            .withValues(
-                          alpha: 0.6,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.6),
                       ),
                     ),
                     child: Padding(
-                      padding:
-                          const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: CheckboxListTile(
-                        key: const Key(
-                          'onlineFriendshipsCheckbox',
-                        ),
-                        contentPadding:
-                            EdgeInsets.zero,
-                        value:
-                            _onlineFriendships,
-                        activeColor:
-                            PhilotesColors.navy,
+                        key: const Key('onlineFriendshipsCheckbox'),
+                        contentPadding: EdgeInsets.zero,
+                        value: _onlineFriendships,
+                        activeColor: PhilotesColors.navy,
                         checkColor: Colors.white,
-                        controlAffinity:
-                            ListTileControlAffinity
-                                .leading,
+                        controlAffinity: ListTileControlAffinity.leading,
                         onChanged: (value) {
                           setState(() {
-                            _onlineFriendships =
-                                value ?? false;
+                            _onlineFriendships = value ?? false;
                           });
                         },
                         title: const Text(
                           'I\'m also interested in online friendships.',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.navy,
+                            color: PhilotesColors.navy,
                             fontSize: 15,
-                            fontWeight:
-                                FontWeight.w700,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         subtitle: const Padding(
-                          padding:
-                              EdgeInsets.only(top: 6),
+                          padding: EdgeInsets.only(top: 6),
                           child: Text(
                             'Online friendships can expand '
                             'discovery beyond your local '
                             'meeting distance.',
                             style: TextStyle(
-                              color:
-                                  PhilotesColors
-                                      .silver,
+                              color: PhilotesColors.silver,
                               fontSize: 12,
                               height: 1.45,
                             ),
@@ -701,27 +523,18 @@ class _LocationDiscoveryScreenState
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: PhilotesColors.gold
-                          .withValues(
-                        alpha: 0.10,
-                      ),
-                      borderRadius:
-                          BorderRadius.circular(14),
+                      color: PhilotesColors.gold.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: PhilotesColors.gold
-                            .withValues(
-                          alpha: 0.65,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.65),
                       ),
                     ),
                     child: const Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.lock_outline,
-                          color:
-                              PhilotesColors.gold,
+                          color: PhilotesColors.gold,
                           size: 22,
                         ),
                         SizedBox(width: 10),
@@ -732,11 +545,9 @@ class _LocationDiscoveryScreenState
                             'Location is used to help estimate '
                             'distance for friendship discovery.',
                             style: TextStyle(
-                              color:
-                                  PhilotesColors.navy,
+                              color: PhilotesColors.navy,
                               fontSize: 13,
-                              fontWeight:
-                                  FontWeight.w600,
+                              fontWeight: FontWeight.w600,
                               height: 1.45,
                             ),
                           ),
@@ -750,30 +561,20 @@ class _LocationDiscoveryScreenState
                   SizedBox(
                     height: 56,
                     child: FilledButton(
-                      key: const Key(
-                        'locationDiscoveryContinueButton',
-                      ),
+                      key: const Key('locationDiscoveryContinueButton'),
                       onPressed: _continue,
-                      style:
-                          FilledButton.styleFrom(
-                        backgroundColor:
-                            PhilotesColors.navy,
-                        foregroundColor:
-                            Colors.white,
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                            14,
-                          ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: PhilotesColors.navy,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       child: const Text(
                         'Continue',
                         style: TextStyle(
                           fontSize: 17,
-                          fontWeight:
-                              FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -818,22 +619,15 @@ class _SectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:
-            Colors.white.withValues(alpha: 0.55),
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: PhilotesColors.gold
-              .withValues(alpha: 0.6),
-        ),
+        color: Colors.white.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: PhilotesColors.gold.withValues(alpha: 0.6)),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 44,
@@ -841,34 +635,23 @@ class _SectionCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: PhilotesColors.navy,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color:
-                        PhilotesColors.gold,
-                    width: 1.7,
-                  ),
+                  border: Border.all(color: PhilotesColors.gold, width: 1.7),
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                child: Icon(icon, color: Colors.white, size: 22),
               ),
 
               const SizedBox(width: 12),
 
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        color:
-                            PhilotesColors.navy,
+                        color: PhilotesColors.navy,
                         fontSize: 18,
-                        fontWeight:
-                            FontWeight.w700,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
 
@@ -877,8 +660,7 @@ class _SectionCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color:
-                            PhilotesColors.silver,
+                        color: PhilotesColors.silver,
                         fontSize: 12,
                         height: 1.4,
                       ),
@@ -918,26 +700,19 @@ class _LocationChoiceButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: selected
-          ? PhilotesColors.navy.withValues(
-              alpha: 0.08,
-            )
-          : PhilotesColors.ivory.withValues(
-              alpha: 0.55,
-            ),
+          ? PhilotesColors.navy.withValues(alpha: 0.08)
+          : PhilotesColors.ivory.withValues(alpha: 0.55),
       shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         side: BorderSide(
           color: selected
               ? PhilotesColors.gold
-              : PhilotesColors.gold
-                  .withValues(alpha: 0.55),
+              : PhilotesColors.gold.withValues(alpha: 0.55),
           width: selected ? 1.7 : 1,
         ),
       ),
       child: InkWell(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -945,9 +720,7 @@ class _LocationChoiceButton extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: selected
-                    ? PhilotesColors.gold
-                    : PhilotesColors.navy,
+                color: selected ? PhilotesColors.gold : PhilotesColors.navy,
                 size: 25,
               ),
 
@@ -955,25 +728,21 @@ class _LocationChoiceButton extends StatelessWidget {
 
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        color:
-                            PhilotesColors.navy,
+                        color: PhilotesColors.navy,
                         fontSize: 15,
-                        fontWeight:
-                            FontWeight.w700,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color:
-                            PhilotesColors.silver,
+                        color: PhilotesColors.silver,
                         fontSize: 12,
                         height: 1.35,
                       ),
@@ -983,11 +752,7 @@ class _LocationChoiceButton extends StatelessWidget {
               ),
 
               if (selected)
-                const Icon(
-                  Icons.check_circle,
-                  color:
-                      PhilotesColors.gold,
-                ),
+                const Icon(Icons.check_circle, color: PhilotesColors.gold),
             ],
           ),
         ),
@@ -1014,42 +779,29 @@ class _DistanceChoice extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: selected
-          ? PhilotesColors.navy.withValues(
-              alpha: 0.08,
-            )
-          : PhilotesColors.ivory.withValues(
-              alpha: 0.50,
-            ),
+          ? PhilotesColors.navy.withValues(alpha: 0.08)
+          : PhilotesColors.ivory.withValues(alpha: 0.50),
       shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: selected
               ? PhilotesColors.gold
-              : PhilotesColors.gold
-                  .withValues(alpha: 0.45),
+              : PhilotesColors.gold.withValues(alpha: 0.45),
           width: selected ? 1.6 : 1,
         ),
       ),
       child: InkWell(
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
               Icon(
                 selected
                     ? Icons.radio_button_checked
-                    : Icons
-                        .radio_button_unchecked,
-                color: selected
-                    ? PhilotesColors.gold
-                    : PhilotesColors.silver,
+                    : Icons.radio_button_unchecked,
+                color: selected ? PhilotesColors.gold : PhilotesColors.silver,
                 size: 21,
               ),
 
@@ -1057,25 +809,21 @@ class _DistanceChoice extends StatelessWidget {
 
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        color:
-                            PhilotesColors.navy,
+                        color: PhilotesColors.navy,
                         fontSize: 14,
-                        fontWeight:
-                            FontWeight.w700,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color:
-                            PhilotesColors.silver,
+                        color: PhilotesColors.silver,
                         fontSize: 12,
                       ),
                     ),

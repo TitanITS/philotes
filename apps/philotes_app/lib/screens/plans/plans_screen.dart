@@ -10,22 +10,17 @@ import 'plan_detail_screen.dart';
 class PlansScreen extends StatefulWidget {
   const PlansScreen({
     super.key,
-    this.planService =
-        const DevelopmentPlanService(),
+    this.planService = const DevelopmentPlanService(),
   });
 
   final PlanService planService;
 
   @override
-  State<PlansScreen> createState() =>
-      _PlansScreenState();
+  State<PlansScreen> createState() => _PlansScreenState();
 }
 
-class _PlansScreenState
-    extends State<PlansScreen> {
-  final ScrollController
-      _scrollController =
-      ScrollController();
+class _PlansScreenState extends State<PlansScreen> {
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -33,99 +28,56 @@ class _PlansScreenState
     super.dispose();
   }
 
-  List<PhilotesPlan> get _plans =>
-      widget.planService.plans();
+  List<PhilotesPlan> get _plans => widget.planService.plans();
 
   List<PhilotesPlan> get _today =>
-      _plans
-          .where(
-            (plan) =>
-                plan.status ==
-                PhilotesPlanStatus.today,
-          )
-          .toList();
+      _plans.where((plan) => plan.status == PhilotesPlanStatus.today).toList();
 
-  List<PhilotesPlan> get _upcoming =>
-      _plans
-          .where(
-            (plan) =>
-                plan.status ==
-                PhilotesPlanStatus.upcoming,
-          )
-          .toList();
+  List<PhilotesPlan> get _upcoming => _plans
+      .where((plan) => plan.status == PhilotesPlanStatus.upcoming)
+      .toList();
 
-  List<PhilotesPlan> get _past =>
-      _plans
-          .where(
-            (plan) =>
-                plan.status ==
-                PhilotesPlanStatus.completed,
-          )
-          .take(3)
-          .toList();
+  List<PhilotesPlan> get _past => _plans
+      .where((plan) => plan.status == PhilotesPlanStatus.completed)
+      .take(3)
+      .toList();
 
-  void _openPlan(
-    PhilotesPlan plan,
-  ) {
+  void _openPlan(PhilotesPlan plan) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            PlanDetailScreen(
-          plan: plan,
-        ),
+        builder: (context) => PlanDetailScreen(plan: plan),
       ),
     );
   }
 
-  void _showDevelopmentMessage(
-    String message,
-  ) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+  void _showDevelopmentMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (
-        BuildContext context,
-        BoxConstraints constraints,
-      ) {
-        final wide =
-            constraints.maxWidth >=
-            PhilotesDesign.wideBreakpoint;
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final wide = constraints.maxWidth >= PhilotesDesign.wideBreakpoint;
 
         return SingleChildScrollView(
-          key: const Key(
-            'plansScreen',
-          ),
-          controller:
-              _scrollController,
+          key: const Key('plansScreen'),
+          controller: _scrollController,
           padding: EdgeInsets.fromLTRB(
-            wide
-                ? PhilotesDesign.widePadding
-                : PhilotesDesign.mobilePadding,
+            wide ? PhilotesDesign.widePadding : PhilotesDesign.mobilePadding,
             24,
-            wide
-                ? PhilotesDesign.widePadding
-                : PhilotesDesign.mobilePadding,
+            wide ? PhilotesDesign.widePadding : PhilotesDesign.mobilePadding,
             42,
           ),
           child: Center(
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(
-                maxWidth:
-                    PhilotesDesign
-                        .contentMaxWidth,
+              constraints: const BoxConstraints(
+                maxWidth: PhilotesDesign.contentMaxWidth,
               ),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _PlansHeader(
                     onCreatePlan: () {
@@ -137,11 +89,7 @@ class _PlansScreenState
                     },
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign
-                            .sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _PlanSection(
                     title: 'Today',
@@ -153,11 +101,7 @@ class _PlansScreenState
                     onOpenPlan: _openPlan,
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign
-                            .sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _PlanSection(
                     title: 'Upcoming',
@@ -169,11 +113,7 @@ class _PlansScreenState
                     onOpenPlan: _openPlan,
                   ),
 
-                  const SizedBox(
-                    height:
-                        PhilotesDesign
-                            .sectionSpacing,
-                  ),
+                  const SizedBox(height: PhilotesDesign.sectionSpacing),
 
                   _PlanSection(
                     title: 'Recent Past',
@@ -189,12 +129,9 @@ class _PlansScreenState
                   const SizedBox(height: 12),
 
                   Align(
-                    alignment:
-                        Alignment.center,
+                    alignment: Alignment.center,
                     child: TextButton(
-                      key: const Key(
-                        'viewMorePlanHistoryButton',
-                      ),
+                      key: const Key('viewMorePlanHistoryButton'),
                       onPressed: () {
                         _showDevelopmentMessage(
                           'Older plan history '
@@ -202,9 +139,7 @@ class _PlansScreenState
                           'from the backend.',
                         );
                       },
-                      child: const Text(
-                        'View More History',
-                      ),
+                      child: const Text('View More History'),
                     ),
                   ),
                 ],
@@ -217,99 +152,61 @@ class _PlansScreenState
   }
 }
 
-
-class _PlansHeader
-    extends StatelessWidget {
-  const _PlansHeader({
-    required this.onCreatePlan,
-  });
+class _PlansHeader extends StatelessWidget {
+  const _PlansHeader({required this.onCreatePlan});
 
   final VoidCallback onCreatePlan;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (
-        BuildContext context,
-        BoxConstraints constraints,
-      ) {
-        final compact =
-            constraints.maxWidth < 600;
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final compact = constraints.maxWidth < 600;
 
-        final heading =
-            const Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+        final heading = const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Plans',
               style: TextStyle(
-                color:
-                    PhilotesColors.navy,
+                color: PhilotesColors.navy,
                 fontSize: 30,
-                fontWeight:
-                    FontWeight.w800,
+                fontWeight: FontWeight.w800,
               ),
             ),
             SizedBox(height: 6),
             Text(
               'Your activities and '
               'gatherings with friends.',
-              style: TextStyle(
-                color:
-                    PhilotesColors.silver,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: PhilotesColors.silver, fontSize: 14),
             ),
           ],
         );
 
-        final button =
-            FilledButton.icon(
-          key: const Key(
-            'createPlanButton',
-          ),
+        final button = FilledButton.icon(
+          key: const Key('createPlanButton'),
           onPressed: onCreatePlan,
-          style:
-              FilledButton.styleFrom(
-            backgroundColor:
-                PhilotesColors.navy,
-            foregroundColor:
-                Colors.white,
-            padding:
-                const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 14,
-            ),
+          style: FilledButton.styleFrom(
+            backgroundColor: PhilotesColors.navy,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           ),
-          icon: const Icon(
-            Icons.add,
-            size: 18,
-          ),
+          icon: const Icon(Icons.add, size: 18),
           label: const Text(
             'Create Plan',
-            style: TextStyle(
-              fontWeight:
-                  FontWeight.w700,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w700),
           ),
         );
 
         if (compact) {
           return Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.stretch,
-            children: [
-              heading,
-              const SizedBox(height: 18),
-              button,
-            ],
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [heading, const SizedBox(height: 18), button],
           );
         }
 
         return Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(child: heading),
             const SizedBox(width: 18),
@@ -321,9 +218,7 @@ class _PlansHeader
   }
 }
 
-
-class _PlanSection
-    extends StatelessWidget {
+class _PlanSection extends StatelessWidget {
   const _PlanSection({
     required this.title,
     required this.plans,
@@ -338,16 +233,14 @@ class _PlanSection
   final bool wide;
   final String emptyMessage;
 
-  final ValueChanged<PhilotesPlan>
-      onOpenPlan;
+  final ValueChanged<PhilotesPlan> onOpenPlan;
 
   final bool completed;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           children: [
@@ -355,34 +248,21 @@ class _PlanSection
               width: 4,
               height: 22,
               decoration: BoxDecoration(
-                color:
-                    PhilotesColors.gold,
-                borderRadius:
-                    BorderRadius.circular(
-                  4,
-                ),
+                color: PhilotesColors.gold,
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
 
             const SizedBox(width: 9),
 
-            Expanded(
-              child: Text(
-                title,
-                style:
-                    PhilotesDesign
-                        .sectionHeading,
-              ),
-            ),
+            Expanded(child: Text(title, style: PhilotesDesign.sectionHeading)),
 
             Text(
               '${plans.length}',
               style: const TextStyle(
-                color:
-                    PhilotesColors.silver,
+                color: PhilotesColors.silver,
                 fontSize: 12,
-                fontWeight:
-                    FontWeight.w700,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -392,20 +272,12 @@ class _PlanSection
 
         if (plans.isEmpty)
           Container(
-            padding:
-                const EdgeInsets.all(
-              20,
-            ),
-            decoration:
-                PhilotesDesign
-                    .secondaryCardDecoration(),
+            padding: const EdgeInsets.all(20),
+            decoration: PhilotesDesign.secondaryCardDecoration(),
             child: Text(
               emptyMessage,
-              textAlign:
-                  TextAlign.center,
-              style:
-                  PhilotesDesign
-                      .supportingText,
+              textAlign: TextAlign.center,
+              style: PhilotesDesign.supportingText,
             ),
           )
         else
@@ -413,17 +285,14 @@ class _PlanSection
             plans: plans,
             wide: wide,
             completed: completed,
-            onOpenPlan:
-                onOpenPlan,
+            onOpenPlan: onOpenPlan,
           ),
       ],
     );
   }
 }
 
-
-class _PlanGrid
-    extends StatelessWidget {
+class _PlanGrid extends StatelessWidget {
   const _PlanGrid({
     required this.plans,
     required this.wide,
@@ -435,51 +304,33 @@ class _PlanGrid
   final bool wide;
   final bool completed;
 
-  final ValueChanged<PhilotesPlan>
-      onOpenPlan;
+  final ValueChanged<PhilotesPlan> onOpenPlan;
 
   @override
   Widget build(BuildContext context) {
     if (!wide) {
       return Column(
         children: [
-          for (
-            var index = 0;
-            index < plans.length;
-            index++
-          ) ...[
+          for (var index = 0; index < plans.length; index++) ...[
             _PlanCard(
               plan: plans[index],
               completed: completed,
               onOpen: () {
-                onOpenPlan(
-                  plans[index],
-                );
+                onOpenPlan(plans[index]);
               },
             ),
 
-            if (
-              index <
-              plans.length - 1
-            )
-              const SizedBox(
-                height: 14,
-              ),
+            if (index < plans.length - 1) const SizedBox(height: 14),
           ],
         ],
       );
     }
 
     return LayoutBuilder(
-      builder: (
-        BuildContext context,
-        BoxConstraints constraints,
-      ) {
+      builder: (BuildContext context, BoxConstraints constraints) {
         const gap = 16.0;
 
-        final cardWidth =
-            (constraints.maxWidth - gap) /
-            2;
+        final cardWidth = (constraints.maxWidth - gap) / 2;
 
         return Wrap(
           spacing: gap,
@@ -503,7 +354,6 @@ class _PlanGrid
   }
 }
 
-
 class _PlanCard extends StatelessWidget {
   const _PlanCard({
     required this.plan,
@@ -520,11 +370,7 @@ class _PlanCard extends StatelessWidget {
       return 'No attendees yet';
     }
 
-    final others = plan.attendees
-        .where(
-          (name) => name != 'Alex',
-        )
-        .toList();
+    final others = plan.attendees.where((name) => name != 'Alex').toList();
 
     if (others.isEmpty) {
       return 'Just you so far';
@@ -549,76 +395,44 @@ class _PlanCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        key: Key(
-          'planCard-${plan.id}',
-        ),
+        key: Key('planCard-${plan.id}'),
         onTap: onOpen,
-        borderRadius:
-            BorderRadius.circular(
-          PhilotesDesign.cardRadius,
-        ),
+        borderRadius: BorderRadius.circular(PhilotesDesign.cardRadius),
         child: Ink(
-          padding:
-              const EdgeInsets.all(
-            18,
-          ),
-          decoration:
-              PhilotesDesign
-                  .primaryCardDecoration(),
+          padding: const EdgeInsets.all(18),
+          decoration: PhilotesDesign.primaryCardDecoration(),
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
                   Expanded(
                     child: Text(
                       plan.title,
-                      style:
-                          const TextStyle(
-                        color:
-                            PhilotesColors
-                                .navy,
+                      style: const TextStyle(
+                        color: PhilotesColors.navy,
                         fontSize: 17,
-                        fontWeight:
-                            FontWeight.w800,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
 
                   if (completed)
                     Container(
-                      padding:
-                          const EdgeInsets
-                              .symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 9,
                         vertical: 4,
                       ),
-                      decoration:
-                          BoxDecoration(
-                        color:
-                            PhilotesColors
-                                .silver
-                                .withValues(
-                          alpha: 0.12,
-                        ),
-                        borderRadius:
-                            BorderRadius
-                                .circular(
-                          20,
-                        ),
+                      decoration: BoxDecoration(
+                        color: PhilotesColors.silver.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Text(
                         'Completed',
-                        style:
-                            TextStyle(
-                          color:
-                              PhilotesColors
-                                  .silver,
+                        style: TextStyle(
+                          color: PhilotesColors.silver,
                           fontSize: 9,
-                          fontWeight:
-                              FontWeight
-                                  .w700,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -628,9 +442,7 @@ class _PlanCard extends StatelessWidget {
               const SizedBox(height: 12),
 
               _PlanCardLine(
-                icon:
-                    Icons
-                        .calendar_today_outlined,
+                icon: Icons.calendar_today_outlined,
                 text:
                     '${plan.dateLabel} • '
                     '${plan.timeLabel}',
@@ -638,36 +450,25 @@ class _PlanCard extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              _PlanCardLine(
-                icon:
-                    Icons
-                        .group_outlined,
-                text: _attendeeSummary,
-              ),
+              _PlanCardLine(icon: Icons.group_outlined, text: _attendeeSummary),
 
               const SizedBox(height: 8),
 
               _PlanCardLine(
-                icon:
-                    Icons
-                        .location_on_outlined,
-                text:
-                    plan.locationName,
+                icon: Icons.location_on_outlined,
+                text: plan.locationName,
               ),
 
               const SizedBox(height: 16),
 
               const Align(
-                alignment:
-                    Alignment.centerRight,
+                alignment: Alignment.centerRight,
                 child: Text(
                   'View Plan  ›',
                   style: TextStyle(
-                    color:
-                        PhilotesColors.navy,
+                    color: PhilotesColors.navy,
                     fontSize: 12,
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
@@ -679,13 +480,8 @@ class _PlanCard extends StatelessWidget {
   }
 }
 
-
-class _PlanCardLine
-    extends StatelessWidget {
-  const _PlanCardLine({
-    required this.icon,
-    required this.text,
-  });
+class _PlanCardLine extends StatelessWidget {
+  const _PlanCardLine({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -694,12 +490,7 @@ class _PlanCardLine
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color:
-              PhilotesColors.gold,
-        ),
+        Icon(icon, size: 16, color: PhilotesColors.gold),
 
         const SizedBox(width: 8),
 
@@ -707,8 +498,7 @@ class _PlanCardLine
           child: Text(
             text,
             style: const TextStyle(
-              color:
-                  PhilotesColors.silver,
+              color: PhilotesColors.silver,
               fontSize: 11,
               height: 1.3,
             ),

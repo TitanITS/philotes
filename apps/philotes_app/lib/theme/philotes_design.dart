@@ -14,54 +14,32 @@ abstract final class PhilotesDesign {
   static const double contentMaxWidth = 1180;
   static const double wideBreakpoint = 900;
 
-  static BoxDecoration primaryCardDecoration({
-    Color? backgroundColor,
-  }) {
+  static BoxDecoration primaryCardDecoration({Color? backgroundColor}) {
     return BoxDecoration(
       color: backgroundColor ?? Colors.white,
-      borderRadius: BorderRadius.circular(
-        cardRadius,
-      ),
-      border: Border.all(
-        color: PhilotesColors.gold,
-        width: primaryBorderWidth,
-      ),
+      borderRadius: BorderRadius.circular(cardRadius),
+      border: Border.all(color: PhilotesColors.gold, width: primaryBorderWidth),
     );
   }
 
-  static BoxDecoration secondaryCardDecoration({
-    Color? backgroundColor,
-  }) {
+  static BoxDecoration secondaryCardDecoration({Color? backgroundColor}) {
     return BoxDecoration(
-      color:
-          backgroundColor ??
-          Colors.white.withValues(
-            alpha: 0.82,
-          ),
-      borderRadius: BorderRadius.circular(
-        cardRadius,
-      ),
+      color: backgroundColor ?? Colors.white.withValues(alpha: 0.82),
+      borderRadius: BorderRadius.circular(cardRadius),
       border: Border.all(
-        color: PhilotesColors.gold.withValues(
-          alpha: 0.72,
-        ),
+        color: PhilotesColors.gold.withValues(alpha: 0.72),
         width: secondaryBorderWidth,
       ),
     );
   }
 
-  static TextStyle get sectionHeading =>
-      const TextStyle(
-        color: PhilotesColors.navy,
-        fontSize: 18,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 0.2,
-      );
+  static TextStyle get sectionHeading => const TextStyle(
+    color: PhilotesColors.navy,
+    fontSize: 18,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0.2,
+  );
 
   static TextStyle get supportingText =>
-      const TextStyle(
-        color: PhilotesColors.silver,
-        fontSize: 12,
-        height: 1.45,
-      );
+      const TextStyle(color: PhilotesColors.silver, fontSize: 12, height: 1.45);
 }

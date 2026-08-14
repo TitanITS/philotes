@@ -1,8 +1,4 @@
-enum PhilotesPlanStatus {
-  today,
-  upcoming,
-  completed,
-}
+enum PhilotesPlanStatus { today, upcoming, completed }
 
 class PhilotesPlan {
   const PhilotesPlan({
@@ -42,6 +38,5 @@ class PhilotesPlan {
   /// should eventually be available to this user.
   final bool isOrganizer;
 
-  bool get isPast =>
-      status == PhilotesPlanStatus.completed;
+  bool get isPast => status == PhilotesPlanStatus.completed;
 }

@@ -7,13 +7,10 @@ import '../app/philotes_shell_screen.dart';
 class WelcomeToPhilotesScreen extends StatelessWidget {
   const WelcomeToPhilotesScreen({super.key});
 
-  void _enterPhilotes(
-    BuildContext context,
-  ) {
+  void _enterPhilotes(BuildContext context) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            const PhilotesShellScreen(),
+        builder: (context) => const PhilotesShellScreen(),
       ),
     );
   }
@@ -22,10 +19,9 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final profile = OnboardingProfileData.instance;
 
-    final displayName =
-        profile.displayName.trim().isEmpty
-            ? 'Friend'
-            : profile.displayName.trim();
+    final displayName = profile.displayName.trim().isEmpty
+        ? 'Friend'
+        : profile.displayName.trim();
 
     return Scaffold(
       backgroundColor: PhilotesColors.ivory,
@@ -36,36 +32,24 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: const Text(
           'Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              28,
-              20,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 28, 20, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 680,
-              ),
+              constraints: const BoxConstraints(maxWidth: 680),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   //
                   // COMPLETION EMBLEM
                   //
                   Center(
                     child: Container(
-                      key: const Key(
-                        'welcomeCompletionEmblem',
-                      ),
+                      key: const Key('welcomeCompletionEmblem'),
                       width: 118,
                       height: 118,
                       decoration: BoxDecoration(
@@ -77,13 +61,9 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: PhilotesColors.navy
-                                .withValues(
-                              alpha: 0.12,
-                            ),
+                            color: PhilotesColors.navy.withValues(alpha: 0.12),
                             blurRadius: 18,
-                            offset:
-                                const Offset(0, 6),
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
@@ -125,9 +105,7 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
 
                   Text(
                     'Welcome to Philotes, $displayName!',
-                    key: const Key(
-                      'welcomeDisplayName',
-                    ),
+                    key: const Key('welcomeDisplayName'),
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: PhilotesColors.navy,
@@ -165,11 +143,8 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                   const SizedBox(height: 30),
 
                   const _WelcomeFeatureCard(
-                    key: Key(
-                      'discoverPeopleCard',
-                    ),
-                    icon:
-                        Icons.person_search_outlined,
+                    key: Key('discoverPeopleCard'),
+                    icon: Icons.person_search_outlined,
                     title: 'Discover People',
                     description:
                         'Meet people nearby or online who '
@@ -180,11 +155,8 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                   const SizedBox(height: 14),
 
                   const _WelcomeFeatureCard(
-                    key: Key(
-                      'startConversationsCard',
-                    ),
-                    icon:
-                        Icons.chat_bubble_outline,
+                    key: Key('startConversationsCard'),
+                    icon: Icons.chat_bubble_outline,
                     title: 'Start Conversations',
                     description:
                         'Get to know potential friends through '
@@ -195,11 +167,8 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                   const SizedBox(height: 14),
 
                   const _WelcomeFeatureCard(
-                    key: Key(
-                      'makePlansTogetherCard',
-                    ),
-                    icon:
-                        Icons.event_available_outlined,
+                    key: Key('makePlansTogetherCard'),
+                    icon: Icons.event_available_outlined,
                     title: 'Make Plans Together',
                     description:
                         'Find ideas for restaurants, movies, '
@@ -213,35 +182,23 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                   // SAFETY REMINDER
                   //
                   Container(
-                    key: const Key(
-                      'welcomeSafetyReminder',
-                    ),
-                    padding:
-                        const EdgeInsets.all(18),
+                    key: const Key('welcomeSafetyReminder'),
+                    padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: PhilotesColors.gold
-                          .withValues(
-                        alpha: 0.10,
-                      ),
-                      borderRadius:
-                          BorderRadius.circular(16),
+                      color: PhilotesColors.gold.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: PhilotesColors.gold
-                            .withValues(
-                          alpha: 0.70,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.70),
                       ),
                     ),
                     child: const Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             Icon(
                               Icons.shield_outlined,
-                              color:
-                                  PhilotesColors.gold,
+                              color: PhilotesColors.gold,
                               size: 23,
                             ),
                             SizedBox(width: 9),
@@ -249,11 +206,9 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                               child: Text(
                                 'A Friendly Reminder',
                                 style: TextStyle(
-                                  color:
-                                      PhilotesColors.navy,
+                                  color: PhilotesColors.navy,
                                   fontSize: 17,
-                                  fontWeight:
-                                      FontWeight.w800,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                             ),
@@ -269,8 +224,7 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                           'public place when meeting someone for '
                           'the first time.',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.navy,
+                            color: PhilotesColors.navy,
                             fontSize: 13,
                             height: 1.5,
                           ),
@@ -283,8 +237,7 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                           'You always decide who you connect with '
                           'and when you are ready to meet.',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.silver,
+                            color: PhilotesColors.silver,
                             fontSize: 12,
                             height: 1.45,
                           ),
@@ -301,42 +254,27 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                   SizedBox(
                     height: 60,
                     child: FilledButton.icon(
-                      key: const Key(
-                        'enterPhilotesButton',
-                      ),
+                      key: const Key('enterPhilotesButton'),
                       onPressed: () {
                         _enterPhilotes(context);
                       },
-                      style:
-                          FilledButton.styleFrom(
-                        backgroundColor:
-                            PhilotesColors.navy,
-                        foregroundColor:
-                            Colors.white,
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                            15,
-                          ),
-                          side:
-                              const BorderSide(
-                            color:
-                                PhilotesColors.gold,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: PhilotesColors.navy,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: const BorderSide(
+                            color: PhilotesColors.gold,
                             width: 1.5,
                           ),
                         ),
                       ),
-                      icon: const Icon(
-                        Icons.groups_outlined,
-                        size: 23,
-                      ),
+                      icon: const Icon(Icons.groups_outlined, size: 23),
                       label: const Text(
                         'Enter Philotes',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight:
-                              FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -363,21 +301,16 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                   // TITAN BRAND ATTRIBUTION
                   //
                   Row(
-                    key: const Key(
-                      'titanAttribution',
-                    ),
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    mainAxisSize:
-                        MainAxisSize.min,
+                    key: const Key('titanAttribution'),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
                         'BROUGHT TO YOU BY',
                         style: TextStyle(
                           color: PhilotesColors.navy,
                           fontSize: 11,
-                          fontWeight:
-                              FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 2.0,
                         ),
                       ),
@@ -397,8 +330,7 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
                         style: TextStyle(
                           color: PhilotesColors.navy,
                           fontSize: 11,
-                          fontWeight:
-                              FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 2.0,
                         ),
                       ),
@@ -413,7 +345,6 @@ class WelcomeToPhilotesScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _WelcomeFeatureCard extends StatelessWidget {
   const _WelcomeFeatureCard({
@@ -432,22 +363,12 @@ class _WelcomeFeatureCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:
-            Colors.white.withValues(
-          alpha: 0.58,
-        ),
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: PhilotesColors.gold
-              .withValues(
-            alpha: 0.55,
-          ),
-        ),
+        color: Colors.white.withValues(alpha: 0.58),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: PhilotesColors.gold.withValues(alpha: 0.55)),
       ),
       child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 48,
@@ -455,33 +376,23 @@ class _WelcomeFeatureCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: PhilotesColors.navy,
-              border: Border.all(
-                color: PhilotesColors.gold,
-                width: 1.5,
-              ),
+              border: Border.all(color: PhilotesColors.gold, width: 1.5),
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 23,
-            ),
+            child: Icon(icon, color: Colors.white, size: 23),
           ),
 
           const SizedBox(width: 14),
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: const TextStyle(
-                    color:
-                        PhilotesColors.navy,
+                    color: PhilotesColors.navy,
                     fontSize: 17,
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
 
@@ -490,8 +401,7 @@ class _WelcomeFeatureCard extends StatelessWidget {
                 Text(
                   description,
                   style: const TextStyle(
-                    color:
-                        PhilotesColors.silver,
+                    color: PhilotesColors.silver,
                     fontSize: 13,
                     height: 1.45,
                   ),

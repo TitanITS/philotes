@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../data/interests.dart';
-import '../../models/interest_item.dart';
-import '../../theme/philotes_colors.dart';
+import '../../data/philotes_activity_catalog.dart';
 import '../../models/onboarding_profile_data.dart';
+import '../../theme/philotes_colors.dart';
+import '../../widgets/interests/philotes_interest_widgets.dart';
 import 'friendship_preferences_screen.dart';
 
 class InterestsScreen extends StatefulWidget {
@@ -18,56 +18,47 @@ class _InterestsScreenState extends State<InterestsScreen> {
   static const int maximumFavorites = 5;
 
   final TextEditingController _searchController = TextEditingController();
-
   final TextEditingController _customInterestController =
       TextEditingController();
 
-  final Set<String> _selectedIds = <String>{};
-  final Set<String> _favoriteIds = <String>{};
-
-  final List<InterestItem> _customInterests = <InterestItem>[];
+  final Set<String> _selected = <String>{};
+  final Set<String> _favorites = <String>{};
+  final List<String> _customInterests = <String>[];
 
   String _searchText = '';
   bool _showValidation = false;
 
-  int get _selectedCount => _selectedIds.length;
-
-  int get _favoriteCount => _favoriteIds.length;
-
+  int get _selectedCount => _selected.length;
+  int get _favoriteCount => _favorites.length;
   bool get _minimumReached => _selectedCount >= minimumSelections;
 
-  List<InterestItem> get _allInterests => [
-    ...InterestsData.interests,
-    ..._customInterests,
-  ];
+  int _suggestionCount(double width) {
+    if (width >= 900) return 16;
+    if (width >= 600) return 12;
+    return 8;
+  }
 
-  void _toggleInterest(InterestItem interest) {
+  void _toggleInterest(String interest) {
     setState(() {
-      if (_selectedIds.contains(interest.id)) {
-        _selectedIds.remove(interest.id);
-        _favoriteIds.remove(interest.id);
+      if (_selected.contains(interest)) {
+        _selected.remove(interest);
+        _favorites.remove(interest);
       } else {
-        _selectedIds.add(interest.id);
+        _selected.add(interest);
       }
-
-      if (_minimumReached) {
-        _showValidation = false;
-      }
+      if (_minimumReached) _showValidation = false;
     });
   }
 
-  void _toggleFavorite(InterestItem interest) {
-    if (!_selectedIds.contains(interest.id)) {
-      return;
-    }
+  void _toggleFavorite(String interest) {
+    if (!_selected.contains(interest)) return;
 
     setState(() {
-      if (_favoriteIds.contains(interest.id)) {
-        _favoriteIds.remove(interest.id);
+      if (_favorites.contains(interest)) {
+        _favorites.remove(interest);
         return;
       }
-
-      if (_favoriteIds.length >= maximumFavorites) {
+      if (_favorites.length >= maximumFavorites) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('You can choose up to 5 favorite interests.'),
@@ -75,89 +66,70 @@ class _InterestsScreenState extends State<InterestsScreen> {
         );
         return;
       }
-
-      _favoriteIds.add(interest.id);
+      _favorites.add(interest);
     });
   }
 
   void _addCustomInterest() {
     final value = _customInterestController.text.trim();
+    if (value.isEmpty) return;
 
-    if (value.isEmpty) {
-      return;
-    }
+    final exists = <String>[
+      ...PhilotesActivityCatalog.allActivities,
+      ..._customInterests,
+    ].any((item) => item.toLowerCase() == value.toLowerCase());
 
-    final alreadyExists = _allInterests.any(
-      (interest) => interest.name.toLowerCase() == value.toLowerCase(),
-    );
-
-    if (alreadyExists) {
+    if (exists) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('That interest is already available.')),
       );
       return;
     }
 
-    final id = 'custom_${DateTime.now().microsecondsSinceEpoch}';
-
-    final customInterest = InterestItem(
-      id: id,
-      name: value,
-      category: 'Your Custom Interests',
-    );
-
     setState(() {
-      _customInterests.add(customInterest);
-      _selectedIds.add(id);
+      _customInterests.add(value);
+      _selected.add(value);
       _customInterestController.clear();
-
-      if (_minimumReached) {
-        _showValidation = false;
-      }
+      if (_minimumReached) _showValidation = false;
     });
   }
 
-  bool _matchesSearch(InterestItem interest) {
-    if (_searchText.trim().isEmpty) {
-      return true;
-    }
+  List<String> get _searchResults {
+    final query = _searchText.trim().toLowerCase();
+    if (query.isEmpty) return const <String>[];
 
-    final query = _searchText.toLowerCase();
+    return <String>[
+      ...PhilotesActivityCatalog.allActivities,
+      ..._customInterests,
+    ].where((item) => item.toLowerCase().contains(query)).toSet().toList();
+  }
 
-    return interest.name.toLowerCase().contains(query) ||
-        interest.category.toLowerCase().contains(query);
+  void _openAllActivities() {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute<void>(
+            builder: (context) => OnboardingAllActivitiesScreen(
+              selected: _selected,
+              favorites: _favorites,
+              onToggleInterest: _toggleInterest,
+              onToggleFavorite: _toggleFavorite,
+            ),
+          ),
+        )
+        .then((_) {
+          if (mounted) setState(() {});
+        });
   }
 
   void _continue() {
     if (!_minimumReached) {
-      setState(() {
-        _showValidation = true;
-      });
-
+      setState(() => _showValidation = true);
       return;
     }
 
     final profile = OnboardingProfileData.instance;
-
-    profile.selectedInterests = _allInterests
-        .where(
-          (interest) =>
-              _selectedIds.contains(interest.id),
-        )
-        .map(
-          (interest) => interest.name,
-        )
-        .toList();
-
-    profile.favoriteInterests = _allInterests
-        .where(
-          (interest) =>
-              _favoriteIds.contains(interest.id),
-        )
-        .map(
-          (interest) => interest.name,
-        )
-        .toList();
+    profile.selectedInterests = _selected.toList();
+    profile.favoriteInterests = _favorites.toList();
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -175,19 +147,13 @@ class _InterestsScreenState extends State<InterestsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final visibleInterests = _allInterests.where(_matchesSearch).toList();
-
-    final categoryNames = <String>[
-      ...InterestsData.categories,
-      if (_customInterests.isNotEmpty) 'Your Custom Interests',
-    ];
-
     return Scaffold(
       backgroundColor: PhilotesColors.ivory,
       appBar: AppBar(
         backgroundColor: PhilotesColors.ivory,
         foregroundColor: PhilotesColors.navy,
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: const Text(
           'Join Philotes',
           style: TextStyle(fontWeight: FontWeight.w600),
@@ -198,7 +164,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
+              constraints: const BoxConstraints(maxWidth: 1100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -211,9 +177,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-
                   const SizedBox(height: 10),
-
                   Center(
                     child: Container(
                       width: 120,
@@ -224,9 +188,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
                   const Text(
                     'What do you enjoy doing?',
                     textAlign: TextAlign.center,
@@ -236,12 +198,10 @@ class _InterestsScreenState extends State<InterestsScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   const Text(
                     'Choose at least 5 interests. You can also mark up to '
-                    '3 favorites with a gold star. Everything can be changed '
+                    '5 favorites with a gold star. Everything can be changed '
                     'later.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -250,18 +210,14 @@ class _InterestsScreenState extends State<InterestsScreen> {
                       height: 1.5,
                     ),
                   ),
-
                   const SizedBox(height: 22),
-
                   _ProgressPanel(
                     selectedCount: _selectedCount,
                     favoriteCount: _favoriteCount,
                     minimumReached: _minimumReached,
                   ),
-
                   if (_showValidation) ...[
                     const SizedBox(height: 12),
-
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
@@ -287,176 +243,143 @@ class _InterestsScreenState extends State<InterestsScreen> {
                       ),
                     ),
                   ],
-
                   const SizedBox(height: 20),
-
                   TextField(
                     key: const Key('interestSearchField'),
                     controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchText = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search interests...',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _searchText.isEmpty
-                          ? null
-                          : IconButton(
-                              tooltip: 'Clear search',
-                              onPressed: () {
-                                _searchController.clear();
-
-                                setState(() {
-                                  _searchText = '';
-                                });
-                              },
-                              icon: const Icon(Icons.close),
+                    onChanged: (value) => setState(() => _searchText = value),
+                    decoration:
+                        philotesInterestInputDecoration(
+                          hintText: 'Search interests...',
+                          prefixIcon: Icons.search,
+                        ).copyWith(
+                          suffixIcon: _searchText.isEmpty
+                              ? null
+                              : IconButton(
+                                  tooltip: 'Clear search',
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() => _searchText = '');
+                                  },
+                                  icon: const Icon(Icons.close),
+                                ),
+                        ),
+                  ),
+                  const SizedBox(height: 22),
+                  if (_searchText.trim().isNotEmpty)
+                    PhilotesInterestCard(
+                      key: const Key('interestSearchResultsCard'),
+                      title: 'Search Results',
+                      subtitle: _searchResults.isEmpty
+                          ? 'No listed activities match. You can add your own below.'
+                          : 'Results from the complete Philotes activity catalog.',
+                      icon: Icons.search,
+                      child: _searchResults.isEmpty
+                          ? const SizedBox.shrink()
+                          : Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                for (final interest in _searchResults)
+                                  PhilotesInterestChip(
+                                    key: Key('searchInterest-$interest'),
+                                    label: interest,
+                                    selected: _selected.contains(interest),
+                                    favorite: _favorites.contains(interest),
+                                    onTap: () => _toggleInterest(interest),
+                                    onFavorite: () => _toggleFavorite(interest),
+                                  ),
+                              ],
                             ),
-                      filled: true,
-                      fillColor: Colors.white.withValues(alpha: 0.65),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
+                    )
+                  else
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final visible = PhilotesActivityCatalog
+                            .starterActivities
+                            .take(_suggestionCount(constraints.maxWidth))
+                            .toList();
+                        return PhilotesInterestCard(
+                          key: const Key('interestSuggestionsCard'),
+                          title: 'Explore Some Ideas',
+                          subtitle:
+                              'A few general ideas to get you started. Choose anything that sounds like you.',
+                          icon: Icons.lightbulb_outline,
+                          child: Wrap(
+                            key: const Key('interestSuggestions'),
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final interest in visible)
+                                PhilotesInterestChip(
+                                  key: Key('interestStarter-$interest'),
+                                  label: interest,
+                                  selected: _selected.contains(interest),
+                                  favorite: _favorites.contains(interest),
+                                  onTap: () => _toggleInterest(interest),
+                                  onFavorite: () => _toggleFavorite(interest),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  const SizedBox(height: 14),
+                  OutlinedButton.icon(
+                    key: const Key('viewAllActivitiesButton'),
+                    onPressed: _openAllActivities,
+                    icon: const Icon(Icons.grid_view_outlined),
+                    label: const Text('View All Activities'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: PhilotesColors.navy,
+                      backgroundColor: Colors.white.withValues(alpha: 0.45),
+                      side: const BorderSide(
+                        color: PhilotesColors.gold,
+                        width: 1.5,
                       ),
-                      enabledBorder: OutlineInputBorder(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(
-                          color: PhilotesColors.gold.withValues(alpha: 0.65),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(
-                          color: PhilotesColors.gold,
-                          width: 2,
-                        ),
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 26),
-
-                  if (visibleInterests.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Text(
-                        'No matching interests were found. You can add your '
-                        'own interest below.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: PhilotesColors.silver,
-                          fontSize: 14,
-                        ),
-                      ),
-                    )
-                  else
-                    for (final category in categoryNames)
-                      _CategorySection(
-                        category: category,
-                        interests: visibleInterests
-                            .where((interest) => interest.category == category)
-                            .toList(),
-                        selectedIds: _selectedIds,
-                        favoriteIds: _favoriteIds,
-                        onToggleInterest: _toggleInterest,
-                        onToggleFavorite: _toggleFavorite,
-                      ),
-
-                  const SizedBox(height: 14),
-
-                  Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.55),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: PhilotesColors.gold.withValues(alpha: 0.65),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                  const SizedBox(height: 22),
+                  PhilotesInterestCard(
+                    key: const Key('makeItYoursCard'),
+                    title: 'Make It Yours',
+                    subtitle:
+                        'We have some general activities listed, but your interests do not have to be on our list. Type any activity or interest below and tap the plus button to add it.',
+                    icon: Icons.add_circle_outline,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              color: PhilotesColors.gold,
+                        Expanded(
+                          child: TextField(
+                            key: const Key('customInterestField'),
+                            controller: _customInterestController,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) => _addCustomInterest(),
+                            decoration: philotesInterestInputDecoration(
+                              hintText: 'Add your own interest',
                             ),
-                            SizedBox(width: 9),
-                            Text(
-                              'Something Missing?',
-                              style: TextStyle(
-                                color: PhilotesColors.navy,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        const Text(
-                          'Add an interest that is not already listed.',
-                          style: TextStyle(
-                            color: PhilotesColors.silver,
-                            fontSize: 13,
                           ),
                         ),
-
-                        const SizedBox(height: 14),
-
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                key: const Key('customInterestField'),
-                                controller: _customInterestController,
-                                textInputAction: TextInputAction.done,
-                                onSubmitted: (_) {
-                                  _addCustomInterest();
-                                },
-                                decoration: InputDecoration(
-                                  hintText: 'Add your interest',
-                                  filled: true,
-                                  fillColor: PhilotesColors.ivory,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(
-                                      color: PhilotesColors.gold.withValues(
-                                        alpha: 0.65,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(width: 10),
-
-                            IconButton.filled(
-                              key: const Key('addCustomInterestButton'),
-                              tooltip: 'Add interest',
-                              onPressed: _addCustomInterest,
-                              style: IconButton.styleFrom(
-                                backgroundColor: PhilotesColors.navy,
-                                foregroundColor: Colors.white,
-                              ),
-                              icon: const Icon(Icons.add),
-                            ),
-                          ],
+                        const SizedBox(width: 10),
+                        IconButton.filled(
+                          key: const Key('addCustomInterestButton'),
+                          onPressed: _addCustomInterest,
+                          tooltip: 'Add interest',
+                          icon: const Icon(Icons.add),
+                          style: IconButton.styleFrom(
+                            backgroundColor: PhilotesColors.navy,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(52, 52),
+                          ),
                         ),
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 28),
-
                   if (_minimumReached)
                     const Padding(
                       padding: EdgeInsets.only(bottom: 16),
@@ -470,8 +393,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                           SizedBox(width: 9),
                           Flexible(
                             child: Text(
-                              'Great! These interests will help Philotes '
-                              'build your community.',
+                              'Great! These interests will help Philotes build your community.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: PhilotesColors.navy,
@@ -483,7 +405,6 @@ class _InterestsScreenState extends State<InterestsScreen> {
                         ],
                       ),
                     ),
-
                   SizedBox(
                     height: 56,
                     child: FilledButton(
@@ -505,9 +426,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 18),
-
                   const Text(
                     'Friendship  •  Trust  •  Community  •  Connection',
                     textAlign: TextAlign.center,
@@ -524,6 +443,170 @@ class _InterestsScreenState extends State<InterestsScreen> {
         ),
       ),
     );
+  }
+}
+
+class OnboardingAllActivitiesScreen extends StatefulWidget {
+  const OnboardingAllActivitiesScreen({
+    super.key,
+    required this.selected,
+    required this.favorites,
+    required this.onToggleInterest,
+    required this.onToggleFavorite,
+  });
+
+  final Set<String> selected;
+  final Set<String> favorites;
+  final ValueChanged<String> onToggleInterest;
+  final ValueChanged<String> onToggleFavorite;
+
+  @override
+  State<OnboardingAllActivitiesScreen> createState() =>
+      _OnboardingAllActivitiesScreenState();
+}
+
+class _OnboardingAllActivitiesScreenState
+    extends State<OnboardingAllActivitiesScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  bool _matches(String value) =>
+      _query.isEmpty || value.toLowerCase().contains(_query.toLowerCase());
+
+  @override
+  Widget build(BuildContext context) {
+    final categories = PhilotesActivityCatalog.categories.entries
+        .map(
+          (entry) => MapEntry(entry.key, entry.value.where(_matches).toList()),
+        )
+        .where((entry) => entry.value.isNotEmpty)
+        .toList();
+
+    return Scaffold(
+      key: const Key('allActivitiesScreen'),
+      backgroundColor: PhilotesColors.ivory,
+      appBar: AppBar(
+        backgroundColor: PhilotesColors.ivory,
+        foregroundColor: PhilotesColors.navy,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          'All Activities',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1.2),
+          child: Divider(
+            height: 1.2,
+            thickness: 1.2,
+            color: PhilotesColors.gold,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1100),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  PhilotesInterestCard(
+                    title: 'Find an Activity',
+                    icon: Icons.search,
+                    child: TextField(
+                      key: const Key('allActivitiesSearchField'),
+                      controller: _searchController,
+                      onChanged: (value) =>
+                          setState(() => _query = value.trim()),
+                      decoration: philotesInterestInputDecoration(
+                        hintText: 'Search all activities',
+                        prefixIcon: Icons.search,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  if (categories.isEmpty)
+                    const PhilotesInterestCard(
+                      title: 'No Matches',
+                      icon: Icons.search_off,
+                      child: Text(
+                        'No listed activities match your search. Return to Your Interests to add anything you want.',
+                        style: TextStyle(
+                          color: PhilotesColors.silver,
+                          fontSize: 13,
+                        ),
+                      ),
+                    )
+                  else
+                    for (final category in categories) ...[
+                      PhilotesInterestCard(
+                        key: Key('activityCategory-${category.key}'),
+                        title: category.key,
+                        icon: _categoryIcon(category.key),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final interest in category.value)
+                              PhilotesInterestChip(
+                                key: Key('allActivity-$interest'),
+                                label: interest,
+                                selected: widget.selected.contains(interest),
+                                favorite: widget.favorites.contains(interest),
+                                onTap: () {
+                                  widget.onToggleInterest(interest);
+                                  setState(() {});
+                                },
+                                onFavorite: () {
+                                  widget.onToggleFavorite(interest);
+                                  setState(() {});
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _categoryIcon(String category) {
+    switch (category) {
+      case 'Fitness & Wellness':
+        return Icons.self_improvement_outlined;
+      case 'Sports & Recreation':
+        return Icons.sports_outlined;
+      case 'Food & Social':
+        return Icons.restaurant_outlined;
+      case 'Arts & Culture':
+        return Icons.palette_outlined;
+      case 'Outdoors & Nature':
+        return Icons.park_outlined;
+      case 'Games & Entertainment':
+        return Icons.sports_esports_outlined;
+      case 'Learning & Hobbies':
+        return Icons.auto_stories_outlined;
+      case 'Community & Volunteering':
+        return Icons.groups_outlined;
+      case 'Travel & Exploration':
+        return Icons.travel_explore_outlined;
+      default:
+        return Icons.interests_outlined;
+    }
   }
 }
 
@@ -592,195 +675,6 @@ class _ProgressItem extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _CategorySection extends StatelessWidget {
-  const _CategorySection({
-    required this.category,
-    required this.interests,
-    required this.selectedIds,
-    required this.favoriteIds,
-    required this.onToggleInterest,
-    required this.onToggleFavorite,
-  });
-
-  final String category;
-  final List<InterestItem> interests;
-  final Set<String> selectedIds;
-  final Set<String> favoriteIds;
-  final ValueChanged<InterestItem> onToggleInterest;
-  final ValueChanged<InterestItem> onToggleFavorite;
-
-  IconData get _categoryIcon {
-    switch (category) {
-      case InterestsData.sportsRecreation:
-        return Icons.sports_outlined;
-      case InterestsData.sportsFans:
-        return Icons.stadium_outlined;
-      case InterestsData.entertainment:
-        return Icons.movie_outlined;
-      case InterestsData.gamingTechnology:
-        return Icons.sports_esports_outlined;
-      case InterestsData.foodSocial:
-        return Icons.restaurant_outlined;
-      case InterestsData.creativeHobbies:
-        return Icons.palette_outlined;
-      case InterestsData.learningCulture:
-        return Icons.auto_stories_outlined;
-      case InterestsData.outdoorsTravel:
-        return Icons.travel_explore_outlined;
-      case InterestsData.communityLifestyle:
-        return Icons.groups_outlined;
-      default:
-        return Icons.star_border;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (interests.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 26),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: PhilotesColors.navy,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: PhilotesColors.gold, width: 1.5),
-                ),
-                child: Icon(_categoryIcon, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  category,
-                  style: const TextStyle(
-                    color: PhilotesColors.navy,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          Wrap(
-            spacing: 9,
-            runSpacing: 9,
-            children: [
-              for (final interest in interests)
-                _InterestChip(
-                  key: Key('interest-${interest.id}'),
-                  interest: interest,
-                  selected: selectedIds.contains(interest.id),
-                  favorite: favoriteIds.contains(interest.id),
-                  onToggle: () {
-                    onToggleInterest(interest);
-                  },
-                  onFavorite: () {
-                    onToggleFavorite(interest);
-                  },
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InterestChip extends StatelessWidget {
-  const _InterestChip({
-    super.key,
-    required this.interest,
-    required this.selected,
-    required this.favorite,
-    required this.onToggle,
-    required this.onFavorite,
-  });
-
-  final InterestItem interest;
-  final bool selected;
-  final bool favorite;
-  final VoidCallback onToggle;
-  final VoidCallback onFavorite;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: selected
-          ? PhilotesColors.navy
-          : Colors.white.withValues(alpha: 0.7),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: BorderSide(
-          color: selected
-              ? PhilotesColors.navy
-              : PhilotesColors.gold.withValues(alpha: 0.7),
-          width: selected ? 1.5 : 1,
-        ),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap: onToggle,
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: 14,
-            right: selected ? 4 : 14,
-            top: 7,
-            bottom: 7,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                interest.name,
-                style: TextStyle(
-                  color: selected ? Colors.white : PhilotesColors.navy,
-                  fontSize: 13,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                ),
-              ),
-
-              if (selected) ...[
-                const SizedBox(width: 4),
-
-                IconButton(
-                  key: Key('favorite-${interest.id}'),
-                  tooltip: favorite
-                      ? 'Remove from favorites'
-                      : 'Add to favorites',
-                  visualDensity: VisualDensity.compact,
-                  constraints: const BoxConstraints(
-                    minWidth: 32,
-                    minHeight: 32,
-                  ),
-                  padding: EdgeInsets.zero,
-                  onPressed: onFavorite,
-                  icon: Icon(
-                    favorite ? Icons.star : Icons.star_border,
-                    color: PhilotesColors.gold,
-                    size: 19,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

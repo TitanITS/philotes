@@ -94,11 +94,9 @@ class _FriendshipPreferencesScreenState
         _maximumFriendAge = _minimumFriendAge;
       }
 
-      _minimumAgeController.text =
-          _minimumFriendAge.toString();
+      _minimumAgeController.text = _minimumFriendAge.toString();
 
-      _maximumAgeController.text =
-          _formatMaximumAge(_maximumFriendAge);
+      _maximumAgeController.text = _formatMaximumAge(_maximumFriendAge);
     });
   }
 
@@ -112,16 +110,12 @@ class _FriendshipPreferencesScreenState
     setState(() {
       _maximumFriendAge = adjustedAge;
 
-      _maximumAgeController.text =
-          _formatMaximumAge(_maximumFriendAge);
+      _maximumAgeController.text = _formatMaximumAge(_maximumFriendAge);
     });
   }
 
   void _handleMinimumAgeTyped(String value) {
-    final digits = value.replaceAll(
-      RegExp(r'[^0-9]'),
-      '',
-    );
+    final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
 
     if (digits.isEmpty) {
       return;
@@ -135,8 +129,7 @@ class _FriendshipPreferencesScreenState
 
     if (parsed < 18) {
       _setMinimumAge(18);
-      _minimumAgeController.selection =
-          TextSelection.collapsed(
+      _minimumAgeController.selection = TextSelection.collapsed(
         offset: _minimumAgeController.text.length,
       );
       return;
@@ -146,10 +139,7 @@ class _FriendshipPreferencesScreenState
   }
 
   void _handleMaximumAgeTyped(String value) {
-    final digits = value.replaceAll(
-      RegExp(r'[^0-9]'),
-      '',
-    );
+    final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
 
     if (digits.isEmpty) {
       return;
@@ -163,8 +153,7 @@ class _FriendshipPreferencesScreenState
 
     if (parsed < 18) {
       _setMaximumAge(18);
-      _maximumAgeController.selection =
-          TextSelection.collapsed(
+      _maximumAgeController.selection = TextSelection.collapsed(
         offset: _maximumAgeController.text.length,
       );
       return;
@@ -182,49 +171,35 @@ class _FriendshipPreferencesScreenState
       return;
     }
 
-    final profile =
-        OnboardingProfileData.instance;
+    final profile = OnboardingProfileData.instance;
 
-    profile.friendshipStyles =
-        _friendshipStyles.toList();
+    profile.friendshipStyles = _friendshipStyles.toList();
 
-    profile.socialFrequency =
-        _socialFrequency;
+    profile.socialFrequency = _socialFrequency;
 
-    profile.planningStyle =
-        _planningStyle;
+    profile.planningStyle = _planningStyle;
 
-    profile.interestStyle =
-        _interestStyle;
+    profile.interestStyle = _interestStyle;
 
-    profile.newActivityComfort =
-        _newActivityComfort;
+    profile.newActivityComfort = _newActivityComfort;
 
-    profile.minimumFriendAge =
-        _minimumFriendAge;
+    profile.minimumFriendAge = _minimumFriendAge;
 
-    profile.maximumFriendAge =
-        _maximumFriendAge;
+    profile.maximumFriendAge = _maximumFriendAge;
 
-    profile.politicsImportance =
-        _politicsImportance;
+    profile.politicsImportance = _politicsImportance;
 
-    profile.politicalOutlook =
-        _politicalOutlook;
+    profile.politicalOutlook = _politicalOutlook;
 
-    profile.faithImportance =
-        _faithImportance;
+    profile.faithImportance = _faithImportance;
 
-    profile.faithDescription =
-        _faithDescription;
+    profile.faithDescription = _faithDescription;
 
-    profile.flexibleDiscovery =
-        _flexibleDiscovery;
+    profile.flexibleDiscovery = _flexibleDiscovery;
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) =>
-            const LocationDiscoveryScreen(),
+        builder: (context) => const LocationDiscoveryScreen(),
       ),
     );
   }
@@ -239,27 +214,17 @@ class _FriendshipPreferencesScreenState
         elevation: 0,
         title: const Text(
           'Join Philotes',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              20,
-              20,
-              36,
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 720,
-              ),
+              constraints: const BoxConstraints(maxWidth: 720),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
                     'Friendship Preferences',
@@ -279,8 +244,7 @@ class _FriendshipPreferencesScreenState
                       height: 2,
                       decoration: BoxDecoration(
                         color: PhilotesColors.gold,
-                        borderRadius:
-                            BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
@@ -317,20 +281,13 @@ class _FriendshipPreferencesScreenState
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color:
-                            Colors.red.withValues(alpha: 0.08),
-                        borderRadius:
-                            BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.red,
-                        ),
+                        color: Colors.red.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red),
                       ),
                       child: const Row(
                         children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                          ),
+                          Icon(Icons.error_outline, color: Colors.red),
                           SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -340,8 +297,7 @@ class _FriendshipPreferencesScreenState
                               style: TextStyle(
                                 color: Colors.red,
                                 fontSize: 13,
-                                fontWeight:
-                                    FontWeight.w600,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -375,40 +331,24 @@ class _FriendshipPreferencesScreenState
                           'Open to any friendship style',
                         ])
                           FilterChip(
-                            key: Key(
-                              'friendshipStyle-$option',
-                            ),
+                            key: Key('friendshipStyle-$option'),
                             label: Text(option),
-                            selected:
-                                _friendshipStyles.contains(
-                              option,
-                            ),
+                            selected: _friendshipStyles.contains(option),
                             onSelected: (_) {
-                              _toggleFriendshipStyle(
-                                option,
-                              );
+                              _toggleFriendshipStyle(option);
                             },
-                            selectedColor:
-                                PhilotesColors.navy,
-                            checkmarkColor:
-                                PhilotesColors.gold,
+                            selectedColor: PhilotesColors.navy,
+                            checkmarkColor: PhilotesColors.gold,
                             labelStyle: TextStyle(
-                              color:
-                                  _friendshipStyles.contains(
-                                option,
-                              )
+                              color: _friendshipStyles.contains(option)
                                   ? Colors.white
                                   : PhilotesColors.navy,
-                              fontWeight:
-                                  _friendshipStyles.contains(
-                                option,
-                              )
+                              fontWeight: _friendshipStyles.contains(option)
                                   ? FontWeight.w600
                                   : FontWeight.w500,
                             ),
                             side: BorderSide(
-                              color: PhilotesColors.gold
-                                  .withValues(
+                              color: PhilotesColors.gold.withValues(
                                 alpha: 0.75,
                               ),
                             ),
@@ -422,12 +362,10 @@ class _FriendshipPreferencesScreenState
                   _PreferenceSection(
                     icon: Icons.schedule_outlined,
                     title: 'Social Pace',
-                    subtitle:
-                        'Tell us what normally fits your schedule.',
+                    subtitle: 'Tell us what normally fits your schedule.',
                     required: true,
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const _QuestionLabel(
                           text:
@@ -438,55 +376,35 @@ class _FriendshipPreferencesScreenState
                         const SizedBox(height: 10),
 
                         DropdownButtonFormField<String>(
-                          key: const Key(
-                            'socialFrequencyField',
-                          ),
+                          key: const Key('socialFrequencyField'),
                           initialValue: _socialFrequency,
                           decoration: _inputDecoration(
-                            hintText:
-                                'Choose a social pace',
+                            hintText: 'Choose a social pace',
                           ),
                           items: const [
                             DropdownMenuItem(
-                              value:
-                                  'Several times a week',
-                              child: Text(
-                                'Several times a week',
-                              ),
+                              value: 'Several times a week',
+                              child: Text('Several times a week'),
                             ),
                             DropdownMenuItem(
-                              value:
-                                  'About once a week',
-                              child: Text(
-                                'About once a week',
-                              ),
+                              value: 'About once a week',
+                              child: Text('About once a week'),
                             ),
                             DropdownMenuItem(
-                              value:
-                                  'A few times a month',
-                              child: Text(
-                                'A few times a month',
-                              ),
+                              value: 'A few times a month',
+                              child: Text('A few times a month'),
                             ),
                             DropdownMenuItem(
                               value: 'Occasionally',
-                              child: Text(
-                                'Occasionally',
-                              ),
+                              child: Text('Occasionally'),
                             ),
                             DropdownMenuItem(
-                              value:
-                                  "Whenever we're both available",
-                              child: Text(
-                                "Whenever we're both available",
-                              ),
+                              value: "Whenever we're both available",
+                              child: Text("Whenever we're both available"),
                             ),
                             DropdownMenuItem(
-                              value:
-                                  'No strong preference',
-                              child: Text(
-                                'No strong preference',
-                              ),
+                              value: 'No strong preference',
+                              child: Text('No strong preference'),
                             ),
                           ],
                           onChanged: (value) {
@@ -505,19 +423,15 @@ class _FriendshipPreferencesScreenState
                           const SizedBox(height: 10),
 
                           Container(
-                            key: const Key(
-                              'flexibleSocialPaceExplanation',
-                            ),
+                            key: const Key('flexibleSocialPaceExplanation'),
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: PhilotesColors.gold.withValues(
                                 alpha: 0.10,
                               ),
-                              borderRadius:
-                                  BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color:
-                                    PhilotesColors.gold.withValues(
+                                color: PhilotesColors.gold.withValues(
                                   alpha: 0.70,
                                 ),
                               ),
@@ -539,8 +453,7 @@ class _FriendshipPreferencesScreenState
                         const SizedBox(height: 20),
 
                         const _QuestionLabel(
-                          text:
-                              'How do you feel about making plans?',
+                          text: 'How do you feel about making plans?',
                         ),
 
                         const SizedBox(height: 10),
@@ -551,10 +464,8 @@ class _FriendshipPreferencesScreenState
                             'A little of both',
                             'I enjoy spontaneous plans',
                           ],
-                          selectedValue:
-                              _planningStyle,
-                          keyPrefix:
-                              'planningStyle',
+                          selectedValue: _planningStyle,
+                          keyPrefix: 'planningStyle',
                           onChanged: (value) {
                             setState(() {
                               _planningStyle = value;
@@ -573,15 +484,13 @@ class _FriendshipPreferencesScreenState
 
                   _PreferenceSection(
                     icon: Icons.explore_outlined,
-                    title:
-                        'Shared Interests & New Experiences',
+                    title: 'Shared Interests & New Experiences',
                     subtitle:
                         'Good friendships do not always require '
                         'identical interests.',
                     required: true,
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const _QuestionLabel(
                           text:
@@ -598,10 +507,8 @@ class _FriendshipPreferencesScreenState
                             'People who can introduce me to new things',
                             'No preference',
                           ],
-                          selectedValue:
-                              _interestStyle,
-                          keyPrefix:
-                              'interestStyle',
+                          selectedValue: _interestStyle,
+                          keyPrefix: 'interestStyle',
                           onChanged: (value) {
                             setState(() {
                               _interestStyle = value;
@@ -624,19 +531,12 @@ class _FriendshipPreferencesScreenState
                         const SizedBox(height: 10),
 
                         _ChoiceGroup(
-                          values: const [
-                            'Yes',
-                            'Maybe',
-                            'Usually not',
-                          ],
-                          selectedValue:
-                              _newActivityComfort,
-                          keyPrefix:
-                              'newActivityComfort',
+                          values: const ['Yes', 'Maybe', 'Usually not'],
+                          selectedValue: _newActivityComfort,
+                          keyPrefix: 'newActivityComfort',
                           onChanged: (value) {
                             setState(() {
-                              _newActivityComfort =
-                                  value;
+                              _newActivityComfort = value;
 
                               if (_requiredFieldsValid) {
                                 _showValidation = false;
@@ -658,16 +558,14 @@ class _FriendshipPreferencesScreenState
                         'meeting friends in.',
                     required: false,
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Text(
                           'These are friendship recommendations, '
                           'not dating preferences. You can change '
                           'this range later.',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.silver,
+                            color: PhilotesColors.silver,
                             fontSize: 12,
                             height: 1.45,
                           ),
@@ -676,74 +574,46 @@ class _FriendshipPreferencesScreenState
                         const SizedBox(height: 18),
 
                         LayoutBuilder(
-                          builder: (
-                            context,
-                            constraints,
-                          ) {
-                            final narrow =
-                                constraints.maxWidth < 430;
+                          builder: (context, constraints) {
+                            final narrow = constraints.maxWidth < 430;
 
-                            final minimumField =
-                                _AgeField(
-                              key: const Key(
-                                'minimumFriendAgeField',
-                              ),
+                            final minimumField = _AgeField(
+                              key: const Key('minimumFriendAgeField'),
                               label: 'Minimum Age',
-                              controller:
-                                  _minimumAgeController,
-                              value:
-                                  _minimumFriendAge,
-                              onTyped:
-                                  _handleMinimumAgeTyped,
-                              onSelected:
-                                  _setMinimumAge,
+                              controller: _minimumAgeController,
+                              value: _minimumFriendAge,
+                              onTyped: _handleMinimumAgeTyped,
+                              onSelected: _setMinimumAge,
                               maximumMode: false,
                             );
 
-                            final maximumField =
-                                _AgeField(
-                              key: const Key(
-                                'maximumFriendAgeField',
-                              ),
+                            final maximumField = _AgeField(
+                              key: const Key('maximumFriendAgeField'),
                               label: 'Maximum Age',
-                              controller:
-                                  _maximumAgeController,
-                              value:
-                                  _maximumFriendAge,
-                              onTyped:
-                                  _handleMaximumAgeTyped,
-                              onSelected:
-                                  _setMaximumAge,
+                              controller: _maximumAgeController,
+                              value: _maximumFriendAge,
+                              onTyped: _handleMaximumAgeTyped,
+                              onSelected: _setMaximumAge,
                               maximumMode: true,
-                              minimumAllowed:
-                                  _minimumFriendAge,
+                              minimumAllowed: _minimumFriendAge,
                             );
 
                             if (narrow) {
                               return Column(
                                 children: [
                                   minimumField,
-                                  const SizedBox(
-                                    height: 16,
-                                  ),
+                                  const SizedBox(height: 16),
                                   maximumField,
                                 ],
                               );
                             }
 
                             return Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: minimumField,
-                                ),
-                                const SizedBox(
-                                  width: 16,
-                                ),
-                                Expanded(
-                                  child: maximumField,
-                                ),
+                                Expanded(child: minimumField),
+                                const SizedBox(width: 16),
+                                Expanded(child: maximumField),
                               ],
                             );
                           },
@@ -752,22 +622,16 @@ class _FriendshipPreferencesScreenState
                         const SizedBox(height: 14),
 
                         Container(
-                          padding:
-                              const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: PhilotesColors.gold
-                                .withValues(
-                              alpha: 0.10,
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            color: PhilotesColors.gold.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             children: [
                               const Icon(
                                 Icons.people_outline,
-                                color:
-                                    PhilotesColors.gold,
+                                color: PhilotesColors.gold,
                                 size: 20,
                               ),
                               const SizedBox(width: 9),
@@ -777,11 +641,9 @@ class _FriendshipPreferencesScreenState
                                   '$_minimumFriendAge - '
                                   '${_formatMaximumAge(_maximumFriendAge)}',
                                   style: const TextStyle(
-                                    color:
-                                        PhilotesColors.navy,
+                                    color: PhilotesColors.navy,
                                     fontSize: 13,
-                                    fontWeight:
-                                        FontWeight.w600,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -803,8 +665,7 @@ class _FriendshipPreferencesScreenState
                         'in a friendship.',
                     required: false,
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const _OptionalExplanation(),
 
@@ -812,83 +673,56 @@ class _FriendshipPreferencesScreenState
 
                         _ImportanceSelector(
                           title: 'Politics',
-                          value:
-                              _politicsImportance,
+                          value: _politicsImportance,
                           onChanged: (value) {
                             setState(() {
-                              _politicsImportance =
-                                  value;
+                              _politicsImportance = value;
 
-                              if (value ==
-                                  'Not important') {
-                                _politicalOutlook =
-                                    null;
+                              if (value == 'Not important') {
+                                _politicalOutlook = null;
                               }
                             });
                           },
                         ),
 
-                        if (_politicsImportance !=
-                            'Not important') ...[
+                        if (_politicsImportance != 'Not important') ...[
                           const SizedBox(height: 14),
 
-                          DropdownButtonFormField<
-                              String>(
-                            key: const Key(
-                              'politicalOutlookField',
-                            ),
-                            initialValue:
-                                _politicalOutlook,
-                            decoration:
-                                _inputDecoration(
-                              hintText:
-                                  'Optional political outlook',
+                          DropdownButtonFormField<String>(
+                            key: const Key('politicalOutlookField'),
+                            initialValue: _politicalOutlook,
+                            decoration: _inputDecoration(
+                              hintText: 'Optional political outlook',
                             ),
                             items: const [
                               DropdownMenuItem(
-                                value:
-                                    'Conservative',
-                                child: Text(
-                                  'Conservative',
-                                ),
+                                value: 'Conservative',
+                                child: Text('Conservative'),
                               ),
                               DropdownMenuItem(
                                 value: 'Moderate',
-                                child: Text(
-                                  'Moderate',
-                                ),
+                                child: Text('Moderate'),
                               ),
                               DropdownMenuItem(
                                 value: 'Liberal',
-                                child: Text(
-                                  'Liberal',
-                                ),
+                                child: Text('Liberal'),
                               ),
                               DropdownMenuItem(
-                                value:
-                                    'Independent',
-                                child: Text(
-                                  'Independent',
-                                ),
+                                value: 'Independent',
+                                child: Text('Independent'),
                               ),
                               DropdownMenuItem(
                                 value: 'Other',
-                                child: Text(
-                                  'Other',
-                                ),
+                                child: Text('Other'),
                               ),
                               DropdownMenuItem(
-                                value:
-                                    'Prefer not to say',
-                                child: Text(
-                                  'Prefer not to say',
-                                ),
+                                value: 'Prefer not to say',
+                                child: Text('Prefer not to say'),
                               ),
                             ],
                             onChanged: (value) {
                               setState(() {
-                                _politicalOutlook =
-                                    value;
+                                _politicalOutlook = value;
                               });
                             },
                           ),
@@ -897,108 +731,73 @@ class _FriendshipPreferencesScreenState
                         const SizedBox(height: 22),
 
                         _ImportanceSelector(
-                          title:
-                              'Faith / Religion',
-                          value:
-                              _faithImportance,
+                          title: 'Faith / Religion',
+                          value: _faithImportance,
                           onChanged: (value) {
                             setState(() {
-                              _faithImportance =
-                                  value;
+                              _faithImportance = value;
 
-                              if (value ==
-                                  'Not important') {
-                                _faithDescription =
-                                    null;
+                              if (value == 'Not important') {
+                                _faithDescription = null;
                               }
                             });
                           },
                         ),
 
-                        if (_faithImportance !=
-                            'Not important') ...[
+                        if (_faithImportance != 'Not important') ...[
                           const SizedBox(height: 14),
 
-                          DropdownButtonFormField<
-                              String>(
-                            key: const Key(
-                              'faithPreferenceField',
-                            ),
-                            initialValue:
-                                _faithDescription,
-                            decoration:
-                                _inputDecoration(
-                              hintText:
-                                  'Optional faith preference',
+                          DropdownButtonFormField<String>(
+                            key: const Key('faithPreferenceField'),
+                            initialValue: _faithDescription,
+                            decoration: _inputDecoration(
+                              hintText: 'Optional faith preference',
                             ),
                             items: const [
                               DropdownMenuItem(
                                 value: 'Catholic',
-                                child: Text(
-                                  'Catholic',
-                                ),
+                                child: Text('Catholic'),
                               ),
                               DropdownMenuItem(
                                 value: 'Christian',
-                                child: Text(
-                                  'Christian',
-                                ),
+                                child: Text('Christian'),
                               ),
                               DropdownMenuItem(
                                 value: 'Jewish',
-                                child: Text(
-                                  'Jewish',
-                                ),
+                                child: Text('Jewish'),
                               ),
                               DropdownMenuItem(
                                 value: 'Muslim',
-                                child: Text(
-                                  'Muslim',
-                                ),
+                                child: Text('Muslim'),
                               ),
                               DropdownMenuItem(
                                 value: 'Hindu',
-                                child: Text(
-                                  'Hindu',
-                                ),
+                                child: Text('Hindu'),
                               ),
                               DropdownMenuItem(
                                 value: 'Buddhist',
-                                child: Text(
-                                  'Buddhist',
-                                ),
+                                child: Text('Buddhist'),
                               ),
                               DropdownMenuItem(
                                 value: 'Spiritual',
-                                child: Text(
-                                  'Spiritual',
-                                ),
+                                child: Text('Spiritual'),
                               ),
                               DropdownMenuItem(
-                                value:
-                                    'Not religious',
-                                child: Text(
-                                  'Not religious',
-                                ),
+                                value: 'Not religious',
+                                child: Text('Not religious'),
                               ),
                               DropdownMenuItem(
                                 value: 'Other',
-                                child: Text(
-                                  'Other',
-                                ),
+                                child: Text('Other'),
                               ),
                               DropdownMenuItem(
-                                value:
-                                    'Prefer not to say',
-                                child: Text(
-                                  'Prefer not to say',
-                                ),
+                                value: 'Prefer not to say',
+                                child: Text('Prefer not to say'),
                               ),
                             ],
                             onChanged: (value) {
                               setState(() {
-                                _faithDescription =
-                                    value;
+                                _faithDescription = value;
                               });
                             },
                           ),
@@ -1012,8 +811,7 @@ class _FriendshipPreferencesScreenState
                           'pets, family lifestyle, and '
                           'accessibility can be refined later.',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.silver,
+                            color: PhilotesColors.silver,
                             fontSize: 12,
                             height: 1.45,
                           ),
@@ -1025,65 +823,46 @@ class _FriendshipPreferencesScreenState
                   const SizedBox(height: 18),
 
                   Material(
-                    color: PhilotesColors.gold.withValues(
-                      alpha: 0.10,
-                    ),
+                    color: PhilotesColors.gold.withValues(alpha: 0.10),
                     clipBehavior: Clip.antiAlias,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                       side: BorderSide(
-                        color: PhilotesColors.gold
-                            .withValues(
-                          alpha: 0.7,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.7),
                       ),
                     ),
                     child: Padding(
-                      padding:
-                          const EdgeInsets.all(18),
+                      padding: const EdgeInsets.all(18),
                       child: CheckboxListTile(
-                        key: const Key(
-                          'flexibleDiscoveryCheckbox',
-                        ),
-                        contentPadding:
-                            EdgeInsets.zero,
-                        value:
-                            _flexibleDiscovery,
-                        activeColor:
-                            PhilotesColors.navy,
+                        key: const Key('flexibleDiscoveryCheckbox'),
+                        contentPadding: EdgeInsets.zero,
+                        value: _flexibleDiscovery,
+                        activeColor: PhilotesColors.navy,
                         checkColor: Colors.white,
-                        controlAffinity:
-                            ListTileControlAffinity
-                                .leading,
+                        controlAffinity: ListTileControlAffinity.leading,
                         onChanged: (value) {
                           setState(() {
-                            _flexibleDiscovery =
-                                value ?? false;
+                            _flexibleDiscovery = value ?? false;
                           });
                         },
                         title: const Text(
                           'Help me discover people I might '
                           'not normally meet.',
                           style: TextStyle(
-                            color:
-                                PhilotesColors.navy,
+                            color: PhilotesColors.navy,
                             fontSize: 15,
-                            fontWeight:
-                                FontWeight.w700,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         subtitle: const Padding(
-                          padding:
-                              EdgeInsets.only(top: 6),
+                          padding: EdgeInsets.only(top: 6),
                           child: Text(
                             'When appropriate, Philotes can '
                             'broaden recommendations beyond '
                             'your usual patterns while still '
                             'respecting important boundaries.',
                             style: TextStyle(
-                              color:
-                                  PhilotesColors.silver,
+                              color: PhilotesColors.silver,
                               fontSize: 12,
                               height: 1.45,
                             ),
@@ -1098,20 +877,14 @@ class _FriendshipPreferencesScreenState
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white
-                          .withValues(alpha: 0.55),
-                      borderRadius:
-                          BorderRadius.circular(14),
+                      color: Colors.white.withValues(alpha: 0.55),
+                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: PhilotesColors.gold
-                            .withValues(
-                          alpha: 0.55,
-                        ),
+                        color: PhilotesColors.gold.withValues(alpha: 0.55),
                       ),
                     ),
                     child: const Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.info_outline,
@@ -1127,11 +900,9 @@ class _FriendshipPreferencesScreenState
                             'identifies a setting specifically '
                             'as a deal breaker.',
                             style: TextStyle(
-                              color:
-                                  PhilotesColors.navy,
+                              color: PhilotesColors.navy,
                               fontSize: 13,
-                              fontWeight:
-                                  FontWeight.w600,
+                              fontWeight: FontWeight.w600,
                               height: 1.45,
                             ),
                           ),
@@ -1145,29 +916,20 @@ class _FriendshipPreferencesScreenState
                   SizedBox(
                     height: 56,
                     child: FilledButton(
-                      key: const Key(
-                        'friendshipPreferencesContinueButton',
-                      ),
+                      key: const Key('friendshipPreferencesContinueButton'),
                       onPressed: _continue,
                       style: FilledButton.styleFrom(
-                        backgroundColor:
-                            PhilotesColors.navy,
-                        foregroundColor:
-                            Colors.white,
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                            14,
-                          ),
+                        backgroundColor: PhilotesColors.navy,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
                       child: const Text(
                         'Continue',
                         style: TextStyle(
                           fontSize: 17,
-                          fontWeight:
-                              FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -1219,14 +981,10 @@ class _AgeField extends StatelessWidget {
     final availableAges = List<int>.generate(
       63,
       (index) => index + 18,
-    ).where(
-      (age) =>
-          !maximumMode || age >= minimumAllowed,
-    );
+    ).where((age) => !maximumMode || age >= minimumAllowed);
 
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           label,
@@ -1241,29 +999,20 @@ class _AgeField extends StatelessWidget {
 
         TextField(
           controller: controller,
-          keyboardType:
-              TextInputType.number,
+          keyboardType: TextInputType.number,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(
-              RegExp(r'[0-9+]'),
-            ),
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
           ],
           onChanged: onTyped,
           decoration: InputDecoration(
             filled: true,
-            fillColor: PhilotesColors.ivory
-                .withValues(alpha: 0.65),
+            fillColor: PhilotesColors.ivory.withValues(alpha: 0.65),
             suffixIcon: PopupMenuButton<int>(
               key: Key(
-                maximumMode
-                    ? 'maximumAgeDropdown'
-                    : 'minimumAgeDropdown',
+                maximumMode ? 'maximumAgeDropdown' : 'minimumAgeDropdown',
               ),
-              tooltip:
-                  'Choose $label',
-              icon: const Icon(
-                Icons.arrow_drop_down,
-              ),
+              tooltip: 'Choose $label',
+              icon: const Icon(Icons.arrow_drop_down),
               onSelected: onSelected,
               itemBuilder: (context) {
                 return [
@@ -1271,33 +1020,22 @@ class _AgeField extends StatelessWidget {
                     PopupMenuItem<int>(
                       value: age,
                       child: Text(
-                        maximumMode && age == 80
-                            ? '80+'
-                            : age.toString(),
+                        maximumMode && age == 80 ? '80+' : age.toString(),
                       ),
                     ),
                 ];
               },
             ),
-            border: OutlineInputBorder(
-              borderRadius:
-                  BorderRadius.circular(12),
-            ),
-            enabledBorder:
-                OutlineInputBorder(
-              borderRadius:
-                  BorderRadius.circular(12),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: PhilotesColors.gold
-                    .withValues(alpha: 0.6),
+                color: PhilotesColors.gold.withValues(alpha: 0.6),
               ),
             ),
-            focusedBorder:
-                OutlineInputBorder(
-              borderRadius:
-                  BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
                 color: PhilotesColors.gold,
                 width: 2,
               ),
@@ -1329,22 +1067,15 @@ class _PreferenceSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:
-            Colors.white.withValues(alpha: 0.55),
-        borderRadius:
-            BorderRadius.circular(16),
-        border: Border.all(
-          color: PhilotesColors.gold
-              .withValues(alpha: 0.6),
-        ),
+        color: Colors.white.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: PhilotesColors.gold.withValues(alpha: 0.6)),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 44,
@@ -1352,58 +1083,37 @@ class _PreferenceSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: PhilotesColors.navy,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color:
-                        PhilotesColors.gold,
-                    width: 1.7,
-                  ),
+                  border: Border.all(color: PhilotesColors.gold, width: 1.7),
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                child: Icon(icon, color: Colors.white, size: 22),
               ),
 
               const SizedBox(width: 12),
 
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         Flexible(
                           child: Text(
                             title,
-                            style:
-                                const TextStyle(
-                              color:
-                                  PhilotesColors
-                                      .navy,
+                            style: const TextStyle(
+                              color: PhilotesColors.navy,
                               fontSize: 18,
-                              fontWeight:
-                                  FontWeight
-                                      .w700,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
                         if (required) ...[
-                          const SizedBox(
-                            width: 5,
-                          ),
+                          const SizedBox(width: 5),
                           const Text(
                             '*',
-                            style:
-                                TextStyle(
-                              color:
-                                  PhilotesColors
-                                      .gold,
+                            style: TextStyle(
+                              color: PhilotesColors.gold,
                               fontSize: 17,
-                              fontWeight:
-                                  FontWeight
-                                      .w800,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ],
@@ -1415,8 +1125,7 @@ class _PreferenceSection extends StatelessWidget {
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color:
-                            PhilotesColors.silver,
+                        color: PhilotesColors.silver,
                         fontSize: 12,
                         height: 1.4,
                       ),
@@ -1437,9 +1146,7 @@ class _PreferenceSection extends StatelessWidget {
 }
 
 class _QuestionLabel extends StatelessWidget {
-  const _QuestionLabel({
-    required this.text,
-  });
+  const _QuestionLabel({required this.text});
 
   final String text;
 
@@ -1475,82 +1182,52 @@ class _ChoiceGroup extends StatelessWidget {
       children: [
         for (final value in values)
           Padding(
-            padding:
-                const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.only(bottom: 8),
             child: InkWell(
-              key: Key(
-                '$keyPrefix-$value',
-              ),
-              borderRadius:
-                  BorderRadius.circular(12),
+              key: Key('$keyPrefix-$value'),
+              borderRadius: BorderRadius.circular(12),
               onTap: () {
                 onChanged(value);
               },
               child: Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 11,
                 ),
                 decoration: BoxDecoration(
                   color: selectedValue == value
-                      ? PhilotesColors.navy
-                          .withValues(
-                          alpha: 0.08,
-                        )
-                      : PhilotesColors.ivory
-                          .withValues(
-                          alpha: 0.55,
-                        ),
-                  borderRadius:
-                      BorderRadius.circular(12),
+                      ? PhilotesColors.navy.withValues(alpha: 0.08)
+                      : PhilotesColors.ivory.withValues(alpha: 0.55),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color:
-                        selectedValue == value
+                    color: selectedValue == value
                         ? PhilotesColors.gold
-                        : PhilotesColors.gold
-                            .withValues(
-                            alpha: 0.45,
-                          ),
-                    width:
-                        selectedValue == value
-                        ? 1.6
-                        : 1,
+                        : PhilotesColors.gold.withValues(alpha: 0.45),
+                    width: selectedValue == value ? 1.6 : 1,
                   ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       selectedValue == value
-                          ? Icons
-                              .radio_button_checked
-                          : Icons
-                              .radio_button_unchecked,
-                      color:
-                          selectedValue == value
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                      color: selectedValue == value
                           ? PhilotesColors.gold
-                          : PhilotesColors
-                              .silver,
+                          : PhilotesColors.silver,
                       size: 20,
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         value,
                         style: TextStyle(
-                          color:
-                              PhilotesColors.navy,
+                          color: PhilotesColors.navy,
                           fontSize: 13,
-                          fontWeight:
-                              selectedValue ==
-                                      value
-                                  ? FontWeight
-                                      .w600
-                                  : FontWeight
-                                      .w500,
+                          fontWeight: selectedValue == value
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                         ),
                       ),
                     ),
@@ -1578,8 +1255,7 @@ class _ImportanceSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           title,
@@ -1594,10 +1270,7 @@ class _ImportanceSelector extends StatelessWidget {
 
         const Text(
           'Does compatibility in this area matter to you?',
-          style: TextStyle(
-            color: PhilotesColors.silver,
-            fontSize: 12,
-          ),
+          style: TextStyle(color: PhilotesColors.silver, fontSize: 12),
         ),
 
         const SizedBox(height: 10),
@@ -1606,62 +1279,33 @@ class _ImportanceSelector extends StatelessWidget {
           segments: const [
             ButtonSegment<String>(
               value: 'Not important',
-              label: Text(
-                'Not important',
-              ),
+              label: Text('Not important'),
             ),
             ButtonSegment<String>(
-              value:
-                  'Somewhat important',
-              label: Text(
-                'Somewhat',
-              ),
+              value: 'Somewhat important',
+              label: Text('Somewhat'),
             ),
-            ButtonSegment<String>(
-              value: 'Very important',
-              label: Text(
-                'Very',
-              ),
-            ),
+            ButtonSegment<String>(value: 'Very important', label: Text('Very')),
           ],
           selected: <String>{value},
-          onSelectionChanged: (
-            selection,
-          ) {
-            onChanged(
-              selection.first,
-            );
+          onSelectionChanged: (selection) {
+            onChanged(selection.first);
           },
           style: ButtonStyle(
-            foregroundColor:
-                WidgetStateProperty
-                    .resolveWith<Color>(
-              (states) {
-                if (states.contains(
-                  WidgetState.selected,
-                )) {
-                  return Colors.white;
-                }
+            foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.selected)) {
+                return Colors.white;
+              }
 
+              return PhilotesColors.navy;
+            }),
+            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.selected)) {
                 return PhilotesColors.navy;
-              },
-            ),
-            backgroundColor:
-                WidgetStateProperty
-                    .resolveWith<Color>(
-              (states) {
-                if (states.contains(
-                  WidgetState.selected,
-                )) {
-                  return PhilotesColors.navy;
-                }
+              }
 
-                return Colors.white
-                    .withValues(
-                  alpha: 0.4,
-                );
-              },
-            ),
+              return Colors.white.withValues(alpha: 0.4);
+            }),
           ),
         ),
       ],
@@ -1677,10 +1321,8 @@ class _OptionalExplanation extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: PhilotesColors.gold
-            .withValues(alpha: 0.10),
-        borderRadius:
-            BorderRadius.circular(12),
+        color: PhilotesColors.gold.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: const Text(
         'Some people care about certain personal or '
@@ -1696,36 +1338,19 @@ class _OptionalExplanation extends StatelessWidget {
   }
 }
 
-InputDecoration _inputDecoration({
-  required String hintText,
-}) {
+InputDecoration _inputDecoration({required String hintText}) {
   return InputDecoration(
     hintText: hintText,
     filled: true,
-    fillColor: PhilotesColors.ivory
-        .withValues(alpha: 0.65),
-    border: OutlineInputBorder(
-      borderRadius:
-          BorderRadius.circular(12),
+    fillColor: PhilotesColors.ivory.withValues(alpha: 0.65),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: PhilotesColors.gold.withValues(alpha: 0.6)),
     ),
-    enabledBorder:
-        OutlineInputBorder(
-      borderRadius:
-          BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: PhilotesColors.gold
-            .withValues(alpha: 0.6),
-      ),
-    ),
-    focusedBorder:
-        OutlineInputBorder(
-      borderRadius:
-          BorderRadius.circular(12),
-      borderSide:
-          const BorderSide(
-        color: PhilotesColors.gold,
-        width: 2,
-      ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: PhilotesColors.gold, width: 2),
     ),
   );
 }
