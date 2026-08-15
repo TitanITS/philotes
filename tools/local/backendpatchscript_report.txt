@@ -1,6 +1,6 @@
-PHILOTES BACKEND EMAIL VERIFICATION V1.2 REPORT
+PHILOTES BACKEND EMAIL DELIVERY V1.1 REPORT
 ============================================================================
-Generated: 2026-08-15T12:56:40
+Generated: 2026-08-15T16:12:56
 
 PASS: EmailVerificationToken model created
 PASS: Verification table named correctly
@@ -20,16 +20,41 @@ PASS: Email verification tests created
 PASS: Existing login endpoint preserved
 PASS: Existing refresh endpoint preserved
 PASS: Existing logout endpoint preserved
+PASS: Resend provider adapter created
+PASS: Email delivery service created
+PASS: Resend API key remains environment configured
+PASS: Philotes sender domain configured
+PASS: Registration queues verification email
+PASS: Verification landing GET created
+PASS: Automated tests suppress real email delivery
+PASS: Email delivery tests created
+PASS: Philotes security-page presentation created
+PASS: Verification confirmation uses branded shell
+PASS: Verification success uses branded shell
+PASS: Verification error uses branded shell
+PASS: Security-page regression tests created
+PASS: Approved Titan logo copied to backend static
+PASS: Titan logo route created
+PASS: Canonical Titan attribution text preserved
+PASS: Canonical Titan logo size preserved
+PASS: Canonical TITAN label preserved
 
 OVERALL: PASS
 
-EMAIL VERIFICATION V1 CONTRACT
+EMAIL DELIVERY V1.2 CONTRACT
 - Registration creates an email-verification token record.
 - Only SHA-256 verification-token hashes are stored in PostgreSQL.
 - Verification tokens expire after 24 hours by default.
 - Verification tokens are single-use.
 - Resending invalidates prior unused verification tokens.
 - Public registration never returns a usable verification token.
-- Email delivery is not implemented yet; a provider will be connected later.
+- Resend is isolated behind a provider adapter and email delivery service.
+- Automated tests force real email delivery off.
+- Public registration responses never expose verification tokens.
+- Verification-link GET requests do not consume tokens; confirmation requires POST.
+- Browser-only security pages use a reusable Philotes presentation shell and do not represent the full web application.
+- Flutter application files and navigation are not modified by V9.2.
+- Browser security pages reproduce the canonical Titan attribution: BROUGHT TO YOU BY + approved Titan logo + TITAN.
+- The backend receives its own static copy of the approved repository-level Titan logo asset; the Flutter asset is not modified.
 - Existing login, refresh, logout, and bearer-session behavior is preserved.
 - Community endpoints can later require get_verified_user without changing authentication.

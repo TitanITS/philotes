@@ -39,7 +39,11 @@ class AuthenticationService:
         self.sessions = UserSessionRepository(db)
         self.email_verifications = EmailVerificationService(db)
 
-    def register(self, email: str, password: str) -> User:
+    def register(
+        self,
+        email: str,
+        password: str,
+    ) -> tuple[User, str]:
         normalized_email = UserService.normalize_email(email)
 
         if self.users.get_by_email(normalized_email) is not None:
@@ -54,14 +58,14 @@ class AuthenticationService:
                 user_id=user.id,
                 password_hash=hash_password(password),
             )
-            self.email_verifications.issue_token(
+            verification_token = self.email_verifications.issue_token(
                 user.id,
                 commit=False,
             )
 
             self.db.commit()
             self.db.refresh(user)
-            return user
+            return user, verification_token
         except IntegrityError as exc:
             self.db.rollback()
             raise UserAlreadyExistsError from exc

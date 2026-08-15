@@ -1,7 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    Form,
+    HTTPException,
+    Query,
+    Response,
+    status,
+)
+from fastapi.responses import FileResponse, HTMLResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from ...core.config import BACKEND_ROOT, settings
 from ...core.database import get_db
 from ...schemas.auth import (
     LoginRequest,
@@ -14,6 +25,7 @@ from ...schemas.auth import (
 )
 from ...schemas.user import UserResponse
 from ...security.authentication import get_current_user
+from ...services.email_delivery_service import EmailDeliveryService
 from ...services.email_verification_service import (
     EmailVerificationService,
     InvalidEmailVerificationTokenError,
@@ -26,6 +38,11 @@ from ...services.auth_service import (
 )
 from ...services.user_service import UserAlreadyExistsError
 from ...models.user import User
+from ...presentation.security_pages import (
+    verification_confirmation_page,
+    verification_error_page,
+    verification_success_page,
+)
 
 
 router = APIRouter(
@@ -41,15 +58,25 @@ router = APIRouter(
 )
 def register(
     payload: RegistrationRequest,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ) -> UserResponse:
     service = AuthenticationService(db)
 
     try:
-        return service.register(
+        user, verification_token = service.register(
             email=str(payload.email),
             password=payload.password,
         )
+
+        if settings.email_delivery_enabled:
+            background_tasks.add_task(
+                EmailDeliveryService().send_verification_email,
+                to_email=user.email,
+                raw_token=verification_token,
+            )
+
+        return user
     except UserAlreadyExistsError as exc:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -169,11 +196,76 @@ def verify_email(
     status_code=status.HTTP_202_ACCEPTED,
 )
 def resend_verification(
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> VerificationStatusResponse:
     if current_user.email_verified:
         return VerificationStatusResponse(status="already_verified")
 
-    EmailVerificationService(db).issue_token(current_user.id)
+    verification_token = EmailVerificationService(db).issue_token(
+        current_user.id
+    )
+
+    if settings.email_delivery_enabled:
+        background_tasks.add_task(
+            EmailDeliveryService().send_verification_email,
+            to_email=current_user.email,
+            raw_token=verification_token,
+        )
+
     return VerificationStatusResponse(status="verification_pending")
+
+
+@router.get(
+    "/security-assets/titan-logo.png",
+    response_class=FileResponse,
+    include_in_schema=False,
+)
+def titan_security_logo() -> FileResponse:
+    logo_path = (
+        BACKEND_ROOT
+        / "app"
+        / "static"
+        / "branding"
+        / "titan-logo.png"
+    )
+    return FileResponse(
+        path=logo_path,
+        media_type="image/png",
+        filename="titan-logo.png",
+    )
+
+
+@router.get(
+    "/verify-email-link",
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
+def verification_landing_page(
+    token: str = Query(min_length=32, max_length=512),
+) -> HTMLResponse:
+    return HTMLResponse(
+        content=verification_confirmation_page(token=token)
+    )
+
+
+@router.post(
+    "/verify-email-link",
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
+def verification_landing_confirm(
+    token: str = Form(..., min_length=32, max_length=512),
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    try:
+        EmailVerificationService(db).verify(token)
+        return HTMLResponse(
+            content=verification_success_page()
+        )
+    except InvalidEmailVerificationTokenError:
+        return HTMLResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=verification_error_page(),
+        )

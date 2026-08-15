@@ -1,0 +1,41 @@
+from app.presentation.security_pages import (
+    verification_confirmation_page,
+    verification_error_page,
+    verification_success_page,
+)
+
+
+def test_verification_confirmation_uses_philotes_security_shell() -> None:
+    html = verification_confirmation_page(
+        token="development-token-123456789012345678901234567890"
+    )
+
+    assert "PHILOTES" in html
+    assert "A Community for Friendship" in html
+    assert "BROUGHT TO YOU BY" in html
+    assert "/api/v1/auth/security-assets/titan-logo.png" in html
+    assert ">TITAN</span>" in html
+    assert "Verify Email Address" in html
+    assert "--philotes-navy" in html
+    assert "--philotes-gold" in html
+
+
+def test_verification_success_uses_philotes_security_shell() -> None:
+    html = verification_success_page()
+
+    assert "Email verified" in html
+    assert "successfully verified" in html
+    assert "return to Philotes" in html
+    assert "BROUGHT TO YOU BY" in html
+    assert "/api/v1/auth/security-assets/titan-logo.png" in html
+    assert ">TITAN</span>" in html
+
+
+def test_verification_error_uses_philotes_security_shell() -> None:
+    html = verification_error_page()
+
+    assert "Verification link unavailable" in html
+    assert "invalid, expired, or has already been used" in html
+    assert "Request a new verification email" in html
+    assert "BROUGHT TO YOU BY" in html
+    assert "/api/v1/auth/security-assets/titan-logo.png" in html

@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,6 +18,19 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     session_expire_days: int = 30
     email_verification_expire_hours: int = 24
+
+    # Resend uses its conventional unprefixed environment variable.
+    resend_api_key: str | None = Field(
+        default=None,
+        validation_alias="RESEND_API_KEY",
+    )
+    email_delivery_enabled: bool = False
+    email_from_address: str = (
+        "Philotes <account@mail.philotes.titannexustech.com>"
+    )
+    email_verification_url: str = (
+        "http://127.0.0.1:8000/api/v1/auth/verify-email-link"
+    )
 
     model_config = SettingsConfigDict(
         env_file=str(BACKEND_ROOT / ".env"),
