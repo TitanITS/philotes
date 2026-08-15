@@ -5,6 +5,7 @@ from fastapi import (
     Form,
     HTTPException,
     Query,
+    Request,
     Response,
     status,
 )
@@ -107,6 +108,7 @@ def register(
 )
 def login(
     payload: LoginRequest,
+    request: Request,
     db: Session = Depends(get_db),
 ) -> TokenResponse:
     service = AuthenticationService(db)
@@ -115,6 +117,9 @@ def login(
         _, access_token, refresh_token, expires_in = service.login(
             email=str(payload.email),
             password=payload.password,
+            device_name=request.headers.get("X-Philotes-Device-Name"),
+            platform=request.headers.get("X-Philotes-Platform"),
+            client_name=request.headers.get("X-Philotes-Client"),
         )
         return TokenResponse(
             access_token=access_token,
@@ -235,6 +240,7 @@ def resend_verification(
 )
 def change_password(
     payload: ChangePasswordRequest,
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> TokenResponse:
@@ -251,6 +257,9 @@ def change_password(
             user_id=current_user.id,
             current_password=payload.current_password,
             new_password=payload.new_password,
+            device_name=request.headers.get("X-Philotes-Device-Name"),
+            platform=request.headers.get("X-Philotes-Platform"),
+            client_name=request.headers.get("X-Philotes-Client"),
         )
         return TokenResponse(
             access_token=access_token,

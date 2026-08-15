@@ -21,6 +21,18 @@ class UserSession(Base):
         nullable=False,
         index=True,
     )
+    device_name: Mapped[str | None] = mapped_column(
+        String(120),
+        nullable=True,
+    )
+    platform: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+    client_name: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
     refresh_token_hash: Mapped[str] = mapped_column(
         String(64),
         nullable=False,

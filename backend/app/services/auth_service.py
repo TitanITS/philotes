@@ -81,7 +81,15 @@ class AuthenticationService:
             self.db.rollback()
             raise
 
-    def login(self, email: str, password: str) -> tuple[User, str, str, int]:
+    def login(
+        self,
+        email: str,
+        password: str,
+        *,
+        device_name: str | None = None,
+        platform: str | None = None,
+        client_name: str | None = None,
+    ) -> tuple[User, str, str, int]:
         normalized_email = UserService.normalize_email(email)
         user = self.users.get_by_email(normalized_email)
 
@@ -107,6 +115,9 @@ class AuthenticationService:
             user_id=user.id,
             refresh_token_hash=hash_refresh_token(refresh_token),
             expires_at=expires_at,
+            device_name=device_name,
+            platform=platform,
+            client_name=client_name,
         )
         self.db.commit()
 
@@ -162,6 +173,9 @@ class AuthenticationService:
         user_id: uuid.UUID,
         current_password: str,
         new_password: str,
+        device_name: str | None = None,
+        platform: str | None = None,
+        client_name: str | None = None,
     ) -> tuple[str, str, int]:
         credential = self.credentials.get_by_user_id(user_id)
 
@@ -199,6 +213,9 @@ class AuthenticationService:
             expires_at=now + timedelta(
                 days=settings.session_expire_days,
             ),
+            device_name=device_name,
+            platform=platform,
+            client_name=client_name,
         )
 
         self.db.commit()

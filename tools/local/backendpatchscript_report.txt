@@ -1,6 +1,6 @@
 PHILOTES BACKEND EMAIL DELIVERY V1.1 REPORT
 ============================================================================
-Generated: 2026-08-15T17:05:46
+Generated: 2026-08-15T17:23:12
 
 PASS: EmailVerificationToken model created
 PASS: Verification table named correctly
@@ -56,10 +56,20 @@ PASS: Password reuse protection configured
 PASS: Password change revokes pre-change sessions
 PASS: Password change creates replacement session
 PASS: Authenticated change-password tests created
+PASS: Session device metadata model configured
+PASS: Session schema created
+PASS: Session service created
+PASS: Sessions API route created
+PASS: Sessions router registered
+PASS: Current session context dependency created
+PASS: Sign-out-others endpoint created
+PASS: Sign-out-everywhere endpoint created
+PASS: Cross-user session isolation tested
+PASS: Session management tests created
 
 OVERALL: PASS
 
-AUTHENTICATED CHANGE PASSWORD V1 CONTRACT
+SESSION + DEVICE MANAGEMENT V1 CONTRACT
 - Registration creates an email-verification token record.
 - Only SHA-256 verification-token hashes are stored in PostgreSQL.
 - Verification tokens expire after 24 hours by default.
@@ -83,5 +93,10 @@ AUTHENTICATED CHANGE PASSWORD V1 CONTRACT
 - A password change rejects reuse of the current password.
 - Every pre-change session is revoked and the requesting device receives a fresh replacement session.
 - The change-password endpoint is API-only; no web-app conversion or Flutter UI change is included in V11.
+- Session/device management remains backend-first; Flutter UI wiring comes after live API validation.
+- The compact session list uses existing created_at as sign-in time and last_used_at as activity time.
+- V12 stores only first-party device/client labels; it does not add browser fingerprinting or IP retention.
+- Individual-session revocation cannot terminate the current session accidentally.
+- Sign out other devices preserves the current session; sign out everywhere revokes it.
 - Existing login, refresh, logout, and bearer-session behavior is preserved.
 - Community endpoints can later require get_verified_user without changing authentication.

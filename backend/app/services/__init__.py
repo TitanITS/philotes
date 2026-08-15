@@ -17,6 +17,9 @@ from .user_service import UserAlreadyExistsError, UserNotFoundError, UserService
 
 
 __all__ = [
+    "CurrentSessionRevocationError",
+    "SessionNotFoundError",
+    "SessionService",
     "AuthenticationService",
     "EmailDeliveryService",
     "EmailVerificationService",
@@ -30,3 +33,10 @@ __all__ = [
     "UserNotFoundError",
     "UserService",
 ]
+
+
+from .session_service import (
+    CurrentSessionRevocationError,
+    SessionNotFoundError,
+    SessionService,
+)

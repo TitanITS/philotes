@@ -14,6 +14,8 @@ from .user import UserCreate, UserResponse
 
 
 __all__ = [
+    "SessionListResponse",
+    "SessionResponse",
     "ChangePasswordRequest",
     "ForgotPasswordRequest",
     "LoginRequest",
@@ -27,3 +29,6 @@ __all__ = [
     "UserCreate",
     "UserResponse",
 ]
+
+
+from .session import SessionListResponse, SessionResponse
