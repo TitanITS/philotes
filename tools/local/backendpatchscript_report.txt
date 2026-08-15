@@ -1,6 +1,6 @@
-PHILOTES BACKEND USER MODEL V4 REPORT
+PHILOTES BACKEND ACCOUNT FOUNDATION V1 REPORT
 ============================================================================
-Generated: 2026-08-15T07:44:27
+Generated: 2026-08-15T08:08:19
 
 PASS: FastAPI app created
 PASS: API v1 prefix configured
@@ -24,6 +24,16 @@ PASS: Alembic imports User model
 PASS: Alembic avoids hard-coded database password
 PASS: Database foundation test created
 PASS: User model tests created
+PASS: User request/response schemas created
+PASS: User repository created
+PASS: User service created
+PASS: Users API route created
+PASS: Users router registered
+PASS: Email validation configured
+PASS: Email normalization configured
+PASS: Duplicate email conflict configured
+PASS: Unknown user 404 configured
+PASS: Account API tests created
 
 OVERALL: PASS
 
@@ -39,7 +49,7 @@ DATABASE FOUNDATION CONTRACT
 - API prefix: /api/v1
 - Application health endpoint: /api/v1/health
 - Database health endpoint: /api/v1/health/database
-- V4 defines the first application table model: users.
+- Account Foundation V1 adds API, schema, service, and repository layers around users.
 - User fields are limited to identity/status/timestamps.
 - No password hash, login, token, MFA, profile, interest, or messaging fields are added yet.
 - The users table is not created directly by this patch; Alembic will generate and apply the migration.

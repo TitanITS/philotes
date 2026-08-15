@@ -20,10 +20,22 @@ FILES = {
 
 __all__ = ["User"]
 """,
-    APP_ROOT / "repositories" / "__init__.py": "",
-    APP_ROOT / "schemas" / "__init__.py": "",
+    APP_ROOT / "repositories" / "__init__.py": """from .user_repository import UserRepository
+
+
+__all__ = ["UserRepository"]
+""",
+    APP_ROOT / "schemas" / "__init__.py": """from .user import UserCreate, UserResponse
+
+
+__all__ = ["UserCreate", "UserResponse"]
+""",
     APP_ROOT / "security" / "__init__.py": "",
-    APP_ROOT / "services" / "__init__.py": "",
+    APP_ROOT / "services" / "__init__.py": """from .user_service import UserAlreadyExistsError, UserNotFoundError, UserService
+
+
+__all__ = ["UserAlreadyExistsError", "UserNotFoundError", "UserService"]
+""",
     TEST_ROOT / "__init__.py": "",
     BACKEND_ROOT / ".env.example": """PHILOTES_APP_NAME=Philotes API
 PHILOTES_ENVIRONMENT=development
@@ -133,6 +145,167 @@ class User(Base):
         onupdate=func.now(),
     )
 """,
+    APP_ROOT / "schemas" / "user.py": """import uuid
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+
+
+class UserResponse(BaseModel):
+    id: uuid.UUID
+    email: EmailStr
+    email_verified: bool
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+""",
+    APP_ROOT / "repositories" / "user_repository.py": """import uuid
+
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from ..models.user import User
+
+
+class UserRepository:
+    def __init__(self, db: Session) -> None:
+        self.db = db
+
+    def get_by_id(self, user_id: uuid.UUID) -> User | None:
+        return self.db.get(User, user_id)
+
+    def get_by_email(self, email: str) -> User | None:
+        statement = select(User).where(User.email == email)
+        return self.db.scalars(statement).first()
+
+    def create(self, email: str) -> User:
+        user = User(email=email)
+        self.db.add(user)
+        self.db.commit()
+        self.db.refresh(user)
+        return user
+""",
+    APP_ROOT / "services" / "user_service.py": """import uuid
+
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from ..models.user import User
+from ..repositories.user_repository import UserRepository
+
+
+class UserAlreadyExistsError(Exception):
+    pass
+
+
+class UserNotFoundError(Exception):
+    pass
+
+
+class UserService:
+    def __init__(self, db: Session) -> None:
+        self.db = db
+        self.repository = UserRepository(db)
+
+    @staticmethod
+    def normalize_email(email: str) -> str:
+        return email.strip().lower()
+
+    def create_user(self, email: str) -> User:
+        normalized_email = self.normalize_email(email)
+
+        if self.repository.get_by_email(normalized_email) is not None:
+            raise UserAlreadyExistsError
+
+        try:
+            return self.repository.create(normalized_email)
+        except IntegrityError as exc:
+            self.db.rollback()
+            raise UserAlreadyExistsError from exc
+
+    def get_user(self, user_id: uuid.UUID) -> User:
+        user = self.repository.get_by_id(user_id)
+
+        if user is None:
+            raise UserNotFoundError
+
+        return user
+""",
+    APP_ROOT / "api" / "routes" / "users.py": """import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
+from ...core.database import get_db
+from ...schemas.user import UserCreate, UserResponse
+from ...services.user_service import (
+    UserAlreadyExistsError,
+    UserNotFoundError,
+    UserService,
+)
+
+
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+)
+
+
+@router.post(
+    "",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_user(
+    payload: UserCreate,
+    db: Session = Depends(get_db),
+) -> UserResponse:
+    service = UserService(db)
+
+    try:
+        return service.create_user(str(payload.email))
+    except UserAlreadyExistsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with that email already exists.",
+        ) from exc
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database unavailable",
+        ) from exc
+
+
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+)
+def get_user(
+    user_id: uuid.UUID,
+    db: Session = Depends(get_db),
+) -> UserResponse:
+    service = UserService(db)
+
+    try:
+        return service.get_user(user_id)
+    except UserNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found.",
+        ) from exc
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database unavailable",
+        ) from exc
+""",
     APP_ROOT / "api" / "routes" / "health.py": """from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
@@ -172,10 +345,12 @@ def database_health_check() -> dict[str, str]:
     APP_ROOT / "api" / "router.py": """from fastapi import APIRouter
 
 from .routes.health import router as health_router
+from .routes.users import router as users_router
 
 
 api_router = APIRouter()
 api_router.include_router(health_router)
+api_router.include_router(users_router)
 """,
     APP_ROOT / "main.py": """from fastapi import FastAPI
 
@@ -302,13 +477,103 @@ def test_user_model_identity_columns() -> None:
     assert User.__table__.c.email.unique is True
     assert User.__table__.c.email.index is True
 """,
+    TEST_ROOT / "test_users.py": """import uuid
+
+from fastapi.testclient import TestClient
+from sqlalchemy import delete
+
+from app.core.database import SessionLocal
+from app.main import app
+from app.models.user import User
+
+
+client = TestClient(app)
+
+
+def _cleanup_email(email: str) -> None:
+    with SessionLocal() as db:
+        db.execute(delete(User).where(User.email == email))
+        db.commit()
+
+
+def test_create_and_get_user() -> None:
+    email = f"account-{uuid.uuid4()}@EXAMPLE.COM"
+    normalized = email.lower()
+
+    try:
+        create_response = client.post(
+            "/api/v1/users",
+            json={"email": email},
+        )
+
+        assert create_response.status_code == 201
+        created = create_response.json()
+        assert created["email"] == normalized
+        assert created["email_verified"] is False
+        assert created["is_active"] is True
+
+        user_id = created["id"]
+
+        get_response = client.get(
+            f"/api/v1/users/{user_id}",
+        )
+
+        assert get_response.status_code == 200
+        assert get_response.json()["id"] == user_id
+        assert get_response.json()["email"] == normalized
+    finally:
+        _cleanup_email(normalized)
+
+
+def test_duplicate_email_is_rejected() -> None:
+    email = f"duplicate-{uuid.uuid4()}@example.com"
+
+    try:
+        first = client.post(
+            "/api/v1/users",
+            json={"email": email},
+        )
+        assert first.status_code == 201
+
+        duplicate = client.post(
+            "/api/v1/users",
+            json={"email": email.upper()},
+        )
+
+        assert duplicate.status_code == 409
+        assert duplicate.json() == {
+            "detail": "An account with that email already exists."
+        }
+    finally:
+        _cleanup_email(email)
+
+
+def test_invalid_email_is_rejected() -> None:
+    response = client.post(
+        "/api/v1/users",
+        json={"email": "not-an-email"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_unknown_user_returns_404() -> None:
+    response = client.get(
+        f"/api/v1/users/{uuid.uuid4()}",
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "User not found."
+    }
+""",
 }
 
 
 def main() -> None:
     print()
     print("=" * 76)
-    print("PHILOTES BACKEND USER MODEL V4")
+    print("PHILOTES BACKEND ACCOUNT FOUNDATION V1")
     print("=" * 76)
     print()
 
@@ -386,11 +651,21 @@ def main() -> None:
         "Alembic avoids hard-coded database password": "driver://user:pass" not in env_text,
         "Database foundation test created": "test_sqlalchemy_base_exists" in (TEST_ROOT / "test_database_foundation.py").read_text(encoding="utf-8"),
         "User model tests created": "test_user_model_registered" in (TEST_ROOT / "test_database_foundation.py").read_text(encoding="utf-8"),
+        "User request/response schemas created": (APP_ROOT / "schemas" / "user.py").exists(),
+        "User repository created": (APP_ROOT / "repositories" / "user_repository.py").exists(),
+        "User service created": (APP_ROOT / "services" / "user_service.py").exists(),
+        "Users API route created": (APP_ROOT / "api" / "routes" / "users.py").exists(),
+        "Users router registered": "include_router(users_router)" in (APP_ROOT / "api" / "router.py").read_text(encoding="utf-8"),
+        "Email validation configured": "EmailStr" in (APP_ROOT / "schemas" / "user.py").read_text(encoding="utf-8"),
+        "Email normalization configured": "email.strip().lower()" in (APP_ROOT / "services" / "user_service.py").read_text(encoding="utf-8"),
+        "Duplicate email conflict configured": "HTTP_409_CONFLICT" in (APP_ROOT / "api" / "routes" / "users.py").read_text(encoding="utf-8"),
+        "Unknown user 404 configured": "HTTP_404_NOT_FOUND" in (APP_ROOT / "api" / "routes" / "users.py").read_text(encoding="utf-8"),
+        "Account API tests created": (TEST_ROOT / "test_users.py").exists(),
     }
 
     passed = True
     report = [
-        "PHILOTES BACKEND USER MODEL V4 REPORT",
+        "PHILOTES BACKEND ACCOUNT FOUNDATION V1 REPORT",
         "=" * 76,
         "Generated: " + datetime.now().isoformat(timespec="seconds"),
         "",
@@ -419,7 +694,7 @@ def main() -> None:
         "- API prefix: /api/v1",
         "- Application health endpoint: /api/v1/health",
         "- Database health endpoint: /api/v1/health/database",
-        "- V4 defines the first application table model: users.",
+        "- Account Foundation V1 adds API, schema, service, and repository layers around users.",
         "- User fields are limited to identity/status/timestamps.",
         "- No password hash, login, token, MFA, profile, interest, or messaging fields are added yet.",
         "- The users table is not created directly by this patch; Alembic will generate and apply the migration.",
