@@ -1,4 +1,7 @@
 from app.presentation.security_pages import (
+    password_reset_error_page,
+    password_reset_form_page,
+    password_reset_success_page,
     verification_confirmation_page,
     verification_error_page,
     verification_success_page,
@@ -39,3 +42,23 @@ def test_verification_error_uses_philotes_security_shell() -> None:
     assert "Request a new verification email" in html
     assert "BROUGHT TO YOU BY" in html
     assert "/api/v1/auth/security-assets/titan-logo.png" in html
+
+
+
+def test_password_reset_pages_use_philotes_security_shell() -> None:
+    form = password_reset_form_page(
+        token="reset-development-token-123456789012345678901234"
+    )
+    success = password_reset_success_page()
+    error = password_reset_error_page()
+
+    for html in (form, success, error):
+        assert "PHILOTES" in html
+        assert "A Community for Friendship" in html
+        assert "BROUGHT TO YOU BY" in html
+        assert "/api/v1/auth/security-assets/titan-logo.png" in html
+        assert ">TITAN</span>" in html
+
+    assert "Change Password" in form
+    assert "Password changed" in success
+    assert "Reset link unavailable" in error

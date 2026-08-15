@@ -9,6 +9,10 @@ from .email_verification_service import (
     EmailVerificationService,
     InvalidEmailVerificationTokenError,
 )
+from .password_reset_service import (
+    InvalidPasswordResetTokenError,
+    PasswordResetService,
+)
 from .user_service import UserAlreadyExistsError, UserNotFoundError, UserService
 
 
@@ -20,6 +24,8 @@ __all__ = [
     "InvalidCredentialsError",
     "InvalidEmailVerificationTokenError",
     "InvalidRefreshTokenError",
+    "InvalidPasswordResetTokenError",
+    "PasswordResetService",
     "UserAlreadyExistsError",
     "UserNotFoundError",
     "UserService",

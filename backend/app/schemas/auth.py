@@ -47,3 +47,12 @@ class VerifyEmailRequest(BaseModel):
 
 class VerificationStatusResponse(BaseModel):
     status: str
+
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetStatusResponse(BaseModel):
+    status: str

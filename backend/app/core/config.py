@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 15
     session_expire_days: int = 30
     email_verification_expire_hours: int = 24
+    password_reset_expire_minutes: int = 60
 
     # Resend uses its conventional unprefixed environment variable.
     resend_api_key: str | None = Field(
@@ -30,6 +31,9 @@ class Settings(BaseSettings):
     )
     email_verification_url: str = (
         "http://127.0.0.1:8000/api/v1/auth/verify-email-link"
+    )
+    password_reset_url: str = (
+        "http://127.0.0.1:8000/api/v1/auth/reset-password-link"
     )
 
     model_config = SettingsConfigDict(

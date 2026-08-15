@@ -2,6 +2,10 @@ from .email_verification_tokens import (
     create_email_verification_token,
     hash_email_verification_token,
 )
+from .password_reset_tokens import (
+    create_password_reset_token,
+    hash_password_reset_token,
+)
 from .passwords import hash_password, verify_password
 from .tokens import (
     create_access_token,
@@ -17,7 +21,9 @@ __all__ = [
     "create_refresh_token",
     "decode_access_token",
     "hash_email_verification_token",
+    "create_password_reset_token",
     "hash_password",
+    "hash_password_reset_token",
     "hash_refresh_token",
     "verify_password",
 ]

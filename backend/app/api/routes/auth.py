@@ -15,8 +15,10 @@ from sqlalchemy.orm import Session
 from ...core.config import BACKEND_ROOT, settings
 from ...core.database import get_db
 from ...schemas.auth import (
+    ForgotPasswordRequest,
     LoginRequest,
     LogoutRequest,
+    PasswordResetStatusResponse,
     RefreshRequest,
     RegistrationRequest,
     TokenResponse,
@@ -36,9 +38,16 @@ from ...services.auth_service import (
     InvalidCredentialsError,
     InvalidRefreshTokenError,
 )
+from ...services.password_reset_service import (
+    InvalidPasswordResetTokenError,
+    PasswordResetService,
+)
 from ...services.user_service import UserAlreadyExistsError
 from ...models.user import User
 from ...presentation.security_pages import (
+    password_reset_error_page,
+    password_reset_form_page,
+    password_reset_success_page,
     verification_confirmation_page,
     verification_error_page,
     verification_success_page,
@@ -215,6 +224,78 @@ def resend_verification(
         )
 
     return VerificationStatusResponse(status="verification_pending")
+
+
+@router.post(
+    "/forgot-password",
+    response_model=PasswordResetStatusResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def forgot_password(
+    payload: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+) -> PasswordResetStatusResponse:
+    reset = PasswordResetService(db).request_reset(str(payload.email))
+
+    if reset is not None and settings.email_delivery_enabled:
+        user, raw_token = reset
+        background_tasks.add_task(
+            EmailDeliveryService().send_password_reset_email,
+            to_email=user.email,
+            raw_token=raw_token,
+        )
+
+    # Deliberately identical whether or not the account exists.
+    return PasswordResetStatusResponse(status="password_reset_pending")
+
+
+@router.get(
+    "/reset-password-link",
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
+def password_reset_landing_page(
+    token: str = Query(min_length=32, max_length=512),
+) -> HTMLResponse:
+    return HTMLResponse(
+        content=password_reset_form_page(token=token)
+    )
+
+
+@router.post(
+    "/reset-password-link",
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
+def password_reset_landing_confirm(
+    token: str = Form(..., min_length=32, max_length=512),
+    new_password: str = Form(..., min_length=15, max_length=128),
+    confirm_password: str = Form(..., min_length=15, max_length=128),
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    if new_password != confirm_password:
+        return HTMLResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=password_reset_form_page(
+                token=token,
+                error_message="The password entries do not match.",
+            ),
+        )
+
+    try:
+        PasswordResetService(db).reset_password(
+            raw_token=token,
+            new_password=new_password,
+        )
+        return HTMLResponse(
+            content=password_reset_success_page()
+        )
+    except InvalidPasswordResetTokenError:
+        return HTMLResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=password_reset_error_page(),
+        )
 
 
 @router.get(

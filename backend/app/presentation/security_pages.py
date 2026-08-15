@@ -318,3 +318,127 @@ def verification_error_page() -> str:
         ),
         body_html=body,
     )
+
+
+
+def password_reset_form_page(
+    *,
+    token: str,
+    error_message: str | None = None,
+) -> str:
+    safe_token = escape(token, quote=True)
+    error_html = (
+        f'<p class="form-error" role="alert">{escape(error_message)}</p>'
+        if error_message
+        else ""
+    )
+
+    body = f"""
+{error_html}
+<form method="post" action="/api/v1/auth/reset-password-link">
+  <input type="hidden" name="token" value="{safe_token}">
+
+  <div style="margin-bottom: 16px;">
+    <label
+      for="new-password"
+      style="display:block;margin-bottom:8px;font-weight:700;"
+    >
+      New password
+    </label>
+    <input
+      id="new-password"
+      name="new_password"
+      type="password"
+      minlength="15"
+      maxlength="128"
+      autocomplete="new-password"
+      required
+      style="
+        width:100%;
+        min-height:50px;
+        border:1px solid #aeb8c2;
+        border-radius:12px;
+        padding:12px 14px;
+        font:inherit;
+      "
+    >
+  </div>
+
+  <div style="margin-bottom: 22px;">
+    <label
+      for="confirm-password"
+      style="display:block;margin-bottom:8px;font-weight:700;"
+    >
+      Confirm new password
+    </label>
+    <input
+      id="confirm-password"
+      name="confirm_password"
+      type="password"
+      minlength="15"
+      maxlength="128"
+      autocomplete="new-password"
+      required
+      style="
+        width:100%;
+        min-height:50px;
+        border:1px solid #aeb8c2;
+        border-radius:12px;
+        padding:12px 14px;
+        font:inherit;
+      "
+    >
+  </div>
+
+  <button class="primary-action" type="submit">
+    Change Password
+  </button>
+</form>
+<p class="help-text">
+  Use at least 15 characters. After your password changes,
+  Philotes will sign out all existing sessions for your security.
+</p>
+"""
+
+    return philotes_security_page(
+        title="Reset your password",
+        message=(
+            "Choose a new password for your Philotes account."
+        ),
+        body_html=body,
+    )
+
+
+def password_reset_success_page() -> str:
+    body = """
+<p class="help-text">
+  All existing Philotes sessions have been signed out.
+  You may close this window and sign in again with your new password.
+</p>
+"""
+
+    return philotes_security_page(
+        title="Password changed",
+        message=(
+            "Your Philotes password has been updated successfully."
+        ),
+        body_html=body,
+        tone="success",
+    )
+
+
+def password_reset_error_page() -> str:
+    body = """
+<p class="help-text">
+  Request a new password-reset email from Philotes and try again.
+</p>
+"""
+
+    return philotes_security_page(
+        title="Reset link unavailable",
+        message=(
+            "This password-reset link is invalid, expired, or has "
+            "already been used."
+        ),
+        body_html=body,
+    )

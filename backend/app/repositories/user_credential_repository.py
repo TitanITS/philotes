@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 
@@ -23,4 +24,20 @@ class UserCredentialRepository:
         )
         self.db.add(credential)
         self.db.flush()
+        return credential
+
+
+    def update_password(
+        self,
+        *,
+        user_id: uuid.UUID,
+        password_hash: str,
+        changed_at: datetime,
+    ) -> UserCredential | None:
+        credential = self.get_by_user_id(user_id)
+        if credential is None:
+            return None
+
+        credential.password_hash = password_hash
+        credential.password_changed_at = changed_at
         return credential

@@ -92,3 +92,35 @@ def test_verification_link_get_does_not_verify_email() -> None:
             assert user.email_verified is False
     finally:
         _cleanup_email(email)
+
+
+
+def test_resend_provider_builds_password_reset_message(monkeypatch) -> None:
+    captured: dict = {}
+
+    def fake_send(params):
+        captured.update(params)
+        return {"id": "development-reset-email-id"}
+
+    monkeypatch.setattr(
+        "app.providers.resend_email_provider.resend.Emails.send",
+        fake_send,
+    )
+    monkeypatch.setattr(
+        settings,
+        "resend_api_key",
+        "re_development_test_key",
+    )
+
+    EmailDeliveryService(
+        provider=ResendEmailProvider()
+    ).send_password_reset_email(
+        to_email="reset-delivery-test@example.com",
+        raw_token="development-reset-token-12345678901234567890",
+    )
+
+    assert captured["from"] == settings.email_from_address
+    assert captured["to"] == ["reset-delivery-test@example.com"]
+    assert captured["subject"] == "Reset your Philotes password"
+    assert "development-reset-token" in captured["html"]
+    assert "development-reset-token" in captured["text"]

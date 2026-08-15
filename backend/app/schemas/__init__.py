@@ -1,6 +1,8 @@
 from .auth import (
+    ForgotPasswordRequest,
     LoginRequest,
     LogoutRequest,
+    PasswordResetStatusResponse,
     RefreshRequest,
     RegistrationRequest,
     TokenResponse,
@@ -11,8 +13,10 @@ from .user import UserCreate, UserResponse
 
 
 __all__ = [
+    "ForgotPasswordRequest",
     "LoginRequest",
     "LogoutRequest",
+    "PasswordResetStatusResponse",
     "RefreshRequest",
     "RegistrationRequest",
     "TokenResponse",
