@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from ...core.config import BACKEND_ROOT, settings
 from ...core.database import get_db
 from ...schemas.auth import (
+    ChangePasswordRequest,
     ForgotPasswordRequest,
     LoginRequest,
     LogoutRequest,
@@ -34,9 +35,11 @@ from ...services.email_verification_service import (
 )
 from ...services.auth_service import (
     AuthenticationService,
+    InvalidCurrentPasswordError,
     InactiveUserError,
     InvalidCredentialsError,
     InvalidRefreshTokenError,
+    PasswordReuseError,
 )
 from ...services.password_reset_service import (
     InvalidPasswordResetTokenError,
@@ -224,6 +227,46 @@ def resend_verification(
         )
 
     return VerificationStatusResponse(status="verification_pending")
+
+
+@router.post(
+    "/change-password",
+    response_model=TokenResponse,
+)
+def change_password(
+    payload: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> TokenResponse:
+    if payload.new_password != payload.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The new password entries do not match.",
+        )
+
+    try:
+        access_token, refresh_token, expires_in = AuthenticationService(
+            db
+        ).change_password(
+            user_id=current_user.id,
+            current_password=payload.current_password,
+            new_password=payload.new_password,
+        )
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=expires_in,
+        )
+    except InvalidCurrentPasswordError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect.",
+        ) from exc
+    except PasswordReuseError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from the current password.",
+        ) from exc
 
 
 @router.post(

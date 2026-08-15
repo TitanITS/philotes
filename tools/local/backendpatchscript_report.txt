@@ -1,6 +1,6 @@
 PHILOTES BACKEND EMAIL DELIVERY V1.1 REPORT
 ============================================================================
-Generated: 2026-08-15T16:41:11
+Generated: 2026-08-15T17:05:46
 
 PASS: EmailVerificationToken model created
 PASS: Verification table named correctly
@@ -49,10 +49,17 @@ PASS: Password reset lifetime configured
 PASS: Password reset revokes all sessions
 PASS: Alembic imports PasswordResetToken
 PASS: Password reset tests created
+PASS: Change-password schema created
+PASS: Change-password endpoint created
+PASS: Current password verification configured
+PASS: Password reuse protection configured
+PASS: Password change revokes pre-change sessions
+PASS: Password change creates replacement session
+PASS: Authenticated change-password tests created
 
 OVERALL: PASS
 
-PASSWORD RESET + ACCOUNT RECOVERY V1 CONTRACT
+AUTHENTICATED CHANGE PASSWORD V1 CONTRACT
 - Registration creates an email-verification token record.
 - Only SHA-256 verification-token hashes are stored in PostgreSQL.
 - Verification tokens expire after 24 hours by default.
@@ -72,5 +79,9 @@ PASSWORD RESET + ACCOUNT RECOVERY V1 CONTRACT
 - Successful password reset revokes every existing session for the user.
 - Password-reset browser pages reuse the approved Philotes security shell and Titan attribution.
 - No Flutter application files are modified by Password Reset V1.
+- Authenticated password changes require the current password.
+- A password change rejects reuse of the current password.
+- Every pre-change session is revoked and the requesting device receives a fresh replacement session.
+- The change-password endpoint is API-only; no web-app conversion or Flutter UI change is included in V11.
 - Existing login, refresh, logout, and bearer-session behavior is preserved.
 - Community endpoints can later require get_verified_user without changing authentication.

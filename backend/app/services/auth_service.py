@@ -31,6 +31,14 @@ class InvalidRefreshTokenError(Exception):
     pass
 
 
+class InvalidCurrentPasswordError(Exception):
+    pass
+
+
+class PasswordReuseError(Exception):
+    pass
+
+
 class AuthenticationService:
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -147,6 +155,59 @@ class AuthenticationService:
         if session.revoked_at is None:
             session.revoked_at = datetime.now(timezone.utc)
             self.db.commit()
+
+    def change_password(
+        self,
+        *,
+        user_id: uuid.UUID,
+        current_password: str,
+        new_password: str,
+    ) -> tuple[str, str, int]:
+        credential = self.credentials.get_by_user_id(user_id)
+
+        if credential is None or not verify_password(
+            current_password,
+            credential.password_hash,
+        ):
+            raise InvalidCurrentPasswordError
+
+        if verify_password(
+            new_password,
+            credential.password_hash,
+        ):
+            raise PasswordReuseError
+
+        now = datetime.now(timezone.utc)
+
+        updated = self.credentials.update_password(
+            user_id=user_id,
+            password_hash=hash_password(new_password),
+            changed_at=now,
+        )
+        if updated is None:
+            raise InvalidCurrentPasswordError
+
+        # A password change is a security boundary. Revoke every
+        # pre-change session, including the session that submitted this
+        # request, then create a replacement session for this device.
+        self.sessions.revoke_all_for_user(user_id, now)
+
+        new_refresh_token = create_refresh_token()
+        replacement_session = self.sessions.create(
+            user_id=user_id,
+            refresh_token_hash=hash_refresh_token(new_refresh_token),
+            expires_at=now + timedelta(
+                days=settings.session_expire_days,
+            ),
+        )
+
+        self.db.commit()
+
+        access_token, expires_in = create_access_token(
+            user_id,
+            replacement_session.id,
+        )
+        return access_token, new_refresh_token, expires_in
 
     def get_session_user(
         self,
