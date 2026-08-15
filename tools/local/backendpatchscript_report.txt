@@ -1,21 +1,45 @@
-PHILOTES BACKEND FOUNDATION V1 REPORT
+PHILOTES BACKEND USER MODEL V4 REPORT
 ============================================================================
-Generated: 2026-08-14T19:55:08
+Generated: 2026-08-15T07:44:27
 
 PASS: FastAPI app created
 PASS: API v1 prefix configured
 PASS: Health endpoint created
 PASS: Database engine configured
-PASS: Psycopg PostgreSQL URL configured
-PASS: Health test created
+PASS: Environment prefix configured
+PASS: Backend .env path configured
+PASS: Safe .env example created
+PASS: Database health endpoint created
+PASS: Database SELECT 1 check configured
+PASS: SQLAlchemy DeclarativeBase created
+PASS: User model created
+PASS: User table named users
+PASS: User model uses UUID identity
+PASS: User email is unique
+PASS: Alembic initialized
+PASS: Alembic uses application settings
+PASS: Alembic uses application engine
+PASS: Alembic target metadata configured
+PASS: Alembic imports User model
+PASS: Alembic avoids hard-coded database password
+PASS: Database foundation test created
+PASS: User model tests created
 
 OVERALL: PASS
 
-FOUNDATION CONTRACT
+DATABASE FOUNDATION CONTRACT
 - Backend framework: FastAPI
-- ORM: SQLAlchemy
+- ORM: SQLAlchemy 2.x DeclarativeBase
 - Database target: PostgreSQL
 - PostgreSQL driver: Psycopg 3
+- Migration system: Alembic
+- Alembic reads the same backend/.env configuration as FastAPI.
+- Alembic target metadata is Base.metadata.
+- Database credentials are not stored in alembic.ini or generated source.
 - API prefix: /api/v1
-- Health endpoint: /api/v1/health
-- No authentication or production database actions are implemented yet.
+- Application health endpoint: /api/v1/health
+- Database health endpoint: /api/v1/health/database
+- V4 defines the first application table model: users.
+- User fields are limited to identity/status/timestamps.
+- No password hash, login, token, MFA, profile, interest, or messaging fields are added yet.
+- The users table is not created directly by this patch; Alembic will generate and apply the migration.

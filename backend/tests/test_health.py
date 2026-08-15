@@ -14,3 +14,14 @@ def test_health_endpoint() -> None:
         "status": "healthy",
         "service": "Philotes API",
     }
+
+
+def test_database_health_endpoint() -> None:
+    response = client.get("/api/v1/health/database")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "healthy",
+        "service": "Philotes API",
+        "database": "connected",
+    }
