@@ -9,9 +9,15 @@ from ...schemas.auth import (
     RefreshRequest,
     RegistrationRequest,
     TokenResponse,
+    VerificationStatusResponse,
+    VerifyEmailRequest,
 )
 from ...schemas.user import UserResponse
 from ...security.authentication import get_current_user
+from ...services.email_verification_service import (
+    EmailVerificationService,
+    InvalidEmailVerificationTokenError,
+)
 from ...services.auth_service import (
     AuthenticationService,
     InactiveUserError,
@@ -137,3 +143,37 @@ def me(
     current_user: User = Depends(get_current_user),
 ) -> UserResponse:
     return current_user
+
+
+@router.post(
+    "/verify-email",
+    response_model=VerificationStatusResponse,
+)
+def verify_email(
+    payload: VerifyEmailRequest,
+    db: Session = Depends(get_db),
+) -> VerificationStatusResponse:
+    try:
+        EmailVerificationService(db).verify(payload.token)
+        return VerificationStatusResponse(status="verified")
+    except InvalidEmailVerificationTokenError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token.",
+        ) from exc
+
+
+@router.post(
+    "/resend-verification",
+    response_model=VerificationStatusResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def resend_verification(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> VerificationStatusResponse:
+    if current_user.email_verified:
+        return VerificationStatusResponse(status="already_verified")
+
+    EmailVerificationService(db).issue_token(current_user.id)
+    return VerificationStatusResponse(status="verification_pending")

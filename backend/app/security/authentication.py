@@ -32,3 +32,15 @@ def get_current_user(
         )
     except (AccessTokenError, InvalidCredentialsError) as exc:
         raise unauthorized from exc
+
+
+def get_verified_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    if not current_user.email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email verification required.",
+        )
+
+    return current_user

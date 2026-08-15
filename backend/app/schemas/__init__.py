@@ -4,6 +4,8 @@ from .auth import (
     RefreshRequest,
     RegistrationRequest,
     TokenResponse,
+    VerificationStatusResponse,
+    VerifyEmailRequest,
 )
 from .user import UserCreate, UserResponse
 
@@ -14,6 +16,8 @@ __all__ = [
     "RefreshRequest",
     "RegistrationRequest",
     "TokenResponse",
+    "VerificationStatusResponse",
+    "VerifyEmailRequest",
     "UserCreate",
     "UserResponse",
 ]

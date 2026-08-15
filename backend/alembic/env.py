@@ -5,6 +5,7 @@ from alembic import context
 from app.core.config import settings
 from app.core.database import engine
 from app.models.base import Base
+from app.models.email_verification_token import EmailVerificationToken
 from app.models.user import User
 from app.models.user_credential import UserCredential
 from app.models.user_session import UserSession

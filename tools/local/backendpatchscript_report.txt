@@ -1,79 +1,35 @@
-PHILOTES BACKEND AUTHENTICATION V2 REPORT
+PHILOTES BACKEND EMAIL VERIFICATION V1.2 REPORT
 ============================================================================
-Generated: 2026-08-15T09:44:25
+Generated: 2026-08-15T12:56:40
 
-PASS: FastAPI app created
-PASS: API v1 prefix configured
-PASS: Health endpoint created
-PASS: Database engine configured
-PASS: Environment prefix configured
-PASS: Backend .env path configured
-PASS: Safe .env example created
-PASS: Database health endpoint created
-PASS: Database SELECT 1 check configured
-PASS: SQLAlchemy DeclarativeBase created
-PASS: User model created
-PASS: User table named users
-PASS: User model uses UUID identity
-PASS: User email is unique
-PASS: Alembic initialized
-PASS: Alembic uses application settings
-PASS: Alembic uses application engine
-PASS: Alembic target metadata configured
-PASS: Alembic imports User model
-PASS: Alembic avoids hard-coded database password
-PASS: Database foundation test created
-PASS: User model tests created
-PASS: User request/response schemas created
-PASS: User repository created
-PASS: User service created
-PASS: Users API route created
-PASS: Users router registered
-PASS: Email validation configured
-PASS: Email normalization configured
-PASS: Duplicate email conflict configured
-PASS: Unknown user 404 configured
-PASS: Account API tests created
-PASS: UserCredential model created
-PASS: Password hashing service created
-PASS: Registration schema created
-PASS: Authentication service created
-PASS: Registration API route created
-PASS: Authentication router registered
-PASS: Password minimum length configured
-PASS: Argon2-ready pwdlib hashing configured
-PASS: Alembic imports UserCredential
-PASS: Authentication foundation tests created
-PASS: UserSession model created
-PASS: UserSession table named user_sessions
-PASS: Refresh tokens stored as hashes
-PASS: JWT access-token service created
-PASS: Bearer current-user dependency created
-PASS: Login endpoint created
-PASS: Refresh endpoint created
-PASS: Logout endpoint created
-PASS: Current-user endpoint created
-PASS: Access token lifetime configured
-PASS: Session lifetime configured
-PASS: Alembic imports UserSession
-PASS: Authentication session tests created
+PASS: EmailVerificationToken model created
+PASS: Verification table named correctly
+PASS: Verification tokens stored as hashes
+PASS: Verification token generator created
+PASS: Verification token SHA-256 hashing configured
+PASS: 24-hour verification lifetime configured
+PASS: Verification service created
+PASS: Registration creates verification token
+PASS: Verify-email endpoint created
+PASS: Resend-verification endpoint created
+PASS: Verified resend reports already_verified
+PASS: Verified resend regression test created
+PASS: Verified-user dependency created
+PASS: Alembic imports EmailVerificationToken
+PASS: Email verification tests created
+PASS: Existing login endpoint preserved
+PASS: Existing refresh endpoint preserved
+PASS: Existing logout endpoint preserved
 
 OVERALL: PASS
 
-DATABASE FOUNDATION CONTRACT
-- Backend framework: FastAPI
-- ORM: SQLAlchemy 2.x DeclarativeBase
-- Database target: PostgreSQL
-- PostgreSQL driver: Psycopg 3
-- Migration system: Alembic
-- Alembic reads the same backend/.env configuration as FastAPI.
-- Alembic target metadata is Base.metadata.
-- Database credentials are not stored in alembic.ini or generated source.
-- API prefix: /api/v1
-- Application health endpoint: /api/v1/health
-- Database health endpoint: /api/v1/health/database
-- Authentication Foundation V1 adds password hashing and credential storage.
-- User fields are limited to identity/status/timestamps.
-- Password hashes are stored only in user_credentials; plaintext passwords are never stored or returned.
-- Login, bearer tokens, refresh sessions, email-verification delivery, password reset, and MFA are not implemented yet.
-- The user_credentials table is not created directly by this patch; Alembic will generate and apply the migration.
+EMAIL VERIFICATION V1 CONTRACT
+- Registration creates an email-verification token record.
+- Only SHA-256 verification-token hashes are stored in PostgreSQL.
+- Verification tokens expire after 24 hours by default.
+- Verification tokens are single-use.
+- Resending invalidates prior unused verification tokens.
+- Public registration never returns a usable verification token.
+- Email delivery is not implemented yet; a provider will be connected later.
+- Existing login, refresh, logout, and bearer-session behavior is preserved.
+- Community endpoints can later require get_verified_user without changing authentication.

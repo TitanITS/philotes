@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     jwt_issuer: str = "philotes-api"
     access_token_expire_minutes: int = 15
     session_expire_days: int = 30
+    email_verification_expire_hours: int = 24
 
     model_config = SettingsConfigDict(
         env_file=str(BACKEND_ROOT / ".env"),

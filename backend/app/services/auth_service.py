@@ -15,6 +15,7 @@ from ..security.tokens import (
     create_refresh_token,
     hash_refresh_token,
 )
+from .email_verification_service import EmailVerificationService
 from .user_service import UserAlreadyExistsError, UserService
 
 
@@ -36,6 +37,7 @@ class AuthenticationService:
         self.users = UserRepository(db)
         self.credentials = UserCredentialRepository(db)
         self.sessions = UserSessionRepository(db)
+        self.email_verifications = EmailVerificationService(db)
 
     def register(self, email: str, password: str) -> User:
         normalized_email = UserService.normalize_email(email)
@@ -51,6 +53,10 @@ class AuthenticationService:
             self.credentials.create(
                 user_id=user.id,
                 password_hash=hash_password(password),
+            )
+            self.email_verifications.issue_token(
+                user.id,
+                commit=False,
             )
 
             self.db.commit()

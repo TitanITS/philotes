@@ -36,3 +36,14 @@ class TokenResponse(BaseModel):
     refresh_token: str
     token_type: str = "bearer"
     expires_in: int
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str = Field(
+        min_length=32,
+        max_length=512,
+    )
+
+
+class VerificationStatusResponse(BaseModel):
+    status: str
