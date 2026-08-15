@@ -1,11 +1,33 @@
+import uuid
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from ..core.config import settings
 from ..models.user import User
 from ..repositories.user_credential_repository import UserCredentialRepository
 from ..repositories.user_repository import UserRepository
-from ..security.passwords import hash_password
+from ..repositories.user_session_repository import UserSessionRepository
+from ..security.passwords import hash_password, verify_password
+from ..security.tokens import (
+    create_access_token,
+    create_refresh_token,
+    hash_refresh_token,
+)
 from .user_service import UserAlreadyExistsError, UserService
+
+
+class InvalidCredentialsError(Exception):
+    pass
+
+
+class InactiveUserError(Exception):
+    pass
+
+
+class InvalidRefreshTokenError(Exception):
+    pass
 
 
 class AuthenticationService:
@@ -13,6 +35,7 @@ class AuthenticationService:
         self.db = db
         self.users = UserRepository(db)
         self.credentials = UserCredentialRepository(db)
+        self.sessions = UserSessionRepository(db)
 
     def register(self, email: str, password: str) -> User:
         normalized_email = UserService.normalize_email(email)
@@ -39,3 +62,100 @@ class AuthenticationService:
         except Exception:
             self.db.rollback()
             raise
+
+    def login(self, email: str, password: str) -> tuple[User, str, str, int]:
+        normalized_email = UserService.normalize_email(email)
+        user = self.users.get_by_email(normalized_email)
+
+        if user is None:
+            raise InvalidCredentialsError
+
+        credential = self.credentials.get_by_user_id(user.id)
+        if credential is None or not verify_password(
+            password,
+            credential.password_hash,
+        ):
+            raise InvalidCredentialsError
+
+        if not user.is_active:
+            raise InactiveUserError
+
+        refresh_token = create_refresh_token()
+        expires_at = datetime.now(timezone.utc) + timedelta(
+            days=settings.session_expire_days,
+        )
+
+        session = self.sessions.create(
+            user_id=user.id,
+            refresh_token_hash=hash_refresh_token(refresh_token),
+            expires_at=expires_at,
+        )
+        self.db.commit()
+
+        access_token, expires_in = create_access_token(
+            user.id,
+            session.id,
+        )
+        return user, access_token, refresh_token, expires_in
+
+    def refresh(self, refresh_token: str) -> tuple[str, str, int]:
+        now = datetime.now(timezone.utc)
+        session = self.sessions.get_by_refresh_hash(
+            hash_refresh_token(refresh_token)
+        )
+
+        if (
+            session is None
+            or session.revoked_at is not None
+            or session.expires_at <= now
+        ):
+            raise InvalidRefreshTokenError
+
+        user = self.users.get_by_id(session.user_id)
+        if user is None or not user.is_active:
+            raise InvalidRefreshTokenError
+
+        new_refresh_token = create_refresh_token()
+        session.refresh_token_hash = hash_refresh_token(new_refresh_token)
+        session.last_used_at = now
+        self.db.commit()
+
+        access_token, expires_in = create_access_token(
+            user.id,
+            session.id,
+        )
+        return access_token, new_refresh_token, expires_in
+
+    def logout(self, refresh_token: str) -> None:
+        session = self.sessions.get_by_refresh_hash(
+            hash_refresh_token(refresh_token)
+        )
+
+        if session is None:
+            return
+
+        if session.revoked_at is None:
+            session.revoked_at = datetime.now(timezone.utc)
+            self.db.commit()
+
+    def get_session_user(
+        self,
+        user_id: uuid.UUID,
+        session_id: uuid.UUID,
+    ) -> User:
+        now = datetime.now(timezone.utc)
+        session = self.sessions.get_by_id(session_id)
+
+        if (
+            session is None
+            or session.user_id != user_id
+            or session.revoked_at is not None
+            or session.expires_at <= now
+        ):
+            raise InvalidCredentialsError
+
+        user = self.users.get_by_id(user_id)
+        if user is None or not user.is_active:
+            raise InvalidCredentialsError
+
+        return user

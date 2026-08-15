@@ -1,6 +1,6 @@
-PHILOTES BACKEND AUTHENTICATION FOUNDATION V1 REPORT
+PHILOTES BACKEND AUTHENTICATION V2 REPORT
 ============================================================================
-Generated: 2026-08-15T08:32:26
+Generated: 2026-08-15T09:44:25
 
 PASS: FastAPI app created
 PASS: API v1 prefix configured
@@ -44,6 +44,19 @@ PASS: Password minimum length configured
 PASS: Argon2-ready pwdlib hashing configured
 PASS: Alembic imports UserCredential
 PASS: Authentication foundation tests created
+PASS: UserSession model created
+PASS: UserSession table named user_sessions
+PASS: Refresh tokens stored as hashes
+PASS: JWT access-token service created
+PASS: Bearer current-user dependency created
+PASS: Login endpoint created
+PASS: Refresh endpoint created
+PASS: Logout endpoint created
+PASS: Current-user endpoint created
+PASS: Access token lifetime configured
+PASS: Session lifetime configured
+PASS: Alembic imports UserSession
+PASS: Authentication session tests created
 
 OVERALL: PASS
 

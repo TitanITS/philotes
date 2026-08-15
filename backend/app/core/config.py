@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     environment: str = "development"
     api_v1_prefix: str = "/api/v1"
     database_url: str
+    jwt_secret_key: str
+    jwt_algorithm: str = "HS256"
+    jwt_issuer: str = "philotes-api"
+    access_token_expire_minutes: int = 15
+    session_expire_days: int = 30
 
     model_config = SettingsConfigDict(
         env_file=str(BACKEND_ROOT / ".env"),

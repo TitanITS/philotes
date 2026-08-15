@@ -7,6 +7,7 @@ from app.core.database import engine
 from app.models.base import Base
 from app.models.user import User
 from app.models.user_credential import UserCredential
+from app.models.user_session import UserSession
 
 
 config = context.config
@@ -14,7 +15,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-_ = (User, UserCredential)
+_ = (User, UserCredential, UserSession)
 target_metadata = Base.metadata
 
 
