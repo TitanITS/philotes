@@ -1,6 +1,6 @@
-PHILOTES BACKEND ACCOUNT FOUNDATION V1 REPORT
+PHILOTES BACKEND AUTHENTICATION FOUNDATION V1 REPORT
 ============================================================================
-Generated: 2026-08-15T08:08:19
+Generated: 2026-08-15T08:32:26
 
 PASS: FastAPI app created
 PASS: API v1 prefix configured
@@ -34,6 +34,16 @@ PASS: Email normalization configured
 PASS: Duplicate email conflict configured
 PASS: Unknown user 404 configured
 PASS: Account API tests created
+PASS: UserCredential model created
+PASS: Password hashing service created
+PASS: Registration schema created
+PASS: Authentication service created
+PASS: Registration API route created
+PASS: Authentication router registered
+PASS: Password minimum length configured
+PASS: Argon2-ready pwdlib hashing configured
+PASS: Alembic imports UserCredential
+PASS: Authentication foundation tests created
 
 OVERALL: PASS
 
@@ -49,7 +59,8 @@ DATABASE FOUNDATION CONTRACT
 - API prefix: /api/v1
 - Application health endpoint: /api/v1/health
 - Database health endpoint: /api/v1/health/database
-- Account Foundation V1 adds API, schema, service, and repository layers around users.
+- Authentication Foundation V1 adds password hashing and credential storage.
 - User fields are limited to identity/status/timestamps.
-- No password hash, login, token, MFA, profile, interest, or messaging fields are added yet.
-- The users table is not created directly by this patch; Alembic will generate and apply the migration.
+- Password hashes are stored only in user_credentials; plaintext passwords are never stored or returned.
+- Login, bearer tokens, refresh sessions, email-verification delivery, password reset, and MFA are not implemented yet.
+- The user_credentials table is not created directly by this patch; Alembic will generate and apply the migration.

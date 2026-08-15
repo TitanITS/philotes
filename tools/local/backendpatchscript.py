@@ -16,25 +16,38 @@ FILES = {
     APP_ROOT / "api" / "routes" / "__init__.py": "",
     APP_ROOT / "core" / "__init__.py": "",
     APP_ROOT / "models" / "__init__.py": """from .user import User
+from .user_credential import UserCredential
 
 
-__all__ = ["User"]
+__all__ = ["User", "UserCredential"]
 """,
-    APP_ROOT / "repositories" / "__init__.py": """from .user_repository import UserRepository
+    APP_ROOT / "repositories" / "__init__.py": """from .user_credential_repository import UserCredentialRepository
+from .user_repository import UserRepository
 
 
-__all__ = ["UserRepository"]
+__all__ = ["UserCredentialRepository", "UserRepository"]
 """,
-    APP_ROOT / "schemas" / "__init__.py": """from .user import UserCreate, UserResponse
+    APP_ROOT / "schemas" / "__init__.py": """from .auth import RegistrationRequest
+from .user import UserCreate, UserResponse
 
 
-__all__ = ["UserCreate", "UserResponse"]
+__all__ = ["RegistrationRequest", "UserCreate", "UserResponse"]
 """,
-    APP_ROOT / "security" / "__init__.py": "",
-    APP_ROOT / "services" / "__init__.py": """from .user_service import UserAlreadyExistsError, UserNotFoundError, UserService
+    APP_ROOT / "security" / "__init__.py": """from .passwords import hash_password, verify_password
 
 
-__all__ = ["UserAlreadyExistsError", "UserNotFoundError", "UserService"]
+__all__ = ["hash_password", "verify_password"]
+""",
+    APP_ROOT / "services" / "__init__.py": """from .auth_service import AuthenticationService
+from .user_service import UserAlreadyExistsError, UserNotFoundError, UserService
+
+
+__all__ = [
+    "AuthenticationService",
+    "UserAlreadyExistsError",
+    "UserNotFoundError",
+    "UserService",
+]
 """,
     TEST_ROOT / "__init__.py": "",
     BACKEND_ROOT / ".env.example": """PHILOTES_APP_NAME=Philotes API
@@ -145,6 +158,67 @@ class User(Base):
         onupdate=func.now(),
     )
 """,
+    APP_ROOT / "models" / "user_credential.py": """import uuid
+from datetime import datetime
+
+from sqlalchemy import DateTime, ForeignKey, String, Uuid, func
+from sqlalchemy.orm import Mapped, mapped_column
+
+from .base import Base
+
+
+class UserCredential(Base):
+    __tablename__ = "user_credentials"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    password_hash: Mapped[str] = mapped_column(
+        String(512),
+        nullable=False,
+    )
+    password_changed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+""",
+    APP_ROOT / "security" / "passwords.py": """from pwdlib import PasswordHash
+
+
+_password_hash = PasswordHash.recommended()
+
+
+def hash_password(password: str) -> str:
+    return _password_hash.hash(password)
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    return _password_hash.verify(password, password_hash)
+""",
+    APP_ROOT / "schemas" / "auth.py": """from pydantic import BaseModel, EmailStr, Field
+
+
+class RegistrationRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(
+        min_length=15,
+        max_length=128,
+    )
+""",
     APP_ROOT / "schemas" / "user.py": """import uuid
 from datetime import datetime
 
@@ -191,6 +265,33 @@ class UserRepository:
         self.db.refresh(user)
         return user
 """,
+    APP_ROOT / "repositories" / "user_credential_repository.py": """import uuid
+
+from sqlalchemy.orm import Session
+
+from ..models.user_credential import UserCredential
+
+
+class UserCredentialRepository:
+    def __init__(self, db: Session) -> None:
+        self.db = db
+
+    def get_by_user_id(self, user_id: uuid.UUID) -> UserCredential | None:
+        return self.db.get(UserCredential, user_id)
+
+    def create(
+        self,
+        user_id: uuid.UUID,
+        password_hash: str,
+    ) -> UserCredential:
+        credential = UserCredential(
+            user_id=user_id,
+            password_hash=password_hash,
+        )
+        self.db.add(credential)
+        self.db.flush()
+        return credential
+""",
     APP_ROOT / "services" / "user_service.py": """import uuid
 
 from sqlalchemy.exc import IntegrityError
@@ -236,6 +337,92 @@ class UserService:
             raise UserNotFoundError
 
         return user
+""",
+    APP_ROOT / "services" / "auth_service.py": """from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from ..models.user import User
+from ..repositories.user_credential_repository import UserCredentialRepository
+from ..repositories.user_repository import UserRepository
+from ..security.passwords import hash_password
+from .user_service import UserAlreadyExistsError, UserService
+
+
+class AuthenticationService:
+    def __init__(self, db: Session) -> None:
+        self.db = db
+        self.users = UserRepository(db)
+        self.credentials = UserCredentialRepository(db)
+
+    def register(self, email: str, password: str) -> User:
+        normalized_email = UserService.normalize_email(email)
+
+        if self.users.get_by_email(normalized_email) is not None:
+            raise UserAlreadyExistsError
+
+        try:
+            user = User(email=normalized_email)
+            self.db.add(user)
+            self.db.flush()
+
+            self.credentials.create(
+                user_id=user.id,
+                password_hash=hash_password(password),
+            )
+
+            self.db.commit()
+            self.db.refresh(user)
+            return user
+        except IntegrityError as exc:
+            self.db.rollback()
+            raise UserAlreadyExistsError from exc
+        except Exception:
+            self.db.rollback()
+            raise
+""",
+    APP_ROOT / "api" / "routes" / "auth.py": """from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
+from ...core.database import get_db
+from ...schemas.auth import RegistrationRequest
+from ...schemas.user import UserResponse
+from ...services.auth_service import AuthenticationService
+from ...services.user_service import UserAlreadyExistsError
+
+
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"],
+)
+
+
+@router.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def register(
+    payload: RegistrationRequest,
+    db: Session = Depends(get_db),
+) -> UserResponse:
+    service = AuthenticationService(db)
+
+    try:
+        return service.register(
+            email=str(payload.email),
+            password=payload.password,
+        )
+    except UserAlreadyExistsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with that email already exists.",
+        ) from exc
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database unavailable",
+        ) from exc
 """,
     APP_ROOT / "api" / "routes" / "users.py": """import uuid
 
@@ -344,11 +531,13 @@ def database_health_check() -> dict[str, str]:
 """,
     APP_ROOT / "api" / "router.py": """from fastapi import APIRouter
 
+from .routes.auth import router as auth_router
 from .routes.health import router as health_router
 from .routes.users import router as users_router
 
 
 api_router = APIRouter()
+api_router.include_router(auth_router)
 api_router.include_router(health_router)
 api_router.include_router(users_router)
 """,
@@ -382,6 +571,7 @@ from app.core.config import settings
 from app.core.database import engine
 from app.models.base import Base
 from app.models.user import User
+from app.models.user_credential import UserCredential
 
 
 config = context.config
@@ -389,7 +579,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-_ = User
+_ = (User, UserCredential)
 target_metadata = Base.metadata
 
 
@@ -567,13 +757,119 @@ def test_unknown_user_returns_404() -> None:
         "detail": "User not found."
     }
 """,
+    TEST_ROOT / "test_auth_foundation.py": """import uuid
+
+from fastapi.testclient import TestClient
+from sqlalchemy import delete, select
+
+from app.core.database import SessionLocal
+from app.main import app
+from app.models.user import User
+from app.models.user_credential import UserCredential
+from app.security.passwords import hash_password, verify_password
+
+
+client = TestClient(app)
+
+
+def _cleanup_email(email: str) -> None:
+    with SessionLocal() as db:
+        user = db.scalars(
+            select(User).where(User.email == email)
+        ).first()
+        if user is not None:
+            db.execute(
+                delete(UserCredential).where(
+                    UserCredential.user_id == user.id
+                )
+            )
+            db.delete(user)
+            db.commit()
+
+
+def test_password_hash_round_trip() -> None:
+    password = "correct horse battery staple"
+    password_hash = hash_password(password)
+
+    assert password_hash != password
+    assert verify_password(password, password_hash) is True
+    assert verify_password("wrong password", password_hash) is False
+
+
+def test_registration_creates_user_and_credential() -> None:
+    email = f"registration-{uuid.uuid4()}@EXAMPLE.COM"
+    normalized = email.lower()
+    password = "a secure development password"
+
+    try:
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": email,
+                "password": password,
+            },
+        )
+
+        assert response.status_code == 201
+        body = response.json()
+        assert body["email"] == normalized
+        assert "password" not in body
+        assert "password_hash" not in body
+
+        with SessionLocal() as db:
+            user = db.scalars(
+                select(User).where(User.email == normalized)
+            ).one()
+            credential = db.get(UserCredential, user.id)
+
+            assert credential is not None
+            assert credential.password_hash != password
+            assert verify_password(
+                password,
+                credential.password_hash,
+            ) is True
+    finally:
+        _cleanup_email(normalized)
+
+
+def test_registration_rejects_short_password() -> None:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": f"short-{uuid.uuid4()}@example.com",
+            "password": "too-short",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_registration_rejects_duplicate_email() -> None:
+    email = f"auth-duplicate-{uuid.uuid4()}@example.com"
+    password = "another secure development password"
+
+    try:
+        first = client.post(
+            "/api/v1/auth/register",
+            json={"email": email, "password": password},
+        )
+        assert first.status_code == 201
+
+        duplicate = client.post(
+            "/api/v1/auth/register",
+            json={"email": email.upper(), "password": password},
+        )
+        assert duplicate.status_code == 409
+    finally:
+        _cleanup_email(email)
+""",
 }
 
 
 def main() -> None:
     print()
     print("=" * 76)
-    print("PHILOTES BACKEND ACCOUNT FOUNDATION V1")
+    print("PHILOTES BACKEND AUTHENTICATION FOUNDATION V1")
     print("=" * 76)
     print()
 
@@ -661,11 +957,21 @@ def main() -> None:
         "Duplicate email conflict configured": "HTTP_409_CONFLICT" in (APP_ROOT / "api" / "routes" / "users.py").read_text(encoding="utf-8"),
         "Unknown user 404 configured": "HTTP_404_NOT_FOUND" in (APP_ROOT / "api" / "routes" / "users.py").read_text(encoding="utf-8"),
         "Account API tests created": (TEST_ROOT / "test_users.py").exists(),
+        "UserCredential model created": (APP_ROOT / "models" / "user_credential.py").exists(),
+        "Password hashing service created": (APP_ROOT / "security" / "passwords.py").exists(),
+        "Registration schema created": (APP_ROOT / "schemas" / "auth.py").exists(),
+        "Authentication service created": (APP_ROOT / "services" / "auth_service.py").exists(),
+        "Registration API route created": (APP_ROOT / "api" / "routes" / "auth.py").exists(),
+        "Authentication router registered": "include_router(auth_router)" in (APP_ROOT / "api" / "router.py").read_text(encoding="utf-8"),
+        "Password minimum length configured": "min_length=15" in (APP_ROOT / "schemas" / "auth.py").read_text(encoding="utf-8"),
+        "Argon2-ready pwdlib hashing configured": "PasswordHash.recommended()" in (APP_ROOT / "security" / "passwords.py").read_text(encoding="utf-8"),
+        "Alembic imports UserCredential": "from app.models.user_credential import UserCredential" in env_text,
+        "Authentication foundation tests created": (TEST_ROOT / "test_auth_foundation.py").exists(),
     }
 
     passed = True
     report = [
-        "PHILOTES BACKEND ACCOUNT FOUNDATION V1 REPORT",
+        "PHILOTES BACKEND AUTHENTICATION FOUNDATION V1 REPORT",
         "=" * 76,
         "Generated: " + datetime.now().isoformat(timespec="seconds"),
         "",
@@ -694,10 +1000,11 @@ def main() -> None:
         "- API prefix: /api/v1",
         "- Application health endpoint: /api/v1/health",
         "- Database health endpoint: /api/v1/health/database",
-        "- Account Foundation V1 adds API, schema, service, and repository layers around users.",
+        "- Authentication Foundation V1 adds password hashing and credential storage.",
         "- User fields are limited to identity/status/timestamps.",
-        "- No password hash, login, token, MFA, profile, interest, or messaging fields are added yet.",
-        "- The users table is not created directly by this patch; Alembic will generate and apply the migration.",
+        "- Password hashes are stored only in user_credentials; plaintext passwords are never stored or returned.",
+        "- Login, bearer tokens, refresh sessions, email-verification delivery, password reset, and MFA are not implemented yet.",
+        "- The user_credentials table is not created directly by this patch; Alembic will generate and apply the migration.",
     ])
 
     REPORT_FILE.write_text("\n".join(report) + "\n", encoding="utf-8")
