@@ -229,3 +229,68 @@ def test_password_reset_revokes_existing_sessions() -> None:
             )
     finally:
         _cleanup_email(email)
+
+def test_password_reset_browser_link_is_unavailable_after_use() -> None:
+    email = f"reset-browser-single-{uuid.uuid4()}@example.com"
+    old_password = "browser reset original development password"
+    first_password = "browser reset first changed development password"
+    second_password = "browser reset second changed development password"
+
+    try:
+        _register(email, old_password)
+
+        with SessionLocal() as db:
+            reset = PasswordResetService(db).request_reset(email)
+            assert reset is not None
+            _, raw_token = reset
+
+        landing = client.get(
+            "/api/v1/auth/reset-password-link",
+            params={"token": raw_token},
+        )
+        assert landing.status_code == 200
+        assert "Change Password" in landing.text
+
+        first_change = client.post(
+            "/api/v1/auth/reset-password-link",
+            data={
+                "token": raw_token,
+                "new_password": first_password,
+                "confirm_password": first_password,
+            },
+        )
+        assert first_change.status_code == 200
+        assert "Password changed" in first_change.text
+
+        reused_landing = client.get(
+            "/api/v1/auth/reset-password-link",
+            params={"token": raw_token},
+        )
+        assert reused_landing.status_code == 400
+        assert "Reset link unavailable" in reused_landing.text
+        assert "Change Password" not in reused_landing.text
+
+        reused_post = client.post(
+            "/api/v1/auth/reset-password-link",
+            data={
+                "token": raw_token,
+                "new_password": second_password,
+                "confirm_password": second_password,
+            },
+        )
+        assert reused_post.status_code == 400
+        assert "Reset link unavailable" in reused_post.text
+
+        with SessionLocal() as db:
+            user = db.scalars(
+                select(User).where(User.email == email)
+            ).one()
+            credential = AuthenticationService(db).credentials.get_by_user_id(
+                user.id
+            )
+            assert credential is not None
+            assert verify_password(first_password, credential.password_hash)
+            assert not verify_password(second_password, credential.password_hash)
+    finally:
+        _cleanup_email(email)
+

@@ -70,18 +70,22 @@ def philotes_security_page(
     }}
 
     .brand-mark {{
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 12px;
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 14px;
       border: 2px solid var(--philotes-gold);
       border-radius: 50%;
       display: grid;
       place-items: center;
-      background: var(--philotes-white);
-      color: var(--philotes-navy);
-      font-size: 28px;
-      font-weight: 800;
+      background: var(--philotes-ivory);
       box-shadow: 0 8px 24px rgba(11, 37, 69, 0.08);
+      overflow: hidden;
+    }}
+
+    .brand-mark svg {{
+      width: 76px;
+      height: 76px;
+      display: block;
     }}
 
     .brand-name {{
@@ -166,6 +170,47 @@ def philotes_security_page(
       outline-offset: 3px;
     }}
 
+    .password-field-wrap {{
+      position: relative;
+    }}
+
+    .password-input {{
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid #aeb8c2;
+      border-radius: 12px;
+      padding: 12px 52px 12px 14px;
+      font: inherit;
+      color: var(--philotes-navy);
+      background: var(--philotes-white);
+    }}
+
+    .password-toggle {{
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      color: var(--philotes-navy);
+      cursor: pointer;
+    }}
+
+    .password-toggle svg {{
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }}
+
     .help-text {{
       margin: 22px 0 0;
       color: var(--philotes-silver);
@@ -230,7 +275,19 @@ def philotes_security_page(
 <body>
   <main class="page-shell">
     <header class="brand" aria-label="Philotes">
-      <div class="brand-mark" aria-hidden="true">Φ</div>
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="22" r="13" fill="#0b2545"></circle>
+          <circle cx="24" cy="50" r="13" fill="#32658d"></circle>
+          <circle cx="76" cy="50" r="13" fill="#c89b3c"></circle>
+          <circle cx="50" cy="78" r="13" fill="#7a8796"></circle>
+          <circle cx="50" cy="50" r="21" fill="#f7f2e8" stroke="#c89b3c" stroke-width="2"></circle>
+          <circle cx="45" cy="43" r="5" fill="none" stroke="#0b2545" stroke-width="4"></circle>
+          <circle cx="57" cy="43" r="5" fill="none" stroke="#0b2545" stroke-width="4"></circle>
+          <path d="M35 62c2-8 8-12 15-12s13 4 15 12" fill="none" stroke="#0b2545" stroke-width="4" stroke-linecap="round"></path>
+          <path d="M50 54c4-4 9-5 14-2 4 2 6 5 7 10" fill="none" stroke="#0b2545" stroke-width="4" stroke-linecap="round"></path>
+        </svg>
+      </div>
       <h2 class="brand-name">PHILOTES</h2>
       <p class="tagline">A Community for Friendship</p>
     </header>
@@ -339,75 +396,68 @@ def password_reset_form_page(
   <input type="hidden" name="token" value="{safe_token}">
 
   <div style="margin-bottom: 16px;">
-    <label
-      for="new-password"
-      style="display:block;margin-bottom:8px;font-weight:700;"
-    >
+    <label for="new-password" style="display:block;margin-bottom:8px;font-weight:700;">
       New password
     </label>
-    <input
-      id="new-password"
-      name="new_password"
-      type="password"
-      minlength="15"
-      maxlength="128"
-      autocomplete="new-password"
-      required
-      style="
-        width:100%;
-        min-height:50px;
-        border:1px solid #aeb8c2;
-        border-radius:12px;
-        padding:12px 14px;
-        font:inherit;
-      "
-    >
+    <div class="password-field-wrap">
+      <input class="password-input" id="new-password" name="new_password"
+        type="password" minlength="15" maxlength="128"
+        autocomplete="new-password" required>
+      <button class="password-toggle" type="button"
+        data-password-toggle="new-password"
+        aria-label="Show new password" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <div style="margin-bottom: 22px;">
-    <label
-      for="confirm-password"
-      style="display:block;margin-bottom:8px;font-weight:700;"
-    >
+    <label for="confirm-password" style="display:block;margin-bottom:8px;font-weight:700;">
       Confirm new password
     </label>
-    <input
-      id="confirm-password"
-      name="confirm_password"
-      type="password"
-      minlength="15"
-      maxlength="128"
-      autocomplete="new-password"
-      required
-      style="
-        width:100%;
-        min-height:50px;
-        border:1px solid #aeb8c2;
-        border-radius:12px;
-        padding:12px 14px;
-        font:inherit;
-      "
-    >
+    <div class="password-field-wrap">
+      <input class="password-input" id="confirm-password" name="confirm_password"
+        type="password" minlength="15" maxlength="128"
+        autocomplete="new-password" required>
+      <button class="password-toggle" type="button"
+        data-password-toggle="confirm-password"
+        aria-label="Show confirmed password" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <button class="primary-action" type="submit">
-    Change Password
-  </button>
+  <button class="primary-action" type="submit">Change Password</button>
 </form>
 <p class="help-text">
   Use at least 15 characters. After your password changes,
   Philotes will sign out all existing sessions for your security.
 </p>
+
+<script>
+document.querySelectorAll("[data-password-toggle]").forEach((button) => {{
+  button.addEventListener("click", () => {{
+    const input = document.getElementById(
+      button.getAttribute("data-password-toggle")
+    );
+    if (!input) return;
+    input.type = input.type === "password" ? "text" : "password";
+  }});
+}});
+</script>
 """
 
     return philotes_security_page(
         title="Reset your password",
-        message=(
-            "Choose a new password for your Philotes account."
-        ),
+        message="Choose a new password for your Philotes account.",
         body_html=body,
     )
-
 
 def password_reset_success_page() -> str:
     body = """

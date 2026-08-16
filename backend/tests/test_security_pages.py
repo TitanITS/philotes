@@ -60,5 +60,21 @@ def test_password_reset_pages_use_philotes_security_shell() -> None:
         assert ">TITAN</span>" in html
 
     assert "Change Password" in form
+    assert 'data-password-toggle="new-password"' in form
+    assert 'data-password-toggle="confirm-password"' in form
+    assert 'aria-label="Show new password"' in form
+    assert 'aria-label="Show confirmed password"' in form
+    assert "document.querySelectorAll" in form
     assert "Password changed" in success
     assert "Reset link unavailable" in error
+
+
+def test_security_shell_uses_canonical_philotes_community_mark() -> None:
+    html = verification_success_page()
+
+    assert 'class="brand-mark"' in html
+    assert "<svg" in html
+    assert 'circle cx="50" cy="22"' in html
+    assert 'circle cx="24" cy="50"' in html
+    assert 'circle cx="76" cy="50"' in html
+    assert 'circle cx="50" cy="78"' in html

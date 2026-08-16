@@ -309,10 +309,18 @@ def forgot_password(
 )
 def password_reset_landing_page(
     token: str = Query(min_length=32, max_length=512),
+    db: Session = Depends(get_db),
 ) -> HTMLResponse:
-    return HTMLResponse(
-        content=password_reset_form_page(token=token)
-    )
+    try:
+        PasswordResetService(db).validate_reset_token(token)
+        return HTMLResponse(
+            content=password_reset_form_page(token=token)
+        )
+    except InvalidPasswordResetTokenError:
+        return HTMLResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=password_reset_error_page(),
+        )
 
 
 @router.post(

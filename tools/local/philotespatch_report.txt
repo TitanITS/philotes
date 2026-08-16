@@ -1,24 +1,26 @@
 PHILOTES MASTER PATCH SYSTEM REPORT
 ============================================================================
-Generated: 2026-08-16T16:26:20
-Patch ID: NO-ACTIVE-PATCH
-Patch Name: Philotes Master Patch System - Safe Idle State
-Mode: SAFE IDLE
+Generated: 2026-08-16T18:55:39
+Patch ID: PASSWORD-RESET-HARDENING-V14
+Patch Name: Password reset hardening, branding, and visibility controls
+Mode: SOURCE PATCH ONLY
 
-PASS: Repository root: C:\Titan Information Technology Solutions\philotes
-PASS: Frontend root: C:\Titan Information Technology Solutions\philotes\apps\philotes_app
-PASS: Backend root: C:\Titan Information Technology Solutions\philotes\backend
+PASS: GET reset route validates token
+PASS: Service validates reset tokens without consuming them
+PASS: Canonical Philotes community mark added
+PASS: New password visibility toggle added
+PASS: Confirm password visibility toggle added
+PASS: Browser single-use regression test added
 
 OVERALL: PASS
 
-MASTER PATCH POLICY
+PATCH CONTRACT
 ----------------------------------------------------------------------------
-- philotespatch.cmd is the only patch launcher.
-- philotespatch.py is the only patch implementation file.
-- Patch scripts modify files only when an explicit patch is loaded.
-- Patch scripts do not run Flutter tests.
-- Patch scripts do not run backend tests.
-- Patch scripts do not run Git commands.
-- Patch scripts do not start servers or applications.
-- Validation is always run manually after patching.
-- The safe idle state makes no application source changes.
+- Used reset URLs are rejected on GET.
+- Used reset tokens remain rejected on POST.
+- Both password fields are hidden by default.
+- Both password fields have independent visibility toggles.
+- Security pages use the Philotes community emblem instead of Phi.
+- Titan footer branding is preserved.
+- Browser-route regression coverage is added.
+- This patch runs no tests, Flutter commands, or Git commands.

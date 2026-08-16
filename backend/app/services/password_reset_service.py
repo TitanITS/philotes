@@ -51,6 +51,26 @@ class PasswordResetService:
         self.db.commit()
         return user, raw_token
 
+    def validate_reset_token(self, raw_token: str) -> User:
+        now = datetime.now(timezone.utc)
+        token = self.tokens.get_by_hash(
+            hash_password_reset_token(raw_token)
+        )
+
+        if (
+            token is None
+            or token.used_at is not None
+            or token.invalidated_at is not None
+            or token.expires_at <= now
+        ):
+            raise InvalidPasswordResetTokenError
+
+        user = self.users.get_by_id(token.user_id)
+        if user is None or not user.is_active:
+            raise InvalidPasswordResetTokenError
+
+        return user
+
     def reset_password(
         self,
         *,
