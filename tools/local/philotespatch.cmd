@@ -5,7 +5,13 @@ cd /d "%~dp0"
 
 echo.
 echo ================================================================
-echo PHILOTES DEVELOPMENT PATCH SCRIPT
+echo PHILOTES MASTER PATCH SYSTEM
+echo ================================================================
+echo.
+echo Launcher : philotespatch.cmd
+echo Python   : philotespatch.py
+echo.
+echo This is the ONLY Philotes patch launcher.
 echo ================================================================
 echo.
 
@@ -19,12 +25,20 @@ if not exist "%PYTHON313%" (
     exit /b 1
 )
 
-"%PYTHON313%" "%~dp0developerpatchscript.py"
+if not exist "%~dp0philotespatch.py" (
+    echo FAIL: Master patch file was not found:
+    echo %~dp0philotespatch.py
+    echo.
+    pause
+    exit /b 1
+)
+
+"%PYTHON313%" "%~dp0philotespatch.py"
 
 if errorlevel 1 (
     echo.
     echo ================================================================
-    echo PATCH FAILED
+    echo PHILOTES MASTER PATCH FAILED
     echo ================================================================
     echo.
     pause
@@ -33,7 +47,7 @@ if errorlevel 1 (
 
 echo.
 echo ================================================================
-echo PATCH COMPLETED SUCCESSFULLY
+echo PHILOTES MASTER PATCH COMPLETED SUCCESSFULLY
 echo ================================================================
 echo.
 

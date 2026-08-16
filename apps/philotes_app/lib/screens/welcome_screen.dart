@@ -6,6 +6,7 @@ import '../theme/philotes_colors.dart';
 import '../widgets/community_mark.dart';
 import '../widgets/titan_attribution.dart';
 import 'app/philotes_shell_screen.dart';
+import 'auth/sign_in_screen.dart';
 import 'onboarding/onboarding_intro_screen.dart';
 
 class PhilotesWelcomeScreen extends StatelessWidget {
@@ -149,12 +150,9 @@ class PhilotesWelcomeScreen extends StatelessWidget {
                       child: OutlinedButton(
                         key: const Key('signInButton'),
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Philotes sign in '
-                                'will begin here.',
-                              ),
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const SignInScreen(),
                             ),
                           );
                         },

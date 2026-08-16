@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/auth/auth_service.dart';
+import '../../services/auth/auth_services.dart';
 import '../../theme/philotes_colors.dart';
 import 'verify_email_screen.dart';
 
@@ -19,7 +21,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   bool _showPassword = false;
   bool _showConfirmPassword = false;
 
-  bool get _hasMinimumLength => _passwordController.text.length >= 12;
+  bool get _hasMinimumLength => _passwordController.text.length >= 15;
 
   bool get _hasUppercase => RegExp(r'[A-Z]').hasMatch(_passwordController.text);
 
@@ -58,18 +60,40 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     setState(() {});
   }
 
-  void _createAccount() {
-    if (!_formIsValid) {
-      return;
-    }
-
+  Future<void> _createAccount() async {
+    if (!_formIsValid) return;
     final email = _emailController.text.trim();
-
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) => VerifyEmailScreen(email: email),
-      ),
-    );
+    try {
+      await AuthServices.current.register(
+        email: email,
+        password: _passwordController.text,
+      );
+      await AuthServices.current.login(
+        email: email,
+        password: _passwordController.text,
+      );
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => VerifyEmailScreen(email: email),
+        ),
+      );
+    } on AuthApiException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Philotes could not reach the account service. '
+            'Confirm the backend is running and try again.',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -272,7 +296,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         const SizedBox(height: 10),
 
                         _PasswordRequirement(
-                          label: 'At least 12 characters',
+                          label: 'At least 15 characters',
                           complete: _hasMinimumLength,
                         ),
 

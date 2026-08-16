@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/philotes_colors.dart';
+import '../../widgets/philotes_brand_header.dart';
 import 'profile_photo_screen.dart';
 
 class VerificationSafetyScreen extends StatefulWidget {
@@ -53,6 +53,9 @@ class _VerificationSafetyScreenState extends State<VerificationSafetyScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const PhilotesBrandHeader(compact: true),
+                  const SizedBox(height: 30),
+
                   const Text(
                     'Verification & Safety',
                     textAlign: TextAlign.center,
@@ -110,75 +113,29 @@ class _VerificationSafetyScreenState extends State<VerificationSafetyScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (kDebugMode)
-                          Container(
-                            key: const Key(
-                              'developmentEmailVerificationStatus',
+                        const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.verified_outlined,
+                              color: PhilotesColors.gold,
+                              size: 23,
                             ),
-                            padding: const EdgeInsets.all(13),
-                            decoration: BoxDecoration(
-                              color: PhilotesColors.navy.withValues(
-                                alpha: 0.06,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: PhilotesColors.navy.withValues(
-                                  alpha: 0.45,
-                                ),
-                              ),
-                            ),
-                            child: const Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.developer_mode_outlined,
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Email verified. Your Philotes email address was '
+                                'successfully verified before continuing onboarding.',
+                                style: TextStyle(
                                   color: PhilotesColors.navy,
-                                  size: 21,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.45,
                                 ),
-                                SizedBox(width: 9),
-                                Expanded(
-                                  child: Text(
-                                    'Development mode: real email '
-                                    'verification is not connected yet. '
-                                    'Production onboarding will require '
-                                    'successful email verification before '
-                                    'reaching this page.',
-                                    style: TextStyle(
-                                      color: PhilotesColors.navy,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.45,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          )
-                        else
-                          const Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.verified_outlined,
-                                color: PhilotesColors.gold,
-                                size: 23,
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  'Your verified email helps protect '
-                                  'your account and supports community '
-                                  'authenticity.',
-                                  style: TextStyle(
-                                    color: PhilotesColors.navy,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.45,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -477,7 +434,7 @@ class _VerificationSafetyScreenState extends State<VerificationSafetyScreen> {
                   const SizedBox(height: 18),
 
                   const Text(
-                    'Friendship  •  Trust  •  Community  •  Connection',
+                    'Friendship  ΓÇó  Trust  ΓÇó  Community  ΓÇó  Connection',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: PhilotesColors.gold,
@@ -658,7 +615,7 @@ class _SafetyToolRow extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: '$title — ',
+                  text: '$title ΓÇö ',
                   style: const TextStyle(
                     color: PhilotesColors.navy,
                     fontWeight: FontWeight.w700,

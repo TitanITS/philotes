@@ -1,7 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/auth/auth_service.dart';
+import '../../services/auth/auth_services.dart';
 import '../../theme/philotes_colors.dart';
+import '../../widgets/philotes_brand_header.dart';
 import 'basic_profile_screen.dart';
 
 class VerifyEmailScreen extends StatelessWidget {
@@ -37,33 +39,8 @@ class VerifyEmailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 96,
-                      height: 96,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: PhilotesColors.gold,
-                          width: 2,
-                        ),
-                      ),
-                      child: const DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: PhilotesColors.navy,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.mark_email_unread_outlined,
-                          color: Colors.white,
-                          size: 43,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 28),
+                  const PhilotesBrandHeader(),
+                  const SizedBox(height: 34),
 
                   const Text(
                     'Check Your Email',
@@ -194,11 +171,18 @@ class VerifyEmailScreen extends StatelessWidget {
                     height: 54,
                     child: OutlinedButton.icon(
                       key: const Key('resendVerificationButton'),
-                      onPressed: () {
-                        _showTemporaryMessage(
-                          context,
-                          'A new verification email will be sent here.',
-                        );
+                      onPressed: () async {
+                        try {
+                          await AuthServices.current.resendVerification();
+                          if (!context.mounted) return;
+                          _showTemporaryMessage(
+                            context,
+                            'A new verification email has been sent.',
+                          );
+                        } on AuthApiException catch (e) {
+                          if (!context.mounted) return;
+                          _showTemporaryMessage(context, e.message);
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         foregroundColor: PhilotesColors.navy,
@@ -221,87 +205,42 @@ class VerifyEmailScreen extends StatelessWidget {
                     ),
                   ),
 
-                  if (kDebugMode) ...[
-                    const SizedBox(height: 28),
+                  const SizedBox(height: 14),
 
-                    Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: PhilotesColors.navy.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: PhilotesColors.navy,
-                          width: 1.5,
-                        ),
+                  SizedBox(
+                    height: 54,
+                    child: FilledButton.icon(
+                      key: const Key('checkVerificationButton'),
+                      onPressed: () async {
+                        try {
+                          final user =
+                              await AuthServices.current.currentUser();
+                          if (!context.mounted) return;
+                          if (!user.emailVerified) {
+                            _showTemporaryMessage(
+                              context,
+                              'Your email is not verified yet.',
+                            );
+                            return;
+                          }
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const BasicProfileScreen(),
+                            ),
+                          );
+                        } on AuthApiException catch (e) {
+                          if (!context.mounted) return;
+                          _showTemporaryMessage(context, e.message);
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: PhilotesColors.navy,
+                        foregroundColor: Colors.white,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.developer_mode_outlined,
-                                color: PhilotesColors.navy,
-                                size: 22,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'DEVELOPMENT MODE',
-                                style: TextStyle(
-                                  color: PhilotesColors.navy,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          const Text(
-                            'Email verification is bypassed for local '
-                            'interface testing only. This control must not '
-                            'appear in production builds.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: PhilotesColors.silver,
-                              fontSize: 12,
-                              height: 1.45,
-                            ),
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          FilledButton.icon(
-                            key: const Key('developmentBasicProfileButton'),
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (context) =>
-                                      const BasicProfileScreen(),
-                                ),
-                              );
-                            },
-                            style: FilledButton.styleFrom(
-                              backgroundColor: PhilotesColors.navy,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            icon: const Icon(Icons.arrow_forward_outlined),
-                            label: const Text(
-                              'Continue to Basic Profile (Development)',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ],
-                      ),
+                      icon: const Icon(Icons.verified_outlined),
+                      label: const Text('I Have Verified My Email'),
                     ),
-                  ],
+                  ),
 
                   const SizedBox(height: 22),
 
